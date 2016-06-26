@@ -4,8 +4,19 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "seed.h"
+#include "point.h"
+
 using namespace std;
 
+
+void definePhasisSeeds(cv::Mat img, vector<Seed> &seeds) {
+    seeds.push_back(Seed(img, Point(300, 550), Point(350, 600)));
+    seeds.push_back(Seed(img, Point(6, 529), Point(25, 543)));
+    seeds.push_back(Seed(img, Point(98, 455), Point(150, 507)));
+    seeds.push_back(Seed(img, Point(308, 259), Point(386, 327)));
+    seeds.push_back(Seed(img, Point(290, 23), Point(390, 93)));
+}
 
 void displayImage(cv::Mat img) {
     if( img.rows > 1000 ) {
@@ -31,9 +42,20 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    // code here
+    vector<Seed> seeds;
+    definePhasisSeeds(img, seeds);
 
-    displayImage(img);
+
+    // segmentation code goes here
+
+    cv::Mat res;
+    cv::cvtColor(img, res, cv::COLOR_GRAY2BGR);
+    for( Seed s : seeds) {
+        s.draw(res);
+        cout << s.average << "\t" << s.stdDev << endl;
+    }
+
+    displayImage(res);
 
     return 0;
 }
