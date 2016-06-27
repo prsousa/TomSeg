@@ -11,7 +11,7 @@
 using namespace std;
 
 cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
-    cv::Mat res(img.rows, img.cols, CV_8UC3);
+    cv::Mat res(img.rows, img.cols, CV_8U);
 
     for(int i = 0; i < img.rows; i++) {
         for(int j = 0; j < img.cols; j++) {
@@ -29,9 +29,23 @@ cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
                 }
             }
 
-            res.at<cv::Vec3b>(i, j)[0] = seeds[bestSeed_id].color[0];
-            res.at<cv::Vec3b>(i, j)[1] = seeds[bestSeed_id].color[1];
-            res.at<cv::Vec3b>(i, j)[2] = seeds[bestSeed_id].color[2];
+            res.at<uchar>(i, j) = bestSeed_id;
+        }
+    }
+
+    return res;
+}
+
+// converts a matrix of labels into a colored image
+cv::Mat colorizeLabels(cv::Mat labels, vector<Seed> seeds) {
+    cv::Mat res(labels.rows, labels.cols, CV_8UC3);
+
+    for(int i = 0; i < labels.rows; i++) {
+        for(int j = 0; j < labels.cols; j++) {
+            int label = labels.at<uchar>(i, j);
+            res.at<cv::Vec3b>(i, j)[0] = seeds[label].color[0];
+            res.at<cv::Vec3b>(i, j)[1] = seeds[label].color[1];
+            res.at<cv::Vec3b>(i, j)[2] = seeds[label].color[2];
         }
     }
 
@@ -92,8 +106,8 @@ int main(int argc, char* argv[]) {
     definePhasisSeeds(imagename + ".seeds", img, seeds);
 
     // segmentation code goes here
-    cv::Mat res = segmentation(img, seeds);
-
+    cv::Mat labels = segmentation(img, seeds);
+    cv::Mat res = colorizeLabels(labels, seeds);
 
     cv::Mat imgWithSeeds;
     cv::cvtColor(img, imgWithSeeds, cv::COLOR_GRAY2BGR);
