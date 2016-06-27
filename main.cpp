@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -37,13 +38,20 @@ cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
     return res;
 }
 
-void definePhasisSeeds(cv::Mat img, vector<Seed> &seeds) {
-    // Hard-coded for "LM.tif" example
-    seeds.push_back(Seed(img, Point(300, 550), Point(350, 600)));
-    seeds.push_back(Seed(img, Point(6, 529), Point(25, 543)));
-    seeds.push_back(Seed(img, Point(98, 455), Point(150, 507)));
-    seeds.push_back(Seed(img, Point(308, 259), Point(386, 327)));
-    seeds.push_back(Seed(img, Point(290, 23), Point(390, 93)));
+void definePhasisSeeds(string filename, cv::Mat img, vector<Seed> &seeds) {
+    std::fstream file;
+    int sA_x, sA_y, sB_x, sB_y;
+
+    file.open(filename, std::fstream::in);
+
+    if (!file) {
+        cerr << "Error: Seeds file cannot be loaded!" << endl;
+        return;
+    }
+
+    while (file >> sA_x >> sA_y >> sB_x >> sB_y) {
+        seeds.push_back(Seed(img, Point(sA_x, sA_y), Point(sB_x, sB_y)));
+    }
 }
 
 void mouseHandlerFunc(int event, int x, int y, int flags, void* userdata) {
@@ -73,15 +81,15 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    string filename = argv[1];
-    cv::Mat img = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+    string imagename = argv[1];
+    cv::Mat img = cv::imread(imagename, CV_LOAD_IMAGE_GRAYSCALE);
     if (img.empty()) {
         cerr << "Error: Image cannot be loaded!\n" << endl;
         return EXIT_FAILURE;
     }
 
     vector<Seed> seeds;
-    definePhasisSeeds(img, seeds);
+    definePhasisSeeds(imagename + ".seeds", img, seeds);
 
     // segmentation code goes here
     cv::Mat res = segmentation(img, seeds);
