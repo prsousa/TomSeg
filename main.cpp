@@ -106,6 +106,7 @@ int main(int argc, char* argv[]) {
     definePhasisSeeds(imagename + ".seeds", img, seeds);
 
     // segmentation code goes here
+    // cv::GaussianBlur( img, img, cv::Size( 9, 9 ), 0, 0 );
     cv::Mat labels = segmentation(img, seeds);
     cv::Mat res = colorizeLabels(labels, seeds);
 
@@ -114,7 +115,7 @@ int main(int argc, char* argv[]) {
     for( int i = 0; i < seeds.size(); i++) {
         Seed s = seeds[i];
         s.draw(imgWithSeeds);
-        cout << s.average << "\t" << s.stdDev << endl;
+        cout << "Seed #" << i << "\tμ: " << s.average << "\tσ: " << s.stdDev << endl;
     }
 
     displayImage("Original With Seeds", imgWithSeeds);
