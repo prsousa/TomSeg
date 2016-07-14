@@ -10,7 +10,7 @@
 
 using namespace std;
 
-cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
+cv::Mat segmentationPixelByPixel(cv::Mat img, vector<Seed> seeds) {
     cv::Mat res(img.rows, img.cols, CV_8U);
 
     for(int i = 0; i < img.rows; i++) {
@@ -30,6 +30,57 @@ cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
             }
 
             res.at<uchar>(i, j) = bestSeed_id;
+        }
+    }
+
+    return res;
+}
+
+cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
+    cv::Mat res(img.rows, img.cols, CV_8U);
+    res = cv::Scalar( seeds.size() ); // start with no material
+
+    for(int k = 0; k < seeds.size(); k++) {
+        Seed seed = seeds[k];
+
+        vector<Point> queue;
+        cv::Mat visited(img.rows, img.cols, CV_8U);
+
+        for( int i = seed.a.y; i < seed.b.y; i++ ) {
+            queue.push_back(Point(seed.a.x - 1, i));
+            queue.push_back(Point(seed.b.x + 1, i));
+        }
+
+        for( int j = seed.a.x; j < seed.b.x; j++ ) {
+            queue.push_back(Point(j, seed.a.y - 1));
+            queue.push_back(Point(j, seed.b.y + 1));
+        }
+
+        while( !queue.empty() ) {
+            Point p = queue.back();
+            queue.pop_back();
+
+            if( p.y >= 0 && p.x >= 0 && p.y <= img.rows && p.x <= img.cols && !visited.at<uchar>(p.y, p.x) ) {
+                uchar pixelIntensity = img.at<uchar>(p.y, p.x);
+                uchar diff = abs(pixelIntensity - seed.average);
+
+                if( diff <= 2 * seed.stdDev ) {
+                    res.at<uchar>(p.y, p.x) = k;
+
+                    queue.push_back(Point(p.x + 1, p.y));
+                    queue.push_back(Point(p.x - 1, p.y));
+                    queue.push_back(Point(p.x, p.y - 1));
+                    queue.push_back(Point(p.x, p.y + 1));
+
+                    // corners (8-way)
+                    queue.push_back(Point(p.x - 1, p.y - 1));
+                    queue.push_back(Point(p.x - 1, p.y + 1));
+                    queue.push_back(Point(p.x + 1, p.y - 1));
+                    queue.push_back(Point(p.x + 1, p.y + 1));
+                }
+
+                visited.at<uchar>(p.y, p.x) = 1;
+            }
         }
     }
 
@@ -80,7 +131,9 @@ void mouseHandlerFunc(int event, int x, int y, int flags, void* userdata) {
 
 void displayImage(string title, cv::Mat img) {
     if( img.rows > 1000 ) {
-        cv::resize(img, img, cv::Size(img.cols / 2, img.rows / 2));
+        int newHigh = 600;
+        int newWidth = img.cols * newHigh / img.rows;
+        cv::resize(img, img, cv::Size(newWidth, newHigh));
     }
 
     cv::namedWindow(title, cv::WINDOW_AUTOSIZE);
@@ -95,23 +148,29 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    string imagename = argv[1];
-    cv::Mat img = cv::imread(imagename, CV_LOAD_IMAGE_GRAYSCALE);
-    if (img.empty()) {
-        cerr << "Error: Image cannot be loaded!\n" << endl;
-        return EXIT_FAILURE;
+    vector<cv::Mat> imgs(10);
+
+    for(int i = 0; i < argc - 1; i++) {
+        string imagename = argv[i+1];
+        imgs[i] = cv::imread(imagename, CV_LOAD_IMAGE_GRAYSCALE);
+        if (imgs[i].empty()) {
+            cerr << "Error: Image cannot be loaded!\n" << endl;
+            return EXIT_FAILURE;
+        }
     }
 
+    string seedname = string(argv[1]) + ".seeds";
+
     vector<Seed> seeds;
-    definePhasisSeeds(imagename + ".seeds", img, seeds);
+    definePhasisSeeds(seedname, imgs[0], seeds);
 
     // segmentation code goes here
-    // cv::GaussianBlur( img, img, cv::Size( 9, 9 ), 0, 0 );
-    cv::Mat labels = segmentation(img, seeds);
+//     cv::GaussianBlur( imgs[0], imgs[0], cv::Size( 9, 9 ), 0, 0 );
+    cv::Mat labels = segmentation(imgs[0], seeds);
     cv::Mat res = colorizeLabels(labels, seeds);
 
     cv::Mat imgWithSeeds;
-    cv::cvtColor(img, imgWithSeeds, cv::COLOR_GRAY2BGR);
+    cv::cvtColor(imgs[0], imgWithSeeds, cv::COLOR_GRAY2BGR);
     for( int i = 0; i < seeds.size(); i++) {
         Seed s = seeds[i];
         s.draw(imgWithSeeds);
