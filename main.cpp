@@ -129,7 +129,7 @@ void mouseHandlerFunc(int event, int x, int y, int flags, void* userdata) {
     }
 }
 
-void displayImage(string title, cv::Mat img) {
+void displayImage(string title, cv::Mat img, int x = 0, int y = 100) {
     if( img.rows > 1000 ) {
         int newHigh = 600;
         int newWidth = img.cols * newHigh / img.rows;
@@ -137,6 +137,7 @@ void displayImage(string title, cv::Mat img) {
     }
 
     cv::namedWindow(title, cv::WINDOW_AUTOSIZE);
+    cv::moveWindow(title, x, y);
     cv::setMouseCallback(title, mouseHandlerFunc, NULL);
     cv::imshow(title, img);
 }
@@ -178,7 +179,7 @@ int main(int argc, char* argv[]) {
     }
 
     displayImage("Original With Seeds", imgWithSeeds);
-    displayImage("Result", res);
+    displayImage("Result", res, 650);
 
     cv::waitKey(0);
 
