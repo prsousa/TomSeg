@@ -60,9 +60,24 @@ cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
             Point p = queue.back();
             queue.pop_back();
 
-            if( p.y >= 0 && p.x >= 0 && p.y <= img.rows && p.x <= img.cols && !visited.at<uchar>(p.y, p.x) ) {
-                uchar pixelIntensity = img.at<uchar>(p.y, p.x);
-                uchar diff = abs(pixelIntensity - seed.average);
+            if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) ) {
+                int bluredIntensity = 0;
+                int n = 0;
+                {
+                    int blurSiz = 9 / 2;
+
+                    for(int b = max(p.y - blurSiz, 0); b <= min(p.y + blurSiz, img.rows); b++) {
+                        for(int a = max(p.x - blurSiz, 0); a <= min(p.x + blurSiz, img.cols); a++) {
+                            bluredIntensity += (int) img.at<uchar>(b, a);
+                            n++;
+                        }
+                    }
+                }
+
+                bluredIntensity = bluredIntensity / n;
+
+                // also tried: use minium difference -> diff = min( "blured" value, original one)
+                uchar diff = abs(bluredIntensity - seed.average);
 
                 if( diff <= 2 * seed.stdDev ) {
                     res.at<uchar>(p.y, p.x) = k;
