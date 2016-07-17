@@ -6,7 +6,7 @@
 #include "region.h"
 #include "point.h"
 
-cv::RNG rng(12345);
+static cv::RNG rng(12345);
 
 class Seed : public Region
 {

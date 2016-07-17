@@ -7,100 +7,11 @@
 
 #include "seed.h"
 #include "point.h"
+#include "segmentors/segmenter.h"
+#include "segmentors/region-growing.h"
+#include "segmentors/pixel-by-pixel.h"
 
 using namespace std;
-
-cv::Mat segmentationPixelByPixel(cv::Mat img, vector<Seed> seeds) {
-    cv::Mat res(img.rows, img.cols, CV_8U);
-
-    for(int i = 0; i < img.rows; i++) {
-        for(int j = 0; j < img.cols; j++) {
-
-            uchar bestSeed_id = 0;
-            uchar bestSeed_diff = 255;
-
-            for(int k = 0; k < seeds.size(); k++) {
-                uchar pixelIntensity = img.at<uchar>(i, j);
-                uchar diff = abs(pixelIntensity - seeds[k].average);
-
-                if( diff < bestSeed_diff ) {
-                    bestSeed_diff = diff;
-                    bestSeed_id = k;
-                }
-            }
-
-            res.at<uchar>(i, j) = bestSeed_id;
-        }
-    }
-
-    return res;
-}
-
-cv::Mat segmentation(cv::Mat img, vector<Seed> seeds) {
-    cv::Mat res(img.rows, img.cols, CV_8U);
-    res = cv::Scalar( seeds.size() ); // start with no material
-
-    for(int k = 0; k < seeds.size(); k++) {
-        Seed seed = seeds[k];
-
-        vector<Point> queue;
-        cv::Mat visited(img.rows, img.cols, CV_8U);
-
-        for( int i = seed.a.y; i < seed.b.y; i++ ) {
-            queue.push_back(Point(seed.a.x - 1, i));
-            queue.push_back(Point(seed.b.x + 1, i));
-        }
-
-        for( int j = seed.a.x; j < seed.b.x; j++ ) {
-            queue.push_back(Point(j, seed.a.y - 1));
-            queue.push_back(Point(j, seed.b.y + 1));
-        }
-
-        while( !queue.empty() ) {
-            Point p = queue.back();
-            queue.pop_back();
-
-            if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) ) {
-                int bluredIntensity = 0;
-                int n = 0;
-                {
-                    int blurSiz = 9 / 2;
-
-                    for(int b = max(p.y - blurSiz, 0); b <= min(p.y + blurSiz, img.rows); b++) {
-                        for(int a = max(p.x - blurSiz, 0); a <= min(p.x + blurSiz, img.cols); a++) {
-                            bluredIntensity += (int) img.at<uchar>(b, a);
-                            n++;
-                        }
-                    }
-                }
-
-                bluredIntensity = bluredIntensity / n;
-
-                // also tried: use minium difference -> diff = min( "blured" value, original one)
-                uchar diff = abs(bluredIntensity - seed.average);
-
-                if( diff <= 2 * seed.stdDev ) {
-                    res.at<uchar>(p.y, p.x) = k;
-
-                    queue.push_back(Point(p.x + 1, p.y));
-                    queue.push_back(Point(p.x - 1, p.y));
-                    queue.push_back(Point(p.x, p.y - 1));
-                    queue.push_back(Point(p.x, p.y + 1));
-
-                    // corners (8-way)
-                    queue.push_back(Point(p.x - 1, p.y - 1));
-                    queue.push_back(Point(p.x - 1, p.y + 1));
-                    queue.push_back(Point(p.x + 1, p.y - 1));
-                    queue.push_back(Point(p.x + 1, p.y + 1));
-                }
-
-                visited.at<uchar>(p.y, p.x) = 1;
-            }
-        }
-    }
-
-    return res;
-}
 
 // converts a matrix of labels into a colored image
 cv::Mat colorizeLabels(cv::Mat labels, vector<Seed> seeds) {
@@ -181,8 +92,9 @@ int main(int argc, char* argv[]) {
     definePhasisSeeds(seedname, imgs[0], seeds);
 
     // segmentation code goes here
-//     cv::GaussianBlur( imgs[0], imgs[0], cv::Size( 9, 9 ), 0, 0 );
-    cv::Mat labels = segmentation(imgs[0], seeds);
+    Segmenter* segmenter = new RegionGrowing(imgs[0], seeds);
+    cv::Mat labels = segmenter->Apply();
+
     cv::Mat res = colorizeLabels(labels, seeds);
 
     cv::Mat imgWithSeeds;
