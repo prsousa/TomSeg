@@ -36,9 +36,9 @@ cv::Mat RegionGrowing::Apply() {
 
             if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) ) {
                 int bluredIntensity = 0;
-                int n = 0;
                 {
                     int blurSiz = 9 / 2;
+                    int n = 0;
 
                     for(int b = max(p.y - blurSiz, 0); b <= min(p.y + blurSiz, img.rows); b++) {
                         for(int a = max(p.x - blurSiz, 0); a <= min(p.x + blurSiz, img.cols); a++) {
@@ -46,9 +46,10 @@ cv::Mat RegionGrowing::Apply() {
                             n++;
                         }
                     }
+
+                    bluredIntensity = bluredIntensity / n;
                 }
 
-                bluredIntensity = bluredIntensity / n;
 
                 // also tried: use minium difference -> diff = min( "blured" value, original one)
                 uchar diff = abs(bluredIntensity - seed.average);
