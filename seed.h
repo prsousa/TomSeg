@@ -7,17 +7,20 @@
 #include "point.h"
 
 static cv::RNG rng(12345);
+static int nextId = 0;
 
 class Seed : public Region
 {
 public:
+    int id;
     float average, stdDev;
     cv::Scalar color;
 
     Seed(cv::Mat& img, Point a, Point b): Region(img, a, b) {
+        this->id = nextId++;
         this->average = this->getAverageIntensity();
         this->stdDev = this->getStandardDeviation(this->average);
-        color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+        this->color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 
 //        std::cout << "Average: " << this->average << std::endl;
 //        std::cout << "StdDev.: " << this->stdDev << std::endl;
