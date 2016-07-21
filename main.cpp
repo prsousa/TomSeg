@@ -9,6 +9,7 @@
 #include "point.h"
 #include "segmentors/segmenter.h"
 #include "segmentors/region-growing.h"
+#include "segmentors/proportional-region-growing.h"
 #include "segmentors/pixel-by-pixel.h"
 
 using namespace std;
@@ -92,7 +93,7 @@ int main(int argc, char* argv[]) {
     definePhasisSeeds(seedname, imgs[0], seeds);
 
     // segmentation code goes here
-    Segmenter* segmenter = new RegionGrowing(imgs[0], seeds);
+    Segmenter* segmenter = new ProportinalRegionGrowing(imgs[0], seeds);
     cv::Mat labels = segmenter->Apply();
 
     cv::Mat res = colorizeLabels(labels, seeds);
@@ -104,6 +105,9 @@ int main(int argc, char* argv[]) {
         s.draw(imgWithSeeds);
         cout << "Seed #" << i << "\tμ: " << s.average << "\tσ: " << s.stdDev << endl;
     }
+
+    imwrite("seeded.jpg", imgWithSeeds);
+    imwrite("result.jpg", res);
 
     displayImage("Original With Seeds", imgWithSeeds);
     displayImage("Result", res, 650);
