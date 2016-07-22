@@ -8,14 +8,14 @@
 #include "../seed.h"
 #include "segmenter.h"
 
-class ProportinalRegionGrowing : public Segmenter
+class ProportionalRegionGrowing : public Segmenter
 {
 private:
     cv::Mat img;
     std::vector<Seed> seeds;
     std::vector<int> intervals;
 public:
-    ProportinalRegionGrowing(cv::Mat img, std::vector<Seed> seeds);
+    ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds);
     cv::Mat Apply();
 };
 

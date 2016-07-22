@@ -7,7 +7,7 @@ using namespace std;
 
 bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
 
-ProportinalRegionGrowing::ProportinalRegionGrowing(cv::Mat img, std::vector<Seed> seeds) {
+ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds) {
     this->img = img;
     this->seeds = seeds;
 
@@ -27,7 +27,7 @@ ProportinalRegionGrowing::ProportinalRegionGrowing(cv::Mat img, std::vector<Seed
     }
 }
 
-cv::Mat ProportinalRegionGrowing::Apply() {
+cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( seeds.size() ); // start with no material
 
