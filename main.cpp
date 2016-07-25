@@ -11,6 +11,7 @@
 #include "segmentors/region-growing.h"
 #include "segmentors/proportional-region-growing.h"
 #include "segmentors/pixel-by-pixel.h"
+#include "segmentors/proportional-pixel-by-pixel.h"
 
 using namespace std;
 
@@ -93,7 +94,7 @@ int main(int argc, char* argv[]) {
     definePhasisSeeds(seedname, imgs[0], seeds);
 
     // segmentation code goes here
-    Segmenter* segmenter = new ProportionalRegionGrowing(imgs[0], seeds);
+    Segmenter* segmenter = new ProportionalPixelByPixel(imgs[0], seeds);
     cv::Mat labels = segmenter->Apply();
 
     cv::Mat res = colorizeLabels(labels, seeds);
