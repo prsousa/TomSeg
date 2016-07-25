@@ -15,9 +15,9 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
     this->intervals.push_back(0);
 
     for( int i = 0; i < this->seeds.size() - 1; i++ ) {
-        int innterval = this->seeds[i].stdDev * ((this->seeds[i+1].average - this->seeds[i].average) * 1.0f / (this->seeds[i].stdDev + this->seeds[i+1].stdDev) * 1.0f);
-        cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].stdDev << "\t int: " << innterval << endl;
-        this->intervals.push_back( this->seeds[i].average + innterval);
+        int interval = this->seeds[i].stdDev * ((this->seeds[i+1].average - this->seeds[i].average) * 1.0f / (this->seeds[i].stdDev + this->seeds[i+1].stdDev) * 1.0f);
+//        cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].stdDev << "\t int: " << interval << endl;
+        this->intervals.push_back( this->seeds[i].average + interval);
     }
 
     this->intervals.push_back(255);
