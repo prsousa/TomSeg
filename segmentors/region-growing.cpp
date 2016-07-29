@@ -54,7 +54,7 @@ cv::Mat RegionGrowing::Apply() {
                 // also tried: use minium difference -> diff = min( "blured" value, original one)
                 uchar diff = abs(bluredIntensity - seed.average);
 
-                if( diff <= 2 * seed.stdDev ) {
+                if( diff <= 2 * seed.relativeStdDev ) {
                     res.at<uchar>(p.y, p.x) = k;
 
                     queue.push_back(Point(p.x + 1, p.y));
