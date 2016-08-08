@@ -28,7 +28,7 @@ GridedRegionGrowing::GridedRegionGrowing(cv::Mat img, std::vector<Seed> seeds, i
 
 cv::Mat GridedRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
-    res = cv::Scalar( seeds.size() ); // start with no material
+    res = cv::Scalar( EMPTY ); // start with no material
 
     for( int i = 0; i < compressedImgMean.rows; i++ ) {
         for( int j = 0; j < compressedImgMean.cols; j++ ) {

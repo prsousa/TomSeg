@@ -6,6 +6,8 @@
 #include "region.h"
 #include "point.h"
 
+#define EMPTY 255
+
 static cv::RNG rng(12345);
 static int nextId = 0;
 

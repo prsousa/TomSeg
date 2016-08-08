@@ -29,7 +29,7 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
 
 cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
-    res = cv::Scalar( seeds.size() ); // start with no material
+    res = cv::Scalar( EMPTY ); // start with no material
 
     for(int k = 0; k < seeds.size(); k++) {
         Seed seed = seeds[k];

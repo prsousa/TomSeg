@@ -19,13 +19,16 @@ using namespace std;
 // converts a matrix of labels into a colored image
 cv::Mat colorizeLabels(cv::Mat labels, vector<Seed> seeds) {
     cv::Mat res(labels.rows, labels.cols, CV_8UC3);
+    res = cv::Scalar( 0 );
 
     for(int i = 0; i < labels.rows; i++) {
         for(int j = 0; j < labels.cols; j++) {
             int label = labels.at<uchar>(i, j);
-            res.at<cv::Vec3b>(i, j)[0] = seeds[label].color[0];
-            res.at<cv::Vec3b>(i, j)[1] = seeds[label].color[1];
-            res.at<cv::Vec3b>(i, j)[2] = seeds[label].color[2];
+            if(label != EMPTY) {
+                res.at<cv::Vec3b>(i, j)[0] = seeds[label].color[0];
+                res.at<cv::Vec3b>(i, j)[1] = seeds[label].color[1];
+                res.at<cv::Vec3b>(i, j)[2] = seeds[label].color[2];
+            }
         }
     }
 
