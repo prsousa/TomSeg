@@ -27,6 +27,58 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
     }
 }
 
+cv::Mat Erode(cv::Mat masks, int size) {
+    cv::Mat res;
+    masks.copyTo(res);
+
+    size = size / 2;
+
+    for( int i = 0; i < masks.rows; i++ ) {
+        for( int j = 0; j < masks.cols; j++ ) {
+
+            bool fits = true;
+
+            for( int y = max(0, i - size); fits && y < min(masks.rows, i + size); y++ ) {
+                for( int x = max(0, j - size); fits && x < min(masks.cols, j + size); x++ ) {
+                    fits = masks.at<uchar>(y, x) == masks.at<uchar>(i, j);
+                }
+            }
+
+            if( !fits ) {
+                res.at<uchar>(i, j) = EMPTY;
+            }
+
+        }
+    }
+
+    return res;
+}
+
+cv::Mat Dilate(cv::Mat masks, int size) {
+    cv::Mat res;
+    masks.copyTo(res);
+
+    size = size / 2;
+
+    for( int i = 0; i < masks.rows; i++ ) {
+        for( int j = 0; j < masks.cols; j++ ) {
+
+            uchar color = EMPTY;
+
+            for( int y = max(0, i - size); y < min(masks.rows, i + size); y++ ) {
+                for( int x = max(0, j - size); x < min(masks.cols, j + size); x++ ) {
+                    color = min(color, masks.at<uchar>(y, x));
+                }
+            }
+
+            res.at<uchar>(i, j) = color;
+
+        }
+    }
+
+    return res;
+}
+
 cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( EMPTY ); // start with no material
@@ -90,6 +142,9 @@ cv::Mat ProportionalRegionGrowing::Apply() {
             }
         }
     }
+
+    res = Erode(res, 15);
+    res = Dilate(res, 15);
 
     return res;
 }
