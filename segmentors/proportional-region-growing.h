@@ -14,6 +14,7 @@ private:
     cv::Mat img;
     std::vector<Seed> seeds;
     std::vector<int> intervals;
+    Seed FindNextSeed(cv::Mat labels, int minSize);
 public:
     ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds);
     cv::Mat Apply();

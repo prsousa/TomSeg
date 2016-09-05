@@ -79,6 +79,40 @@ cv::Mat Dilate(cv::Mat masks, int size) {
     return res;
 }
 
+Seed ProportionalRegionGrowing::FindNextSeed( cv::Mat labels, int minSize ) {
+
+    for(int y = 0; y < img.rows - minSize; y++) {
+        for(int x = 0; x < img.cols - minSize; x++) {
+            Point a(x, y);
+            Point b(x + minSize, y + minSize);
+            Region labelRegion(labels, a, b);
+
+            if( labelRegion.isColor<uchar>(EMPTY) ) {
+                Region imgRegion(this->img, a, b);
+                std::cout << "centerOfMass" << std::endl;
+                if( imgRegion.centerOfMassIsMiddle() ) {
+                    return Seed(this->img, a, b);
+                }
+            }
+        }
+    }
+
+
+    return Seed(this->img, Point(0, 0), Point(10, 10));
+}
+
+void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
+    if( img.rows > 1000 ) {
+        int newHigh = 600;
+        int newWidth = img.cols * newHigh / img.rows;
+        cv::resize(img, img, cv::Size(newWidth, newHigh));
+    }
+
+    cv::namedWindow(title, cv::WINDOW_AUTOSIZE);
+    cv::moveWindow(title, x, y);
+    cv::imshow(title, img);
+}
+
 cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( EMPTY ); // start with no material
@@ -143,8 +177,18 @@ cv::Mat ProportionalRegionGrowing::Apply() {
         }
     }
 
-    res = Erode(res, 15);
-    res = Dilate(res, 15);
+    int morphSize = 15;
+    res = Erode(res, morphSize);
+    res = Dilate(res, morphSize);
+
+    Seed nextSeed = this->FindNextSeed( res, 35 );
+
+    cv::Mat imgWithNewSeed;
+    cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
+    nextSeed.draw(imgWithNewSeed);
+
+    displayImageApagar("New Seed", imgWithNewSeed);
+    cv::waitKey();
 
     return res;
 }
