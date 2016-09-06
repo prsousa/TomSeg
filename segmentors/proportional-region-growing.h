@@ -14,6 +14,7 @@ private:
     cv::Mat img;
     std::vector<Seed> seeds;
     std::vector<int> intervals;
+    void RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams );
     Seed FindNextSeed(cv::Mat labels, int minSize);
 public:
     ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds);
