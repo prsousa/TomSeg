@@ -1,6 +1,8 @@
 #ifndef SEED_H
 #define SEED_H
 
+#include <vector>
+
 #include <opencv2/core/core.hpp>
 
 #include "region.h"
@@ -25,18 +27,10 @@ public:
         // if stdDev is lower than 1: relativeStdDev = 1; else: relativeStdDev = stdDev
         this->relativeStdDev = fmax( this->getStandardDeviation(this->average), 1.0f );
         this->color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-
-//        std::cout << "Average: " << this->average << std::endl;
-//        std::cout << "StdDev.: " << this->stdDev << std::endl;
     }
 
-    void draw(cv::Mat img) {
-
-        cv::Point a( this->a.x, this->a.y );
-        cv::Point b( this->b.x, this->b.y );
-
-        cv::rectangle(img, a, b, this->color, 3);
-    }
+    void draw(cv::Mat img);
+    Seed* getSimmilarSeed(std::vector<Seed>&);
 };
 
 #endif // SEED_H
