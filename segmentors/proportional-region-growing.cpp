@@ -89,7 +89,7 @@ Seed ProportionalRegionGrowing::FindNextSeed( cv::Mat labels, int minSize ) {
 
             if( labelRegion.isColor<uchar>(EMPTY) ) {
                 Region imgRegion(this->img, a, b);
-                std::cout << "centerOfMass" << std::endl;
+
                 if( imgRegion.centerOfMassIsMiddle() ) {
                     return Seed(this->img, a, b);
                 }
@@ -171,6 +171,8 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
     }
 }
 
+// aditionalJudgeParams[0] - inferior histogram limmit
+// aditionalJudgeParams[1] - superior histogram limmit
 bool proportionalJudge(int intensity, void* aditionalJudgeParams) {
     int* judgeParams = (int*) aditionalJudgeParams;
     return ( intensity >= judgeParams[0] && intensity < judgeParams[1]);
@@ -184,8 +186,8 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     for(int k = 0; k < seeds.size(); k++) {
         Seed seed = seeds[k];
 
-        proportionalSeedIntervals[0] = intervals[k];
-        proportionalSeedIntervals[1] = intervals[k+1];
+        proportionalSeedIntervals[0] = intervals[k];    // inferior histogram limmit
+        proportionalSeedIntervals[1] = intervals[k+1];  // superior histogram limmit
 
         this->RegionGrowing( res, seed, proportionalJudge, proportionalSeedIntervals );
     }
