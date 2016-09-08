@@ -199,18 +199,36 @@ cv::Mat ProportionalRegionGrowing::Apply() {
         this->RegionGrowing( res, seed, proportionalJudge, proportionalSeedIntervals );
     }
 
-    int morphSize = 15;
-    res = Erode(res, morphSize);
-    res = Dilate(res, morphSize);
 
-    Seed nextSeed = this->FindNextSeed( res, 35 );
 
-    cv::Mat imgWithNewSeed;
-    cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
-    nextSeed.draw(imgWithNewSeed);
+    {
+        Seed nextSeed = this->FindNextSeed( res, 35 );
 
-    displayImageApagar("New Seed", imgWithNewSeed);
-    cv::waitKey();
+        Seed* simmilarSeed = nextSeed.getSimmilarSeed( this->seeds );
+        if( simmilarSeed ) {
+            nextSeed.id = simmilarSeed->id;
+
+            std::pair<int, int> localInterval = intervals[nextSeed.id];
+            proportionalSeedIntervals[0] = localInterval.first;     // inferior histogram limmit
+            proportionalSeedIntervals[1] = localInterval.second;    // superior histogram limmit
+cout << "Next Seed: " << nextSeed.id << " -- " << localInterval.first << "->" << localInterval.second << endl;
+            this->RegionGrowing( res, nextSeed, proportionalJudge, proportionalSeedIntervals);
+        }
+
+//        cv::Mat imgWithNewSeed;
+//        cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
+//        nextSeed.draw(imgWithNewSeed);
+
+//        displayImageApagar("New Seed", imgWithNewSeed);
+//        cv::waitKey();
+    }
+
+    {
+        // TODO: fix bug that requires that erode + dilate must be at the end in order to RegionGrowing work
+        int morphSize = 15;
+        res = Erode(res, morphSize);
+        res = Dilate(res, morphSize);
+    }
 
     return res;
 }
