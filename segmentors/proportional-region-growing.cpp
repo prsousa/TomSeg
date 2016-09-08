@@ -12,17 +12,25 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
     this->seeds = seeds;
 
     std::sort (this->seeds.begin(), this->seeds.end(), seedComparator);
-    this->intervals.push_back(0);
+
+    vector<int> chunks;
+    chunks.push_back(0);
 
     for( int i = 0; i < this->seeds.size() - 1; i++ ) {
         int interval = this->seeds[i].relativeStdDev * ((this->seeds[i+1].average - this->seeds[i].average) * 1.0f / (this->seeds[i].relativeStdDev + this->seeds[i+1].relativeStdDev) * 1.0f);
 //        cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].stdDev << "\t int: " << interval << endl;
-        this->intervals.push_back( this->seeds[i].average + interval);
+        chunks.push_back( this->seeds[i].average + interval);
     }
 
-    this->intervals.push_back(255);
+    chunks.push_back(255);
 
-    for(int interval : this->intervals) {
+    for( int i = 0; i < this->seeds.size(); i++ ) {
+        Seed s = this->seeds[i];
+        this->intervals[s.id] = std::make_pair(chunks[i], chunks[i+1]);
+    }
+
+
+    for(int interval : chunks) {
         cout << interval << endl;
     }
 }
@@ -117,7 +125,6 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
 // instead of receiving the aditionalJudgeParams arg, it might be better
 // to create an object ProportinalJudge that encapsulates it
 void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams ) {
-
     vector<Point> queue;
     cv::Mat visited(img.rows, img.cols, CV_8U);
 
@@ -185,9 +192,9 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     int proportionalSeedIntervals[2];
     for(int k = 0; k < seeds.size(); k++) {
         Seed seed = seeds[k];
-
-        proportionalSeedIntervals[0] = intervals[k];    // inferior histogram limmit
-        proportionalSeedIntervals[1] = intervals[k+1];  // superior histogram limmit
+        std::pair<int, int> localInterval = intervals[seed.id];
+        proportionalSeedIntervals[0] = localInterval.first;    // inferior histogram limmit
+        proportionalSeedIntervals[1] = localInterval.second;  // superior histogram limmit
 
         this->RegionGrowing( res, seed, proportionalJudge, proportionalSeedIntervals );
     }
