@@ -87,7 +87,7 @@ cv::Mat Dilate(cv::Mat masks, int size) {
     return res;
 }
 
-Seed ProportionalRegionGrowing::FindNextSeed( cv::Mat labels, int minSize ) {
+bool ProportionalRegionGrowing::FindNextSeed( Seed* res, cv::Mat labels, int minSize ) {
 
     for(int y = 0; y < img.rows - minSize; y++) {
         for(int x = 0; x < img.cols - minSize; x++) {
@@ -99,14 +99,16 @@ Seed ProportionalRegionGrowing::FindNextSeed( cv::Mat labels, int minSize ) {
                 Region imgRegion(this->img, a, b);
 
                 if( imgRegion.centerOfMassIsMiddle() ) {
-                    return Seed(this->img, a, b);
+                    Seed s(this->img, a, b);
+                    *res = s;
+                    return true;
                 }
             }
         }
     }
 
 
-    return Seed(this->img, Point(0, 0), Point(10, 10));
+    return false;
 }
 
 void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
@@ -200,9 +202,8 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     }
 
 
-
-    {
-        Seed nextSeed = this->FindNextSeed( res, 35 );
+    Seed nextSeed;
+    while( this->FindNextSeed( &nextSeed, res, 35 ) ){
 
         Seed* simmilarSeed = nextSeed.getSimmilarSeed( this->seeds );
         if( simmilarSeed ) {
@@ -211,8 +212,13 @@ cv::Mat ProportionalRegionGrowing::Apply() {
             std::pair<int, int> localInterval = intervals[nextSeed.id];
             proportionalSeedIntervals[0] = localInterval.first;     // inferior histogram limmit
             proportionalSeedIntervals[1] = localInterval.second;    // superior histogram limmit
-cout << "Next Seed: " << nextSeed.id << " -- " << localInterval.first << "->" << localInterval.second << endl;
+
+            cout << "Next Seed: " << nextSeed.id << " -- " << localInterval.first << "->" << localInterval.second << endl;
+
             this->RegionGrowing( res, nextSeed, proportionalJudge, proportionalSeedIntervals);
+        } else {
+            // TODO: find out and apply convinient RegionGrowing
+            // or endless FindNextSeed loop
         }
 
 //        cv::Mat imgWithNewSeed;

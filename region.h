@@ -11,6 +11,8 @@ public:
     Point a, b;
     cv::Mat* img;
 
+    Region() {}
+
     Region(cv::Mat& img, Point a, Point b) {
         assert(a.x >= 0 && a.x <= img.cols && a.y >= 0 && a.y <= img.rows);
         assert(b.x >= 0 && b.x <= img.cols && b.y >= 0 && b.y <= img.rows);

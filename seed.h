@@ -20,6 +20,8 @@ public:
     float average, relativeStdDev;
     cv::Scalar color;
 
+    Seed():Region() {}
+
     Seed(cv::Mat& img, Point a, Point b): Region(img, a, b) {
         this->id = nextId++;
         this->average = this->getAverageIntensity();
