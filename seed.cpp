@@ -27,3 +27,33 @@ Seed* Seed::getSimilarSeed(vector<Seed>& seeds) {
 
     return NULL;
 }
+
+Seed Seed::getMoreSimilarSeedByAvg(std::vector<Seed>& seeds) {
+    Seed res;
+    int minorAvgDiff = INT_MAX;
+
+    for( Seed s : seeds ) {
+        int currentAvgDiff = std::abs( this->average - s.average );
+        if( minorAvgDiff > currentAvgDiff ) {
+            minorAvgDiff = currentAvgDiff;
+            res = s;
+        }
+    }
+
+    return res;
+}
+
+Seed Seed::getMoreSimilarSeedByStdDev(std::vector<Seed>&seeds) {
+    Seed res;
+    int minorStdDevDiff = INT_MAX;
+
+    for( Seed s : seeds ) {
+        int currentStdDevDiff = std::abs( this->relativeStdDev - s.relativeStdDev );
+        if( minorStdDevDiff > currentStdDevDiff ) {
+            minorStdDevDiff = currentStdDevDiff;
+            res = s;
+        }
+    }
+
+    return res;
+}

@@ -33,6 +33,8 @@ public:
 
     void draw(cv::Mat img);
     Seed* getSimilarSeed(std::vector<Seed>&);
+    Seed getMoreSimilarSeedByAvg(std::vector<Seed>&);
+    Seed getMoreSimilarSeedByStdDev(std::vector<Seed>&);
 
     friend std::ostream& operator<<(std::ostream& os, const Seed& s);
 };
