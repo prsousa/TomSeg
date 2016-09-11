@@ -32,7 +32,7 @@ public:
     }
 
     void draw(cv::Mat img);
-    Seed* getSimmilarSeed(std::vector<Seed>&);
+    Seed* getSimilarSeed(std::vector<Seed>&);
 };
 
 #endif // SEED_H

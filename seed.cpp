@@ -9,7 +9,7 @@ void Seed::draw(cv::Mat img) {
     cv::rectangle( img, a, b, this->color, 3 );
 }
 
-Seed* Seed::getSimmilarSeed(vector<Seed>& seeds) {
+Seed* Seed::getSimilarSeed(vector<Seed>& seeds) {
     for( Seed s : seeds ) {
         if( (this->average >= s.average - s.relativeStdDev) && (this->average <= s.average + s.relativeStdDev )) {
             // está dentro da média ± desvio padrão

@@ -205,9 +205,9 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     Seed nextSeed;
     while( this->FindNextSeed( &nextSeed, res, 35 ) ){
 
-        Seed* simmilarSeed = nextSeed.getSimmilarSeed( this->seeds );
-        if( simmilarSeed ) {
-            nextSeed.id = simmilarSeed->id;
+        Seed* similarSeed = nextSeed.getSimilarSeed( this->seeds );
+        if( similarSeed ) {
+            nextSeed.id = similarSeed->id;
 
             std::pair<int, int> localInterval = intervals[nextSeed.id];
             proportionalSeedIntervals[0] = localInterval.first;     // inferior histogram limmit
