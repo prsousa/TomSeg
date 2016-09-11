@@ -30,9 +30,9 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
     }
 
 
-    for(int interval : chunks) {
-        cout << interval << endl;
-    }
+//    for(int interval : chunks) {
+//        cout << interval << endl;
+//    }
 }
 
 cv::Mat Erode(cv::Mat masks, int size) {
@@ -144,7 +144,7 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
         Point p = queue.back();
         queue.pop_back();
 
-        if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) ) {
+        if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) && res.at<uchar>(p.y, p.x) == EMPTY ) {
             int bluredIntensity = 0;
             {
                 int blurSiz = 9 / 2;
@@ -187,6 +187,14 @@ bool proportionalJudge(int intensity, void* aditionalJudgeParams) {
     return ( intensity >= judgeParams[0] && intensity < judgeParams[1]);
 }
 
+bool standardDeviationJudge(int intensity, void* aditionalJudgeParams) {
+    int* judgeParams = (int*) aditionalJudgeParams;
+    int seedAvg = judgeParams[0];
+    int seedStdDev = judgeParams[1];
+    int relax = 5;
+    return ( intensity >= (seedAvg - relax*seedStdDev) && intensity < (seedAvg + relax*seedStdDev) );
+}
+
 cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( EMPTY ); // start with no material
@@ -219,14 +227,33 @@ cv::Mat ProportionalRegionGrowing::Apply() {
         } else {
             // TODO: find out and apply convinient RegionGrowing
             // or endless FindNextSeed loop
+            cout << "Degenerated Seed Found" << endl;
+            cout << nextSeed << endl;
+
+//            Seed similarByAvg = nextSeed.getMoreSimilarSeedByAvg( this->seeds );
+            Seed similarByStdDev = nextSeed.getMoreSimilarSeedByStdDev( this->seeds );
+
+//            cout << "Similar By Avg: \t" << similarByAvg.id << endl;
+            cout << "Similar By StdDev: \t" << similarByStdDev.id << endl;
+
+            nextSeed.id = similarByStdDev.id;
+
+            int seedAvgAndStdDev[2];
+            seedAvgAndStdDev[0] = nextSeed.average;
+            seedAvgAndStdDev[1] = nextSeed.relativeStdDev;
+            this->RegionGrowing( res, nextSeed, standardDeviationJudge, seedAvgAndStdDev);
+
+
+//            cv::Mat imgWithNewSeed;
+//            cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
+//            nextSeed.draw(imgWithNewSeed);
+
+//            displayImageApagar("New Seed", imgWithNewSeed);
+//            cv::waitKey();
+
+//            exit(0);
         }
 
-//        cv::Mat imgWithNewSeed;
-//        cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
-//        nextSeed.draw(imgWithNewSeed);
-
-//        displayImageApagar("New Seed", imgWithNewSeed);
-//        cv::waitKey();
     }
 
     {
