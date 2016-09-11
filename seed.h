@@ -33,6 +33,8 @@ public:
 
     void draw(cv::Mat img);
     Seed* getSimilarSeed(std::vector<Seed>&);
+
+    friend std::ostream& operator<<(std::ostream& os, const Seed& s);
 };
 
 #endif // SEED_H

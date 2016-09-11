@@ -97,6 +97,10 @@ int main(int argc, char* argv[]) {
     vector<Seed> seeds;
     definePhasisSeeds(seedname, imgs[0], seeds);
 
+    for( Seed s : seeds ) {
+        cout << s << endl;
+    }
+
     // segmentation code goes here
     Segmenter* segmenter = new ProportionalRegionGrowing(imgs[0], seeds);
     cv::Mat labels = segmenter->Apply();
@@ -105,10 +109,8 @@ int main(int argc, char* argv[]) {
 
     cv::Mat imgWithSeeds;
     cv::cvtColor(imgs[0], imgWithSeeds, cv::COLOR_GRAY2BGR);
-    for( int i = 0; i < seeds.size(); i++) {
-        Seed s = seeds[i];
+    for( Seed s : seeds ) {
         s.draw(imgWithSeeds);
-        cout << "Seed #" << i << "\tμ: " << s.average << "\tσ: " << s.relativeStdDev << endl;
     }
 
     imwrite("seeded.jpg", imgWithSeeds);

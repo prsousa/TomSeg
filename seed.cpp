@@ -9,6 +9,11 @@ void Seed::draw(cv::Mat img) {
     cv::rectangle( img, a, b, this->color, 3 );
 }
 
+std::ostream& operator<<(std::ostream& os, const Seed& s) {
+    os << "Seed #" << s.id << "\t[(" << s.a.x << ", " << s.a.y << "), (" << s.b.x << ", " << s.b.y << ")]" << "\tμ: " << s.average << "\tσ: " << s.relativeStdDev;
+    return os;
+}
+
 Seed* Seed::getSimilarSeed(vector<Seed>& seeds) {
     for( Seed s : seeds ) {
         if( (this->average >= s.average - s.relativeStdDev) && (this->average <= s.average + s.relativeStdDev )) {
