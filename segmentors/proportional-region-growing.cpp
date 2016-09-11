@@ -195,21 +195,19 @@ bool standardDeviationJudge(int intensity, void* aditionalJudgeParams) {
     return ( intensity >= (seedAvg - relax*seedStdDev) && intensity < (seedAvg + relax*seedStdDev) );
 }
 
-cv::Mat ProportionalRegionGrowing::Apply() {
-    cv::Mat res(img.rows, img.cols, CV_8U);
-    res = cv::Scalar( EMPTY ); // start with no material
-
+void ProportionalRegionGrowing::InitialConquer(cv::Mat& res) {
     int proportionalSeedIntervals[2];
-    for(int k = 0; k < seeds.size(); k++) {
-        Seed seed = seeds[k];
-        std::pair<int, int> localInterval = intervals[seed.id];
+
+    for(Seed seed : this->seeds) {
+        std::pair<int, int> localInterval = this->intervals[seed.id];
         proportionalSeedIntervals[0] = localInterval.first;    // inferior histogram limmit
         proportionalSeedIntervals[1] = localInterval.second;  // superior histogram limmit
 
         this->RegionGrowing( res, seed, proportionalJudge, proportionalSeedIntervals );
     }
+}
 
-
+void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
     Seed nextSeed;
     while( this->FindNextSeed( &nextSeed, res, 35 ) ){
 
@@ -217,11 +215,12 @@ cv::Mat ProportionalRegionGrowing::Apply() {
         if( similarSeed ) {
             nextSeed.id = similarSeed->id;
 
-            std::pair<int, int> localInterval = intervals[nextSeed.id];
+            int proportionalSeedIntervals[2];
+            std::pair<int, int> localInterval = this->intervals[nextSeed.id];
             proportionalSeedIntervals[0] = localInterval.first;     // inferior histogram limmit
             proportionalSeedIntervals[1] = localInterval.second;    // superior histogram limmit
 
-            cout << "Next Seed: " << nextSeed.id << " -- " << localInterval.first << "->" << localInterval.second << endl;
+            cout << "Similar Seed: " << nextSeed.id << endl;
 
             this->RegionGrowing( res, nextSeed, proportionalJudge, proportionalSeedIntervals);
         } else {
@@ -255,13 +254,21 @@ cv::Mat ProportionalRegionGrowing::Apply() {
         }
 
     }
+}
 
-    {
-        // TODO: fix bug that requires that erode + dilate must be at the end in order to RegionGrowing work
-        int morphSize = 15;
-        res = Erode(res, morphSize);
-        res = Dilate(res, morphSize);
-    }
+void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res, int morphSize) {
+    res = Erode(res, morphSize);
+    res = Dilate(res, morphSize);
+}
+
+
+cv::Mat ProportionalRegionGrowing::Apply() {
+    cv::Mat res(img.rows, img.cols, CV_8U);
+    res = cv::Scalar( EMPTY ); // start with no material
+
+    this->InitialConquer(res);
+    this->AutomaticConquer(res);
+    this->MorphologicalFiltering(res, 15);
 
     return res;
 }

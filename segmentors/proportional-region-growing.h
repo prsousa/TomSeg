@@ -18,6 +18,9 @@ private:
     std::unordered_map< int, std::pair<int, int> > intervals;
 
     void RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams );
+    void InitialConquer( cv::Mat& res );
+    void AutomaticConquer( cv::Mat& res );
+    void MorphologicalFiltering(cv::Mat& res, int morphSize);
     bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
 public:
     ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds);
