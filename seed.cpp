@@ -15,12 +15,13 @@ std::ostream& operator<<(std::ostream& os, const Seed& s) {
 }
 
 Seed* Seed::getSimilarSeed(vector<Seed>& seeds) {
-    for( Seed s : seeds ) {
+    for( size_t i = 0; i < seeds.size(); i++ ) {
+        Seed s = seeds[i];
         if( (this->average >= s.average - s.relativeStdDev) && (this->average <= s.average + s.relativeStdDev )) {
             // está dentro da média ± desvio padrão
             float relax = 0.05;
             if( (this->relativeStdDev >= s.relativeStdDev * (1-relax)) && (this->relativeStdDev <= s.relativeStdDev*(1+relax)) ) {
-                return &s;
+                return &seeds[i];
             }
         }
     }

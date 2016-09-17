@@ -45,7 +45,7 @@ cv::Mat ProportionalPixelByPixel::Apply() {
                     }
                 }
 
-                bluredIntensity = bluredIntensity / n;
+                if(n) bluredIntensity = bluredIntensity / n;
             }
 
             for(int k = 0; k < seeds.size(); k++) {

@@ -47,7 +47,7 @@ cv::Mat RegionGrowing::Apply() {
                         }
                     }
 
-                    bluredIntensity = bluredIntensity / n;
+                    if(n) bluredIntensity = bluredIntensity / n;
                 }
 
 
