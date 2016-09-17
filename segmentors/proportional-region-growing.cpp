@@ -1,4 +1,5 @@
 #include <iostream>
+#include <set>
 
 #include "proportional-region-growing.h"
 #include "../point.h"
@@ -10,29 +11,31 @@ bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
 ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds) {
     this->img = img;
     this->seeds = seeds;
+    vector<Seed> sortedSeeds = seeds;
 
-    std::sort (this->seeds.begin(), this->seeds.end(), seedComparator);
+    std::sort (sortedSeeds.begin(), sortedSeeds.end(), seedComparator);
 
     vector<int> chunks;
     chunks.push_back(0);
 
-    for( int i = 0; i < this->seeds.size() - 1; i++ ) {
-        int interval = this->seeds[i].relativeStdDev * ((this->seeds[i+1].average - this->seeds[i].average) * 1.0f / (this->seeds[i].relativeStdDev + this->seeds[i+1].relativeStdDev) * 1.0f);
+    for( int i = 0; i < sortedSeeds.size() - 1; i++ ) {
+        int interval = sortedSeeds[i].relativeStdDev * ((sortedSeeds[i+1].average - sortedSeeds[i].average) * 1.0f / (sortedSeeds[i].relativeStdDev + sortedSeeds[i+1].relativeStdDev) * 1.0f);
 //        cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].stdDev << "\t int: " << interval << endl;
-        chunks.push_back( this->seeds[i].average + interval);
+        chunks.push_back( sortedSeeds[i].average + interval );
     }
 
     chunks.push_back(255);
 
-    for( int i = 0; i < this->seeds.size(); i++ ) {
-        Seed s = this->seeds[i];
+    for( int i = 0; i < sortedSeeds.size(); i++ ) {
+        Seed s = sortedSeeds[i];
+        cout << "-" << s.id << endl;
         this->intervals[s.id] = std::make_pair(chunks[i], chunks[i+1]);
     }
 
 
-//    for(int interval : chunks) {
-//        cout << interval << endl;
-//    }
+    for(int interval : chunks) {
+        cout << interval << endl;
+    }
 }
 
 cv::Mat Erode(cv::Mat masks, int size) {
@@ -112,6 +115,8 @@ bool ProportionalRegionGrowing::FindNextSeed( Seed* res, cv::Mat labels, int min
 }
 
 void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
+    cv::imwrite("next_Seed.jpg", img);
+
     if( img.rows > 1000 ) {
         int newHigh = 600;
         int newWidth = img.cols * newHigh / img.rows;
@@ -129,6 +134,7 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
 void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams ) {
     vector<Point> queue;
     cv::Mat visited(img.rows, img.cols, CV_8U);
+    visited = cv::Scalar( 0 );
 
     for( int i = seed.a.y; i < seed.b.y; i++ ) {
         queue.push_back(Point(seed.a.x - 1, i));
@@ -157,7 +163,7 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
                     }
                 }
 
-                bluredIntensity = bluredIntensity / n;
+                if(n) bluredIntensity = bluredIntensity / n;
             }
 
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
@@ -209,7 +215,17 @@ void ProportionalRegionGrowing::InitialConquer(cv::Mat& res) {
 
 void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
     Seed nextSeed;
-    while( this->FindNextSeed( &nextSeed, res, 35 ) ){
+//    int mm = 3;
+
+    while( this->FindNextSeed( &nextSeed, res, 15 ) ){
+//        if( !mm-- ) break;
+//        cv::Mat imgWithNewSeed;
+//        cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
+//        nextSeed.draw(imgWithNewSeed);
+
+//        displayImageApagar("New Seed", imgWithNewSeed);
+//        cv::waitKey();
+
 
         Seed* similarSeed = nextSeed.getSimilarSeed( this->seeds );
         if( similarSeed ) {
@@ -240,17 +256,7 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
             int seedAvgAndStdDev[2];
             seedAvgAndStdDev[0] = nextSeed.average;
             seedAvgAndStdDev[1] = nextSeed.relativeStdDev;
-            this->RegionGrowing( res, nextSeed, standardDeviationJudge, seedAvgAndStdDev);
-
-
-//            cv::Mat imgWithNewSeed;
-//            cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
-//            nextSeed.draw(imgWithNewSeed);
-
-//            displayImageApagar("New Seed", imgWithNewSeed);
-//            cv::waitKey();
-
-//            exit(0);
+            this->RegionGrowing( res, nextSeed, standardDeviationJudge, seedAvgAndStdDev );
         }
 
     }
@@ -261,6 +267,76 @@ void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res, int morphSi
     res = Dilate(res, morphSize);
 }
 
+void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
+    int count = 0;
+    for( int i = 0; i < res.rows; i++ ) {
+        for( int j = 0; j < res.cols; j++ ) {
+            if( res.at<uchar>(i, j) == EMPTY ) {
+                // try to find out which phases are accessible through EMPTY pixels
+
+                vector<Point> queue;
+                vector<Point> toPaint;
+                set<uchar> accessiblePhasesID;
+                int intensitySum = 0;
+
+                cv::Mat visited(res.rows, res.cols, CV_8U);
+                visited = cv::Scalar( 0 );
+
+                queue.push_back(Point(j, i));
+                queue.push_back(Point(j - 1, i));
+                queue.push_back(Point(j + 1, i));
+                queue.push_back(Point(j, i - 1));
+                queue.push_back(Point(j, i + 1));
+
+                while( !queue.empty() ) {
+                    Point p = queue.back();
+                    queue.pop_back();
+
+                    if( p.y >= 0 && p.x >= 0 && p.y < res.rows && p.x < res.cols && !visited.at<uchar>(p.y, p.x) ) {
+                        uchar currentPhase = res.at<uchar>(p.y, p.x);
+                        if( currentPhase != EMPTY ) {
+                            accessiblePhasesID.insert( currentPhase );
+                        } else {
+                            toPaint.push_back(p);
+                            intensitySum += this->img.at<uchar>(p.x, p.y);
+
+                            queue.push_back(Point(p.x - 1, p.y));
+                            queue.push_back(Point(p.x + 1, p.y));
+                            queue.push_back(Point(p.x, p.y - 1));
+                            queue.push_back(Point(p.x, p.y + 1));
+                        }
+
+                        visited.at<uchar>(p.y, p.x) = 1;
+                    }
+                }
+
+//                int avg = intensitySum / toPaint.size();
+//                int bestAvgDiff = INT_MAX;
+                int bestSeedID = INT_MAX;
+                for(Seed s : this->seeds) {
+                    if( accessiblePhasesID.find( s.id ) != accessiblePhasesID.end() ) {
+//                        cout << "#" << s.id << endl;
+//                        int localDiff = abs(s.average - avg);
+//                        if( localDiff < bestAvgDiff ) {
+//                            bestAvgDiff = localDiff;
+                        bestSeedID = s.id;
+                        break;
+//                        }
+                    }
+                }
+
+                for(Point p : toPaint) {
+                    count++;
+                    res.at<uchar>(p.y, p.x) = bestSeedID;
+                }
+
+            }
+        }
+    }
+
+    int total = res.rows * res.cols;
+    cout << "Empty: " << count << " of " << total << " (" << (count*1.0f / total) * 100 << "%)" << endl;
+}
 
 cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
@@ -268,7 +344,8 @@ cv::Mat ProportionalRegionGrowing::Apply() {
 
     this->InitialConquer(res);
     this->AutomaticConquer(res);
-    this->MorphologicalFiltering(res, 15);
+    this->MorphologicalFiltering(res, 5);
+//    this->FillTinyHoles(res);
 
     return res;
 }

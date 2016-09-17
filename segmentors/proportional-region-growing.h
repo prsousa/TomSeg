@@ -21,6 +21,8 @@ private:
     void InitialConquer( cv::Mat& res );
     void AutomaticConquer( cv::Mat& res );
     void MorphologicalFiltering(cv::Mat& res, int morphSize);
+    void FillTinyHoles(cv::Mat& res);
+
     bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
 public:
     ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds);
