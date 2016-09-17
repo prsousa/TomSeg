@@ -74,6 +74,23 @@ void displayImage(string title, cv::Mat img, int x = 0, int y = 100) {
     cv::imshow(title, img);
 }
 
+void histogram(cv::Mat& img) {
+    int histogram[256];
+    for(int i = 0; i < 256; i++) {
+        histogram[i] = 0;
+    }
+
+    for(int i = 0; i < img.rows; i++) {
+        for(int j = 0; j < img.cols; j++) {
+            histogram[ img.at<uchar>(i, j) ]++;
+        }
+    }
+
+    for(int i = 0; i < 256; i++) {
+        cout << i << "\t" << histogram[i] << endl;
+    }
+}
+
 int main(int argc, char* argv[]) {
 
     if (argc < 2) {
@@ -96,6 +113,8 @@ int main(int argc, char* argv[]) {
 
     vector<Seed> seeds;
     definePhasisSeeds(seedname, imgs[0], seeds);
+
+    // histogram( imgs[0] );
 
     for( Seed s : seeds ) {
         cout << s << endl;
