@@ -2,6 +2,29 @@
 
 using namespace std;
 
+Seed::Seed() :
+    Region()
+{
+
+}
+
+Seed::Seed(cv::Mat& img, Point a, Point b) :
+    Region(img, a, b)
+{
+   this->id = 0;
+   this->average = this->getAverageIntensity();
+
+   // if stdDev is lower than 1: relativeStdDev = 1; else: relativeStdDev = stdDev
+   this->relativeStdDev = fmax( this->getStandardDeviation(this->average), 1.0f );
+   this->color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+}
+
+Seed::Seed(cv::Mat& img, int id, Point a, Point b) :
+    Seed(img, a, b)
+{
+    this->id = id;
+}
+
 void Seed::draw(cv::Mat img) {
     cv::Point a( this->a.x, this->a.y );
     cv::Point b( this->b.x, this->b.y );

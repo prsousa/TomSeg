@@ -18,7 +18,7 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
     vector<int> chunks;
     chunks.push_back(0);
 
-    for( int i = 0; i < sortedSeeds.size() - 1; i++ ) {
+    for( size_t i = 0; i < sortedSeeds.size() - 1; i++ ) {
         int interval = sortedSeeds[i].relativeStdDev * ((sortedSeeds[i+1].average - sortedSeeds[i].average) * 1.0f / (sortedSeeds[i].relativeStdDev + sortedSeeds[i+1].relativeStdDev) * 1.0f);
 //        cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].stdDev << "\t int: " << interval << endl;
         chunks.push_back( sortedSeeds[i].average + interval );
@@ -26,7 +26,7 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
 
     chunks.push_back(255);
 
-    for( int i = 0; i < sortedSeeds.size(); i++ ) {
+    for( size_t i = 0; i < sortedSeeds.size(); i++ ) {
         Seed s = sortedSeeds[i];
         cout << "-" << s.id << endl;
         this->intervals[s.id] = std::make_pair(chunks[i], chunks[i+1]);
@@ -298,7 +298,7 @@ void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
                             accessiblePhasesID.insert( currentPhase );
                         } else {
                             toPaint.push_back(p);
-                            intensitySum += this->img.at<uchar>(p.x, p.y);
+                            intensitySum += this->img.at<uchar>(p.x, p.y); // VER!!!! não está trocado?
 
                             queue.push_back(Point(p.x - 1, p.y));
                             queue.push_back(Point(p.x + 1, p.y));
