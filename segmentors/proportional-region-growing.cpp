@@ -344,8 +344,8 @@ cv::Mat ProportionalRegionGrowing::Apply() {
 
     this->InitialConquer(res);
     this->AutomaticConquer(res);
-    this->MorphologicalFiltering(res, 5);
-//    this->FillTinyHoles(res);
+    this->MorphologicalFiltering(res, 15);
+    this->FillTinyHoles(res);
 
     return res;
 }
