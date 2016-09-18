@@ -298,7 +298,7 @@ void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
                             accessiblePhasesID.insert( currentPhase );
                         } else {
                             toPaint.push_back(p);
-                            intensitySum += this->img.at<uchar>(p.x, p.y); // VER!!!! não está trocado?
+                            intensitySum += this->img.at<uchar>(p.y, p.x);
 
                             queue.push_back(Point(p.x - 1, p.y));
                             queue.push_back(Point(p.x + 1, p.y));
