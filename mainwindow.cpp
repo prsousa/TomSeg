@@ -11,6 +11,7 @@
 #include <QGraphicsPixmapItem>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -242,7 +243,12 @@ void MainWindow::on_goButton_released()
 
     //SegmenterThread* segThread = new SegmenterThread(&this->segManager, currentSliceIndex); // TODO: memory leak on thread's object
     //segThread->start();
+    QTime myTimer;
+    myTimer.start();
+
     int* labels = segManager.apply(currentSliceIndex);
+
+    qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 
     QPixmap& image = sliceInfo.image;
     QImage result(image.width(), image.height(), QImage::Format_RGB888);
@@ -255,11 +261,11 @@ void MainWindow::on_goButton_released()
         }
     }
 
+    delete labels;
+
     sliceInfo.segmentationResult = QPixmap::fromImage(result);
 
-    // sliceScene->setResultPixmap(QPixmap::fromImage(result));
 
-    delete labels;
     showSlice(currentSliceIndex);
 }
 
