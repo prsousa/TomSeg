@@ -41,10 +41,11 @@ private:
     QGraphicsItemGroup * drawZone;
 
 
-    QGraphicsRectItem *drawRectangle( QPointF pointHG,QPointF pointBD );
+    QGraphicsRectItem *drawRectangle( QPointF pointHG, QPointF pointBD );
 
 signals:
     void drawnRectangle( float x, float y, float width, float height );
+    void mouseMoved( QPointF mousePosition );
 };
 
 #endif // MYQGRAPHICSSCENE_H

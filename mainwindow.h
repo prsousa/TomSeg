@@ -35,7 +35,8 @@ public slots:
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);
     void on_goButton_released();
     void resizeEvent(QResizeEvent* event);
-    void seedCreated( float x, float y, float width, float height );
+    void seedCreated(float x, float y, float width, float height);
+    void sliceSceneMouseMoved(QPointF mousePosition);
 
 private:
     Ui::MainWindow *ui;

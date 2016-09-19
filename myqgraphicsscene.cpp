@@ -117,6 +117,8 @@ void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
             lastPoint = currentPosition;
         }
     }
+
+    emit mouseMoved( currentPosition );
 }
 
 void MyQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )

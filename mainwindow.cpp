@@ -20,9 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     sliceScene = new MyQGraphicsScene(this);
     ui->sliceView->setScene(sliceScene);
+    ui->sliceView->setMouseTracking(true);
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
                          this, SLOT(seedCreated(float, float, float, float)));
+
+    QObject::connect(sliceScene, SIGNAL(mouseMoved(QPointF)),
+                         this, SLOT(sliceSceneMouseMoved(QPointF)));
 
     currentSliceIndex = 0;
     ui->currentSliceNumberSpinner->setMaximum( 0 );
@@ -287,4 +291,10 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
 
     showSlice(currentSliceIndex);
     updateSeedsTable();
+}
+
+void MainWindow::sliceSceneMouseMoved(QPointF mousePosition)
+{
+    ui->currentXLabel->setText( QString::number( mousePosition.x(), 'f', 0) );
+    ui->currentYLabel->setText( QString::number( mousePosition.y(), 'f', 0) );
 }
