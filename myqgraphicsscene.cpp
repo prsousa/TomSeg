@@ -121,10 +121,13 @@ void MyQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent 
 
         float width = abs(currentPosition.x() - firstPoint.x());
         float height = abs(currentPosition.y() - firstPoint.y());
-        float x = std::min( firstPoint.x(), currentPosition.x() );
-        float y = std::min( firstPoint.y(), currentPosition.y() );
 
-        emit drawnRectangle( x, y, width, height );
+        if( width > 2 && height > 2 ) {
+            float x = std::min( firstPoint.x(), currentPosition.x() );
+            float y = std::min( firstPoint.y(), currentPosition.y() );
+
+            emit drawnRectangle( x, y, width, height );
+        }
 
         QGraphicsItem *addedRectangle = itemDraw.at(0);
         itemDraw.clear();
