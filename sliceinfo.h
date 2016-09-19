@@ -2,6 +2,7 @@
 #define SLICEINFO_H
 
 #include <QVector>
+#include <QPixmap>
 
 #include "seedinfo.h"
 
@@ -12,6 +13,8 @@ public:
     SliceInfo(QString filename);
 
     QString fileName;
+    QPixmap image;
+    QPixmap segmentationResult;
     QVector<SeedInfo> seedInfos;
 };
 

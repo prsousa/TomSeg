@@ -43,7 +43,7 @@ int* SegmentationManager::apply(size_t sliceNumber)
 
     int* res = new int[labels.rows*labels.cols];
 
-    qDebug() << "cv::Mat " << labels.rows << "rows; " << labels.cols << "cols;";
+    // qDebug() << "cv::Mat " << labels.rows << "rows; " << labels.cols << "cols;";
 
     for( int y = 0; y < labels.rows; y++) {
         for( int x = 0; x < labels.cols; x++) {

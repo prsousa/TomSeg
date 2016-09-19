@@ -142,20 +142,22 @@ void MainWindow::showSlice(int sliceNumber = 0)
     currentSliceIndex = sliceNumber;
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
 
-    QPixmap pix(slices[sliceNumber].fileName);
-    QGraphicsPixmapItem* p = sliceScene->setSlicePixmap( pix );
+    SliceInfo& slice = slices[sliceNumber];
+
+    QGraphicsPixmapItem* p = sliceScene->setSlicePixmap( slice.image );
+    QGraphicsPixmapItem* r = sliceScene->setResultPixmap( slice.segmentationResult );
 
     drawSeeds();
 
     ui->sliceView->fitInView(p, Qt::KeepAspectRatio);
 
-    ui->currentSliceWidthLabel->setText( QString::number( pix.size().width() ) );
-    ui->currentSliceHeightLabel->setText( QString::number( pix.size().height() ) );
+    ui->currentSliceWidthLabel->setText( QString::number( slice.image.width() ) );
+    ui->currentSliceHeightLabel->setText( QString::number( slice.image.height() ) );
 }
 
 void MainWindow::on_addSeedButton_released()
 {
-    this->seedCreated(0, 0, 0, 0);
+    this->seedCreated(0, 0, 10, 10);
 }
 
 void MainWindow::openFileDialog()
@@ -242,8 +244,8 @@ void MainWindow::on_goButton_released()
     //segThread->start();
     int* labels = segManager.apply(currentSliceIndex);
 
-    QPixmap pix(sliceInfo.fileName);
-    QImage result(pix.width(), pix.height(), QImage::Format_RGB888);
+    QPixmap& image = sliceInfo.image;
+    QImage result(image.width(), image.height(), QImage::Format_RGB888);
 
     for( int y = 0; y < result.height(); y++ ) {
         for( int x = 0; x < result.width(); x++ ) {
@@ -253,9 +255,12 @@ void MainWindow::on_goButton_released()
         }
     }
 
-    sliceScene->setResultPixmap(QPixmap::fromImage(result));
+    sliceInfo.segmentationResult = QPixmap::fromImage(result);
+
+    // sliceScene->setResultPixmap(QPixmap::fromImage(result));
 
     delete labels;
+    showSlice(currentSliceIndex);
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
