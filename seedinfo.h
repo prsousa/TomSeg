@@ -16,6 +16,7 @@ public:
 
 private:
     QColor getColor();
+    static const char* colors[];
 };
 
 #endif // SEEDINFO_H
