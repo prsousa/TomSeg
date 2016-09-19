@@ -26,6 +26,7 @@ public slots:
 private:
     bool firstClick;
     QPointF firstPoint;
+    QPointF lastPoint;
 
     QList<QGraphicsItem *> resultDraw;
     QGraphicsItemGroup * resultZone;

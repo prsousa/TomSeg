@@ -94,37 +94,41 @@ void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
     QPointF currentPosition = mouseEvent->scenePos();
 
-    if( firstClick ) {
-        firstClick = false;
-        firstPoint = currentPosition;
-    } else {
-        QGraphicsRectItem *rectangle = drawRectangle(firstPoint, currentPosition);
-        rectangle->setPen(QPen(QColor(0, 200, 0), 3));
-        if(itemDraw.size() > 0){
-            QGraphicsItem *item = itemDraw.at(0);
-            itemDraw.clear();
-            drawZone->removeFromGroup(item);
-            itemDraw.removeOne(item);
-            delete item;
-        }
+    if( sliceDraw.isEmpty() || !sliceDraw.back()->boundingRect().contains(currentPosition) ) return;
 
-        itemDraw.append(rectangle);
-        drawZone->addToGroup(rectangle);
+    if( mouseEvent->buttons() & Qt::LeftButton ) {
+        if( firstClick ) {
+            firstClick = false;
+            firstPoint = currentPosition;
+        } else {
+            QGraphicsRectItem *rectangle = drawRectangle(firstPoint, currentPosition);
+            rectangle->setPen(QPen(QColor(0, 200, 0), 3));
+            if(itemDraw.size() > 0){
+                QGraphicsItem *item = itemDraw.at(0);
+                itemDraw.clear();
+                drawZone->removeFromGroup(item);
+                itemDraw.removeOne(item);
+                delete item;
+            }
+
+            itemDraw.append(rectangle);
+            drawZone->addToGroup(rectangle);
+
+            lastPoint = currentPosition;
+        }
     }
 }
 
 void MyQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
-    QPointF currentPosition = mouseEvent->scenePos();
-
     if(!firstClick && itemDraw.size() > 0){
 
-        float width = abs(currentPosition.x() - firstPoint.x());
-        float height = abs(currentPosition.y() - firstPoint.y());
+        float width = abs( lastPoint.x() - firstPoint.x() );
+        float height = abs( lastPoint.y() - firstPoint.y() );
 
         if( width > 2 && height > 2 ) {
-            float x = std::min( firstPoint.x(), currentPosition.x() );
-            float y = std::min( firstPoint.y(), currentPosition.y() );
+            float x = std::min( lastPoint.x(), firstPoint.x() );
+            float y = std::min( lastPoint.y(), firstPoint.y() );
 
             emit drawnRectangle( x, y, width, height );
         }
