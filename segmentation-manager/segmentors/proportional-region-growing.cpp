@@ -217,7 +217,7 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
     Seed nextSeed;
 //    int mm = 3;
 
-    while( this->FindNextSeed( &nextSeed, res, 15 ) ){
+    while( this->FindNextSeed( &nextSeed, res, 35 ) ){
 //        if( !mm-- ) break;
 //        cv::Mat imgWithNewSeed;
 //        cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
@@ -247,6 +247,17 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 
 //            Seed similarByAvg = nextSeed.getMoreSimilarSeedByAvg( this->seeds );
             Seed similarByStdDev = nextSeed.getMoreSimilarSeedByStdDev( this->seeds );
+
+            nextSeed.getBestGradedSeed(this->seeds, res, NULL);
+
+            {
+                cv::Mat imgWithNewSeed;
+                cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
+                nextSeed.draw(imgWithNewSeed);
+
+                displayImageApagar("New Seed", imgWithNewSeed);
+                cv::waitKey();
+            }
 
 //            cout << "Similar By Avg: \t" << similarByAvg.id << endl;
             cout << "Similar By StdDev: \t" << similarByStdDev.id << endl;

@@ -18,6 +18,8 @@ public:
         this->y = y;
         this->z = z;
     }
+
+    float distance(Point b);
 };
 
 #endif // POINT_H

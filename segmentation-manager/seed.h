@@ -27,8 +27,12 @@ public:
     Seed* getSimilarSeed(std::vector<Seed>&);
     Seed getMoreSimilarSeedByAvg(std::vector<Seed>&);
     Seed getMoreSimilarSeedByStdDev(std::vector<Seed>&);
+    Seed* getBestGradedSeed(std::vector<Seed>&, cv::Mat& labels, int* grade);
 
     friend std::ostream& operator<<(std::ostream& os, const Seed& s);
+
+private:
+    void getDistances(cv::Mat& labels, size_t* dists, int nLabels);
 };
 
 #endif // SEED_H

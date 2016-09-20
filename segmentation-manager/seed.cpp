@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "seed.h"
 
 using namespace std;
@@ -80,4 +82,44 @@ Seed Seed::getMoreSimilarSeedByStdDev(std::vector<Seed>&seeds) {
     }
 
     return res;
+}
+
+void Seed::getDistances(cv::Mat& labels, size_t* dists, int nLabels) {
+    Point centerOfMass = this->centerOfMass();
+
+    for( int i = 0; i < nLabels; i++ ) {
+        dists[i] = INT_MAX;
+    }
+
+
+    // VERY EXPENSIVE!
+    for( int y = 0; y < labels.rows; y++ ) {
+        for( int x = 0; x < labels.cols; x++ ) {
+            uchar label = labels.at<uchar>(y, x);
+            if( label != EMPTY ) {
+                size_t curDist = centerOfMass.distance(Point(x, y));
+                if( dists[label] > curDist ) {
+                    dists[label] = curDist;
+                }
+            }
+        }
+    }
+}
+
+Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, int* grade)
+{
+    size_t* dists = new size_t[seeds.size()];
+
+    this->getDistances(labels, dists, seeds.size());
+
+    for( Seed s : seeds ) {
+        float avgDiff = std::abs( this->average - s.average );
+        float stdDevDiff = std::abs( this->relativeStdDev - s.relativeStdDev );
+        int distance = dists[s.id];
+        float density = 0.0;
+
+        cout << avgDiff << "\t" << stdDevDiff << "\t" << distance << "\t" << density << endl;
+    }
+
+    delete dists;
 }
