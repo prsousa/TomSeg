@@ -274,8 +274,14 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 }
 
 void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res, int morphSize) {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     res = Erode(res, morphSize);
+    std::chrono::steady_clock::time_point erodeTime = std::chrono::steady_clock::now();
     res = Dilate(res, morphSize);
+    std::chrono::steady_clock::time_point dilateTime = std::chrono::steady_clock::now();
+
+    std::cout << "Erode time = " << std::chrono::duration_cast<std::chrono::milliseconds>(erodeTime-begin).count() << std::endl;
+    std::cout << "Dilate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(dilateTime-erodeTime).count() << std::endl;
 }
 
 void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
