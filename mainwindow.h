@@ -34,6 +34,8 @@ public slots:
     void on_previousSliceButton_released();
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);
     void on_goButton_released();
+    void on_moreZoomButton_released();
+    void on_lessZoomButton_released();
     void resizeEvent(QResizeEvent* event);
     void seedCreated(float x, float y, float width, float height);
     void sliceSceneMouseMoved(QPointF mousePosition);

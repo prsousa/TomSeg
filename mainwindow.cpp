@@ -273,6 +273,16 @@ void MainWindow::on_goButton_released()
     showSlice(currentSliceIndex);
 }
 
+void MainWindow::on_moreZoomButton_released()
+{
+    ui->sliceView->scale(1.15, 1.15);
+}
+
+void MainWindow::on_lessZoomButton_released()
+{
+    ui->sliceView->scale(0.75, 0.75);
+}
+
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
    QMainWindow::resizeEvent(event);

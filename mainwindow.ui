@@ -101,6 +101,27 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="moreZoomButton">
+          <property name="text">
+           <string>+</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="lessZoomButton">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
