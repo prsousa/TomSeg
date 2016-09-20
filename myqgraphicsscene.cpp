@@ -9,16 +9,20 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     firstClick = true;
 
     sliceZone = createItemGroup(sliceDraw);
-    sliceZone->setZValue(0);
+    sliceZone->setZValue(1);
 
     seedsZone = createItemGroup(seedsDraw);
-    seedsZone->setZValue(1);
+    seedsZone->setZValue(2);
 
     drawZone = createItemGroup(itemDraw);
-    drawZone->setZValue(2);
+    drawZone->setZValue(3);
 
     resultZone = createItemGroup(resultDraw);
-    resultZone->setZValue(3);
+    resultZone->setZValue(4);
+
+    QGraphicsTextItem* placeHolder = new QGraphicsTextItem();
+    placeHolder->setHtml("<h3 style='color: #999'><i>Slice Viewer</i></h3>");
+    this->addItem(placeHolder);
 }
 
 void MyQGraphicsScene::resetSliceDisplayer()
