@@ -260,8 +260,10 @@ void MainWindow::on_goButton_released()
     for( int y = 0; y < result.height(); y++ ) {
         for( int x = 0; x < result.width(); x++ ) {
             int label = labels[ y*result.width() + x ];
-            QColor color = sliceInfo.seedInfos[label].color;
-            result.setPixel(x, y, color.rgb());
+            if( label != EMPTY ) {
+                QColor color = sliceInfo.seedInfos[label].color;
+                result.setPixel(x, y, color.rgb());
+            }
         }
     }
 
