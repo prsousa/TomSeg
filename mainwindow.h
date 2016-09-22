@@ -36,6 +36,7 @@ public slots:
     void on_goButton_released();
     void on_moreZoomButton_released();
     void on_lessZoomButton_released();
+    void on_resultOpacitySlider_valueChanged(int newOpacity);
     void resizeEvent(QResizeEvent* event);
     void seedCreated(float x, float y, float width, float height);
     void sliceSceneMouseMoved(QPointF mousePosition);

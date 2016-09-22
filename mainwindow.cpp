@@ -285,6 +285,11 @@ void MainWindow::on_lessZoomButton_released()
     ui->sliceView->scale(0.75, 0.75);
 }
 
+void MainWindow::on_resultOpacitySlider_valueChanged( int newOpacity )
+{
+    sliceScene->getResultItemGroup()->setOpacity(newOpacity / 100.f);
+}
+
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
    QMainWindow::resizeEvent(event);

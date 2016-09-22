@@ -94,6 +94,11 @@ QGraphicsPixmapItem *MyQGraphicsScene::setResultPixmap(QPixmap result)
     return r;
 }
 
+QGraphicsItemGroup *MyQGraphicsScene::getResultItemGroup()
+{
+    return this->resultZone;
+}
+
 void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
     QPointF currentPosition = mouseEvent->scenePos();

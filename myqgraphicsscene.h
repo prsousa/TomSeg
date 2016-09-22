@@ -18,6 +18,7 @@ public:
 
     void resetResultDisplayer();
     QGraphicsPixmapItem* setResultPixmap( QPixmap pix );
+    QGraphicsItemGroup* getResultItemGroup();
 
 public slots:
     void mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent );
