@@ -30,6 +30,7 @@ public slots:
     void on_seedsTableWidget_itemSelectionChanged();
     void on_seedsTableWidget_itemChanged(QTableWidgetItem* item);
     void on_removeSeedButton_released();
+    void on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize);
     void on_nextSliceButton_released();
     void on_previousSliceButton_released();
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);

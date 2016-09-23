@@ -7,10 +7,10 @@ using namespace std;
 
 Slice::Slice()
 {
-
+    this->minimumFeatureSize = 35;
 }
 
-Slice::Slice(string filename)
+Slice::Slice(string filename) : Slice()
 {
     this->filename = filename;
     this->img = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
@@ -42,4 +42,14 @@ void Slice::setSeeds(const std::vector<SeedInfo>& seedsInfo)
 std::vector<Seed> &Slice::getSeeds()
 {
     return this->seeds;
+}
+
+void Slice::setMinimumFeatureSize(int minimumFeautureSize)
+{
+    this->minimumFeatureSize = std::max(minimumFeautureSize, 5);
+}
+
+int Slice::getMinimumFeatureSize()
+{
+    return this->minimumFeatureSize;
 }

@@ -29,6 +29,11 @@ void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Se
     slice.setSeeds( seedsInfo );
 }
 
+Slice* SegmentationManager::getSlice(size_t sliceNumber)
+{
+    return &(this->slices[sliceNumber]);
+}
+
 int* SegmentationManager::apply(size_t sliceNumber)
 {
     if( sliceNumber < 0 || sliceNumber >= this->slices.size() ) {
@@ -37,7 +42,7 @@ int* SegmentationManager::apply(size_t sliceNumber)
 
     Slice slice = this->slices[sliceNumber];
 
-    Segmenter* segmenter = new ProportionalRegionGrowing(slice.getImg(), slice.getSeeds());
+    Segmenter* segmenter = new ProportionalRegionGrowing(slice.getImg(), slice.getSeeds(), slice.getMinimumFeatureSize());
     cv::Mat labels = segmenter->Apply();
     delete segmenter;
 

@@ -8,9 +8,11 @@ using namespace std;
 
 bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
 
-ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds) {
+ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds, int minimumFeatureSize) {
     this->img = img;
     this->seeds = seeds;
+    this->minimumFeatureSize = minimumFeatureSize;
+
     vector<Seed> sortedSeeds = seeds;
 
     std::sort (sortedSeeds.begin(), sortedSeeds.end(), seedComparator);
@@ -217,7 +219,7 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
     Seed nextSeed;
 //    int mm = 3;
 
-    while( this->FindNextSeed( &nextSeed, res, 35 ) ){
+    while( this->FindNextSeed( &nextSeed, res, this->minimumFeatureSize ) ){
 //        if( !mm-- ) break;
 //        cv::Mat imgWithNewSeed;
 //        cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);

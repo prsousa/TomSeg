@@ -128,6 +128,14 @@ void MainWindow::on_removeSeedButton_released()
     updateSeedsTable();
 }
 
+void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize)
+{
+    if( slices.isEmpty() ) return;
+
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    slice->setMinimumFeatureSize(newMinimumFeatureSize);
+}
+
 void MainWindow::drawSeeds()
 {
     sliceScene->resetSeedsDisplayer();
@@ -148,6 +156,7 @@ void MainWindow::showSlice(int sliceNumber = 0)
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
 
     SliceInfo& slice = slices[sliceNumber];
+    Slice* sliceFromManager = segManager.getSlice(sliceNumber);
 
     QGraphicsPixmapItem* p = sliceScene->setSlicePixmap( slice.image );
     QGraphicsPixmapItem* r = sliceScene->setResultPixmap( slice.segmentationResult );
@@ -158,6 +167,7 @@ void MainWindow::showSlice(int sliceNumber = 0)
 
     ui->currentSliceWidthLabel->setText( QString::number( slice.image.width() ) );
     ui->currentSliceHeightLabel->setText( QString::number( slice.image.height() ) );
+    ui->minimumFeatureSizeSpinBox->setValue( sliceFromManager->getMinimumFeatureSize() );
 }
 
 void MainWindow::on_addSeedButton_released()
