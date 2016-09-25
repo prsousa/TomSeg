@@ -23,10 +23,10 @@ void SegmentationManager::setSlices(vector<string> &filenames)
     }
 }
 
-void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<SeedInfo>& seedsInfo)
+void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds)
 {
     Slice& slice = this->slices[sliceNumber];
-    slice.setSeeds( seedsInfo );
+    slice.setSeeds( seeds );
 }
 
 Slice* SegmentationManager::getSlice(size_t sliceNumber)
@@ -40,10 +40,11 @@ int* SegmentationManager::apply(size_t sliceNumber)
         return NULL;
     }
 
-    Slice slice = this->slices[sliceNumber];
+    Slice& slice = this->slices[sliceNumber];
 
     Segmenter* segmenter = new ProportionalRegionGrowing(slice.getImg(), slice.getSeeds(), slice.getMinimumFeatureSize());
     cv::Mat labels = segmenter->Apply();
+    slice.setSegmentationResult( labels );
     delete segmenter;
 
     int* res = new int[labels.rows*labels.cols];
@@ -58,4 +59,14 @@ int* SegmentationManager::apply(size_t sliceNumber)
 
     return res;
 
+}
+
+bool SegmentationManager::isEmpty()
+{
+    return this->slices.empty();
+}
+
+size_t SegmentationManager::size()
+{
+    return slices.size();
 }

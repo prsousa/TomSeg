@@ -1,7 +1,6 @@
 #ifndef SEGMENTATIONMANAGER_H
 #define SEGMENTATIONMANAGER_H
 
-#include "../seedinfo.h"
 #include "seed.h"
 #include "slice.h"
 
@@ -12,9 +11,11 @@ class SegmentationManager
 public:
     SegmentationManager();
     void setSlices(std::vector<std::string>& filenames);
-    void setSliceSeeds(size_t sliceNumber, const std::vector<SeedInfo>& seedsInfo);
+    void setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds);
     Slice* getSlice(size_t sliceNumber);
     int* apply(size_t sliceNumber);
+    bool isEmpty();
+    size_t size();
 
 private:
     std::vector<Slice> slices;

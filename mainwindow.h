@@ -1,8 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "seedinfo.h"
-#include "sliceinfo.h"
 #include "myqgraphicsscene.h"
 
 #include "segmentation-manager/segmentationmanager.h"
@@ -45,16 +43,17 @@ public slots:
 private:
     Ui::MainWindow *ui;
     MyQGraphicsScene* sliceScene;
+    QGraphicsPixmapItem* slicePixmapItem;
 
     SegmentationManager segManager;
 
     int currentSliceIndex;
-    QVector<SliceInfo> slices;
 
     void openFileDialog();
     void drawSeeds();
     void showSlice(int sliceNumber);
     void updateSeedsTable();
+    QPixmap convertSegmentationResult(cv::Mat labels);
 };
 
 #endif // MAINWINDOW_H

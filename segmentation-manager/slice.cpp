@@ -21,21 +21,27 @@ cv::Mat &Slice::getImg()
     return this->img;
 }
 
+void Slice::setSegmentationResult(cv::Mat &segmentationResult)
+{
+    this->segmentationResult = segmentationResult;
+}
+
+cv::Mat &Slice::getSegmentationResult()
+{
+    return this->segmentationResult;
+}
+
 string Slice::getFilename()
 {
     return this->filename;
 }
 
-void Slice::setSeeds(const std::vector<SeedInfo>& seedsInfo)
+void Slice::setSeeds(const std::vector<Seed>& seeds)
 {
     this->seeds.clear();
 
-    for( size_t i = 0; i < seedsInfo.size(); i++ ) {
-        SeedInfo seedInfo = seedsInfo[i];
-        Point a(seedInfo.x, seedInfo.y);
-        Point b(seedInfo.x + seedInfo.width, seedInfo.y + seedInfo.height);
-
-        this->seeds.push_back( Seed(this->img, seedInfo.id, a, b) );
+    for( size_t i = 0; i < seeds.size(); i++ ) {
+        this->seeds.push_back( seeds[i] );
     }
 }
 

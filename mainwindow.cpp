@@ -38,15 +38,35 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+const char* colors[] = {
+    "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF",
+    "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080",
+    "#C00000", "#00C000", "#0000C0", "#C0C000", "#C000C0", "#00C0C0", "#C0C0C0",
+    "#400000", "#004000", "#000040", "#404000", "#400040", "#004040", "#404040",
+    "#200000", "#002000", "#000020", "#202000", "#200020", "#002020", "#202020",
+    "#600000", "#006000", "#000060", "#606000", "#600060", "#006060", "#606060",
+    "#A00000", "#00A000", "#0000A0", "#A0A000", "#A000A0", "#00A0A0", "#A0A0A0",
+    "#E00000", "#00E000", "#0000E0", "#E0E000", "#E000E0", "#00E0E0", "#E0E0E0"
+};
+
+QColor getColor(int seedId)
+{
+    int colorIndex = seedId % 55;
+    QColor color;
+    color.setNamedColor( colors[colorIndex] );
+    return color;
+}
+
+
 void MainWindow::updateSeedsTable()
 {
     ui->seedsTableWidget->setRowCount(0);
 
-    QVector<SeedInfo> seeds = slices[currentSliceIndex].seedInfos;
-    std::vector<SeedInfo> seedsSegManager;
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    std::vector<Seed> seeds = slice->getSeeds();
 
-    for(int i = 0; i < seeds.size(); i++) {
-        SeedInfo seedInfo = seeds[i];
+    for( size_t i = 0; i < seeds.size(); i++ ) {
+        Seed seed = seeds[i];
 
         QTableWidgetItem* colorItem = new QTableWidgetItem();
         QTableWidgetItem* xItem = new QTableWidgetItem();
@@ -54,12 +74,12 @@ void MainWindow::updateSeedsTable()
         QTableWidgetItem* widthItem = new QTableWidgetItem();
         QTableWidgetItem* heightItem = new QTableWidgetItem();
 
-        colorItem->setData(Qt::BackgroundRole, seedInfo.color);
-        colorItem->setCheckState( seedInfo.active ? Qt::Checked : Qt::Unchecked );
-        xItem->setText( QString::number(seedInfo.x) );
-        yItem->setText( QString::number(seedInfo.y) );
-        widthItem->setText( QString::number(seedInfo.width) );
-        heightItem->setText( QString::number(seedInfo.height) );
+        colorItem->setData(Qt::BackgroundRole, getColor(seed.id));
+        colorItem->setCheckState( seed.active ? Qt::Checked : Qt::Unchecked );
+        xItem->setText( QString::number(seed.a.x) );
+        yItem->setText( QString::number(seed.a.y) );
+        widthItem->setText( QString::number(seed.b.x - seed.a.x) );
+        heightItem->setText( QString::number(seed.b.y - seed.a.y) );
 
         ui->seedsTableWidget->insertRow(i);
 
@@ -68,11 +88,7 @@ void MainWindow::updateSeedsTable()
         ui->seedsTableWidget->setItem(i, 2, yItem);
         ui->seedsTableWidget->setItem(i, 3, widthItem);
         ui->seedsTableWidget->setItem(i, 4, heightItem);
-
-        seedsSegManager.push_back(seedInfo);
     }
-
-    segManager.setSliceSeeds(currentSliceIndex, seedsSegManager);
 }
 
 void MainWindow::on_seedsTableWidget_itemSelectionChanged()
@@ -87,25 +103,37 @@ void MainWindow::on_seedsTableWidget_itemChanged(QTableWidgetItem* item)
     int rowIndex = item->row();
     int colIndex = item->column();
 
-    QVector<SeedInfo>& seeds = slices[currentSliceIndex].seedInfos;
-    SeedInfo& info = seeds[rowIndex];
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    Seed& seed = slice->getSeeds()[rowIndex];
 
     switch (colIndex) {
     case 0:
-        info.active = item->checkState() == Qt::Checked;
+    {
+        seed.active = item->checkState() == Qt::Checked;
         break;
+    }
     case 1:
-        info.x = item->text().toInt();
+    {
+        seed.a.x = item->text().toInt();
         break;
+    }
     case 2:
-        info.y = item->text().toInt();
+    {
+        seed.a.y = item->text().toInt();
         break;
+    }
     case 3:
-        info.width = item->text().toInt();
+    {
+        int width = item->text().toInt();
+        seed.b.x = seed.a.x + width;
         break;
+    }
     case 4:
-        info.height = item->text().toInt();
+    {
+        int height = item->text().toInt();
+        seed.b.y = seed.a.y + height;
         break;
+    }
     default:
         break;
     }
@@ -115,22 +143,22 @@ void MainWindow::on_seedsTableWidget_itemChanged(QTableWidgetItem* item)
 
 void MainWindow::on_removeSeedButton_released()
 {
-    QModelIndexList  selectedRowIndexes = ui->seedsTableWidget->selectionModel()->selectedRows();
+//    QModelIndexList  selectedRowIndexes = ui->seedsTableWidget->selectionModel()->selectedRows();
 
-    QVector<SeedInfo>& seeds = slices[currentSliceIndex].seedInfos;
+//    QVector<SeedInfo>& seeds = slices[currentSliceIndex].seedInfos;
 
-    for( int i = 0; i < selectedRowIndexes.size(); i++) {
-        QModelIndex rowIndex = selectedRowIndexes.at(i);
-        seeds.erase( seeds.begin() + rowIndex.row());
-    }
+//    for( int i = selectedRowIndexes.size() - 1; i >= 0; i-- ) {
+//        QModelIndex rowIndex = selectedRowIndexes.at(i);
+//        seeds.erase( seeds.begin() + rowIndex.row());
+//    }
 
-    showSlice(currentSliceIndex);
-    updateSeedsTable();
+//    showSlice(currentSliceIndex);
+//    updateSeedsTable();
 }
 
 void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize)
 {
-    if( slices.isEmpty() ) return;
+    if( segManager.isEmpty() ) return;
 
     Slice* slice = segManager.getSlice(currentSliceIndex);
     slice->setMinimumFeatureSize(newMinimumFeatureSize);
@@ -139,15 +167,31 @@ void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeature
 void MainWindow::drawSeeds()
 {
     sliceScene->resetSeedsDisplayer();
-    QVector<SeedInfo>& seeds = slices[currentSliceIndex].seedInfos;
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    std::vector<Seed> seeds = slice->getSeeds();
 
     for( int i = 0; i < seeds.size(); i++ ) {
-        SeedInfo seedInfo = seeds[i];
-        if( seedInfo.active ) {
-            QPen pen(seedInfo.color, 4);
-            sliceScene->addSeed(seedInfo.x, seedInfo.y, seedInfo.width, seedInfo.height, pen);
+        Seed seed = seeds[i];
+        if( seed.active ) {
+            QPen pen( getColor(seed.id), 4 );
+            sliceScene->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, pen);
         }
     }
+}
+
+QPixmap MainWindow::convertSegmentationResult(cv::Mat labels) {
+    QImage result(labels.cols, labels.rows, QImage::Format_RGB888);
+
+    for( int y = 0; y < labels.rows; y++ ) {
+        for( int x = 0; x < labels.cols; x++ ) {
+            uchar label = labels.at<uchar>(y, x);
+            if( label != EMPTY ) {
+                result.setPixel(x, y, getColor(label).rgb());
+            }
+        }
+    }
+
+    return QPixmap::fromImage(result);
 }
 
 void MainWindow::showSlice(int sliceNumber = 0)
@@ -155,19 +199,21 @@ void MainWindow::showSlice(int sliceNumber = 0)
     currentSliceIndex = sliceNumber;
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
 
-    SliceInfo& slice = slices[sliceNumber];
-    Slice* sliceFromManager = segManager.getSlice(sliceNumber);
+    Slice* slice = segManager.getSlice(sliceNumber);
 
-    QGraphicsPixmapItem* p = sliceScene->setSlicePixmap( slice.image );
-    QGraphicsPixmapItem* r = sliceScene->setResultPixmap( slice.segmentationResult );
+    QPixmap image( slice->getFilename().data() );
+    this->slicePixmapItem = sliceScene->setSlicePixmap( image );
+
+    QPixmap segmentationResult = convertSegmentationResult(slice->getSegmentationResult());
+    QGraphicsPixmapItem* r = sliceScene->setResultPixmap( segmentationResult );
 
     drawSeeds();
 
-    ui->sliceView->fitInView(p, Qt::KeepAspectRatio);
+    ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
 
-    ui->currentSliceWidthLabel->setText( QString::number( slice.image.width() ) );
-    ui->currentSliceHeightLabel->setText( QString::number( slice.image.height() ) );
-    ui->minimumFeatureSizeSpinBox->setValue( sliceFromManager->getMinimumFeatureSize() );
+    ui->currentSliceWidthLabel->setText( QString::number( image.width() ) );
+    ui->currentSliceHeightLabel->setText( QString::number( image.height() ) );
+    ui->minimumFeatureSizeSpinBox->setValue( slice->getMinimumFeatureSize() );
 }
 
 void MainWindow::on_addSeedButton_released()
@@ -184,13 +230,10 @@ void MainWindow::openFileDialog()
                                                           );
 
     if( !filenames.isEmpty() ) {
-        slices.clear();
 
         std::vector<std::string> filenamesSegManager;
         for (int i = 0; i < filenames.count(); i++) {
-            QString filename = filenames[i];
-            this->slices.push_back( SliceInfo(filename) );
-            filenamesSegManager.push_back( filename.toStdString() );
+            filenamesSegManager.push_back( filenames[i].toStdString() );
         }
 
         segManager.setSlices( filenamesSegManager );
@@ -214,8 +257,8 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_nextSliceButton_released()
 {
-    if( !slices.isEmpty() ) {
-        currentSliceIndex = std::min( currentSliceIndex + 1, slices.size() - 1 );
+    if( !segManager.isEmpty() ) {
+        currentSliceIndex = std::min( currentSliceIndex + 1, (int) segManager.size() - 1 );
         showSlice(currentSliceIndex);
         updateSeedsTable();
     }
@@ -223,7 +266,7 @@ void MainWindow::on_nextSliceButton_released()
 
 void MainWindow::on_previousSliceButton_released()
 {
-    if( !slices.isEmpty() ) {
+    if( !segManager.isEmpty() ) {
         currentSliceIndex = std::max( 0, currentSliceIndex - 1);
         showSlice(currentSliceIndex);
         updateSeedsTable();
@@ -232,7 +275,7 @@ void MainWindow::on_previousSliceButton_released()
 
 void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
 {
-    if( newSliceNumber > 0 && newSliceNumber <= slices.size()) {
+    if( newSliceNumber > 0 && newSliceNumber <= segManager.size()) {
         currentSliceIndex = newSliceNumber - 1;
         showSlice(currentSliceIndex);
         updateSeedsTable();
@@ -244,13 +287,13 @@ void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
 void MainWindow::on_goButton_released()
 {
     QMessageBox messageBox;
-    if( slices.isEmpty() ) {
+    if( segManager.isEmpty() ) {
         messageBox.critical(this, "Error", "You must open the slice(s) first!");
         return;
     }
 
-    SliceInfo& sliceInfo = slices[currentSliceIndex];
-    if( sliceInfo.seedInfos.size() < 2 ) {
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    if( slice->getSeeds().size() < 2 ) {
         messageBox.critical(this, "Error", "You must define at least two seeds");
         return;
     }
@@ -263,24 +306,6 @@ void MainWindow::on_goButton_released()
     int* labels = segManager.apply(currentSliceIndex);
 
     qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
-
-    QPixmap& image = sliceInfo.image;
-    QImage result(image.width(), image.height(), QImage::Format_RGB888);
-
-    for( int y = 0; y < result.height(); y++ ) {
-        for( int x = 0; x < result.width(); x++ ) {
-            int label = labels[ y*result.width() + x ];
-            if( label != EMPTY ) {
-                QColor color = sliceInfo.seedInfos[label].color;
-                result.setPixel(x, y, color.rgb());
-            }
-        }
-    }
-
-    delete labels;
-
-    sliceInfo.segmentationResult = QPixmap::fromImage(result);
-
 
     showSlice(currentSliceIndex);
 }
@@ -304,16 +329,17 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
    QMainWindow::resizeEvent(event);
 
-   if ( !slices.empty() ){
-       showSlice(currentSliceIndex);
+   if ( !segManager.isEmpty() ){
+       ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
    }
 }
 
 void MainWindow::seedCreated( float x, float y, float width, float height )
 {
-    QVector<SeedInfo>& seeds = slices[currentSliceIndex].seedInfos;
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    std::vector<Seed>& seeds = slice->getSeeds();
 
-    SeedInfo newSeed(seeds.size(), x, y, width, height);
+    Seed newSeed( slice->getImg(), seeds.size(), Point(x, y), Point(x + width, y + height) );
     seeds.push_back(newSeed);
 
     showSlice(currentSliceIndex);

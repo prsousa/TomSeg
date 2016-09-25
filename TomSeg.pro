@@ -14,8 +14,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    seedinfo.cpp \
-    sliceinfo.cpp \
     myqgraphicsscene.cpp \
     segmentation-manager/point.cpp \
     segmentation-manager/region.cpp \
@@ -27,8 +25,6 @@ SOURCES += main.cpp\
 
 
 HEADERS  += mainwindow.h \
-    seedinfo.h \
-    sliceinfo.h \
     myqgraphicsscene.h \
     segmentation-manager/point.h \
     segmentation-manager/region.h \

@@ -13,12 +13,14 @@ Seed::Seed() :
 Seed::Seed(cv::Mat& img, Point a, Point b) :
     Region(img, a, b)
 {
-   this->id = 0;
-   this->average = this->getAverageIntensity();
+    this->id = 0;
+    this->active = true;
 
-   // if stdDev is lower than 1: relativeStdDev = 1; else: relativeStdDev = stdDev
-   this->relativeStdDev = fmax( this->getStandardDeviation(this->average), 1.0f );
-   this->color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+    this->average = this->getAverageIntensity();
+
+    // if stdDev is lower than 1: relativeStdDev = 1; else: relativeStdDev = stdDev
+    this->relativeStdDev = fmax( this->getStandardDeviation(this->average), 1.0f );
+    this->color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 }
 
 Seed::Seed(cv::Mat& img, int id, Point a, Point b) :

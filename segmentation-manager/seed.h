@@ -18,6 +18,7 @@ public:
     int id;
     float average, relativeStdDev;
     cv::Scalar color;
+    bool active;
 
     Seed();
     Seed(cv::Mat& img, Point a, Point b);

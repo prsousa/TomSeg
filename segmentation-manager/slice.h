@@ -2,7 +2,6 @@
 #define SLICE_H
 
 #include "seed.h"
-#include "seedinfo.h"
 
 #include <vector>
 
@@ -12,14 +11,17 @@ public:
     Slice();
     Slice(std::string filename);
     cv::Mat &getImg();
+    void setSegmentationResult(cv::Mat& segmentationResult);
+    cv::Mat& getSegmentationResult();
     std::string getFilename();
-    void setSeeds(const std::vector<SeedInfo> &seedsInfo );
+    void setSeeds(const std::vector<Seed> &seeds );
     std::vector<Seed> &getSeeds();
     void setMinimumFeatureSize(int minimumFeautureSize);
     int getMinimumFeatureSize();
 
 protected:
     cv::Mat img;
+    cv::Mat segmentationResult;
     std::string filename;
     std::vector<Seed> seeds;
     int minimumFeatureSize;
