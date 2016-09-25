@@ -143,17 +143,17 @@ void MainWindow::on_seedsTableWidget_itemChanged(QTableWidgetItem* item)
 
 void MainWindow::on_removeSeedButton_released()
 {
-//    QModelIndexList  selectedRowIndexes = ui->seedsTableWidget->selectionModel()->selectedRows();
+    QModelIndexList  selectedRowIndexes = ui->seedsTableWidget->selectionModel()->selectedRows();
 
-//    QVector<SeedInfo>& seeds = slices[currentSliceIndex].seedInfos;
+    Slice* slice = segManager.getSlice(currentSliceIndex);
 
-//    for( int i = selectedRowIndexes.size() - 1; i >= 0; i-- ) {
-//        QModelIndex rowIndex = selectedRowIndexes.at(i);
-//        seeds.erase( seeds.begin() + rowIndex.row());
-//    }
+    for( int i = selectedRowIndexes.size() - 1; i >= 0; i-- ) {
+        int rowIndex = selectedRowIndexes.at(i).row();
+        slice->removeSeed(rowIndex); // possible bug: seeds indexes will chage after erase.
+    }
 
-//    showSlice(currentSliceIndex);
-//    updateSeedsTable();
+    showSlice(currentSliceIndex);
+    updateSeedsTable();
 }
 
 void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize)

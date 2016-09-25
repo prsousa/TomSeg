@@ -18,6 +18,7 @@ public:
     std::vector<Seed> &getSeeds();
     void setMinimumFeatureSize(int minimumFeautureSize);
     int getMinimumFeatureSize();
+    void removeSeed(int seedPos);
 
 protected:
     cv::Mat img;

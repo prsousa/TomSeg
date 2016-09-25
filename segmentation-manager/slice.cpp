@@ -59,3 +59,8 @@ int Slice::getMinimumFeatureSize()
 {
     return this->minimumFeatureSize;
 }
+
+void Slice::removeSeed(int seedPos)
+{
+    this->seeds.erase( seeds.begin() + seedPos );
+}
