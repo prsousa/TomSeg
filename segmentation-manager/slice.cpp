@@ -26,6 +26,11 @@ void Slice::setSegmentationResult(cv::Mat &segmentationResult)
     this->segmentationResult = segmentationResult;
 }
 
+void Slice::resetSegmentationResult()
+{
+    this->segmentationResult = cv::Mat();
+}
+
 cv::Mat &Slice::getSegmentationResult()
 {
     return this->segmentationResult;

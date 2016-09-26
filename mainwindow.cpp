@@ -196,6 +196,8 @@ QPixmap MainWindow::convertSegmentationResult(cv::Mat labels) {
 
 void MainWindow::showSlice(int sliceNumber = 0)
 {
+    qDebug() << "Show Slice";
+
     currentSliceIndex = sliceNumber;
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
 
@@ -245,7 +247,7 @@ void MainWindow::openFileDialog()
         ui->seedsTableWidget->setEnabled(true);
         ui->addSeedButton->setEnabled(true);
 
-        showSlice();
+        // showSlice();
         updateSeedsTable();
     }
 }
@@ -307,6 +309,13 @@ void MainWindow::on_goButton_released()
 
     qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 
+    showSlice(currentSliceIndex);
+}
+
+void MainWindow::on_resetButton_released()
+{
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+    slice->resetSegmentationResult();
     showSlice(currentSliceIndex);
 }
 

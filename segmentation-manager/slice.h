@@ -12,6 +12,7 @@ public:
     Slice(std::string filename);
     cv::Mat &getImg();
     void setSegmentationResult(cv::Mat& segmentationResult);
+    void resetSegmentationResult();
     cv::Mat& getSegmentationResult();
     std::string getFilename();
     void setSeeds(const std::vector<Seed> &seeds );
