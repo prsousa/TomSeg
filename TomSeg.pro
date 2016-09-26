@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     segmentation-manager/segmentors/proportional-region-growing.cpp \
     segmentation-manager/segmentationmanager.cpp \
     segmentation-manager/slice.cpp \
-    segmenterthread.cpp
+    segmenterthread.cpp \
+    cliapplication.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     segmentation-manager/segmentors/proportional-region-growing.h \
     segmentation-manager/segmentationmanager.h \
     segmentation-manager/slice.h \
-    segmenterthread.h
+    segmenterthread.h \
+    cliapplication.h
 
 
 FORMS    += mainwindow.ui

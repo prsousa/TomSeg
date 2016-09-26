@@ -20,7 +20,9 @@ Seed::Seed(cv::Mat& img, Point a, Point b) :
 
     // if stdDev is lower than 1: relativeStdDev = 1; else: relativeStdDev = stdDev
     this->relativeStdDev = fmax( this->getStandardDeviation(this->average), 1.0f );
-    this->color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+    this->c_r = rng.uniform(0, 255);
+    this->c_g = rng.uniform(0,255);
+    this->c_b = rng.uniform(0,255);
 }
 
 Seed::Seed(cv::Mat& img, int id, Point a, Point b) :
@@ -32,8 +34,9 @@ Seed::Seed(cv::Mat& img, int id, Point a, Point b) :
 void Seed::draw(cv::Mat img) {
     cv::Point a( this->a.x, this->a.y );
     cv::Point b( this->b.x, this->b.y );
+    cv::Scalar color(c_r, c_g, c_b);
 
-    cv::rectangle( img, a, b, this->color, 3 );
+    cv::rectangle( img, a, b, color, 3 );
 }
 
 std::ostream& operator<<(std::ostream& os, const Seed& s) {

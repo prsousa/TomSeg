@@ -17,7 +17,7 @@ class Seed : public Region
 public:
     int id;
     float average, relativeStdDev;
-    cv::Scalar color;
+    uchar c_r, c_g, c_b;
     bool active;
 
     Seed();
