@@ -314,9 +314,11 @@ void MainWindow::on_goButton_released()
 
 void MainWindow::on_resetButton_released()
 {
-    Slice* slice = segManager.getSlice(currentSliceIndex);
-    slice->resetSegmentationResult();
-    showSlice(currentSliceIndex);
+    if( !segManager.isEmpty() ) {
+        Slice* slice = segManager.getSlice(currentSliceIndex);
+        slice->resetSegmentationResult();
+        showSlice(currentSliceIndex);
+    }
 }
 
 void MainWindow::on_moreZoomButton_released()
