@@ -303,7 +303,7 @@ void MainWindow::on_goButton_released()
     QTime myTimer;
     myTimer.start();
 
-    int* labels = segManager.apply(currentSliceIndex);
+    segManager.apply(currentSliceIndex);
 
     qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 

@@ -40,6 +40,11 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
     }
 }
 
+ProportionalRegionGrowing::~ProportionalRegionGrowing()
+{
+
+}
+
 cv::Mat Erode(cv::Mat masks, int size) {
     cv::Mat res;
     masks.copyTo(res);
@@ -250,16 +255,16 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 //            Seed similarByAvg = nextSeed.getMoreSimilarSeedByAvg( this->seeds );
             Seed similarByStdDev = nextSeed.getMoreSimilarSeedByStdDev( this->seeds );
 
-            nextSeed.getBestGradedSeed(this->seeds, res, NULL);
+//            nextSeed.getBestGradedSeed(this->seeds, res, NULL);
 
-            {
-                cv::Mat imgWithNewSeed;
-                cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
-                nextSeed.draw(imgWithNewSeed);
+//            {
+//                cv::Mat imgWithNewSeed;
+//                cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
+//                nextSeed.draw(imgWithNewSeed);
 
-                displayImageApagar("New Seed", imgWithNewSeed);
-                cv::waitKey();
-            }
+//                displayImageApagar("New Seed", imgWithNewSeed);
+//                cv::waitKey();
+//            }
 
 //            cout << "Similar By Avg: \t" << similarByAvg.id << endl;
             cout << "Similar By StdDev: \t" << similarByStdDev.id << endl;

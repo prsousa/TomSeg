@@ -13,7 +13,7 @@ public:
     void setSlices(std::vector<std::string>& filenames);
     void setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds);
     Slice* getSlice(size_t sliceNumber);
-    int* apply(size_t sliceNumber);
+    cv::Mat apply(size_t sliceNumber);
     bool isEmpty();
     size_t size();
 

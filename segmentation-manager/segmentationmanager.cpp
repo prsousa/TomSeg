@@ -34,31 +34,22 @@ Slice* SegmentationManager::getSlice(size_t sliceNumber)
     return &(this->slices[sliceNumber]);
 }
 
-int* SegmentationManager::apply(size_t sliceNumber)
+cv::Mat SegmentationManager::apply(size_t sliceNumber)
 {
-    if( sliceNumber < 0 || sliceNumber >= this->slices.size() ) {
-        return NULL;
-    }
+    cv::Mat res;
 
-    Slice& slice = this->slices[sliceNumber];
+    if( sliceNumber < this->slices.size() ) {
+        Slice& slice = this->slices[sliceNumber];
 
-    Segmenter* segmenter = new ProportionalRegionGrowing(slice.getImg(), slice.getSeeds(), slice.getMinimumFeatureSize());
-    cv::Mat labels = segmenter->Apply();
-    slice.setSegmentationResult( labels );
-    delete segmenter;
+        Segmenter* segmenter = new ProportionalRegionGrowing(slice.getImg(), slice.getSeeds(), slice.getMinimumFeatureSize());
+        res = segmenter->Apply();
 
-    int* res = new int[labels.rows*labels.cols];
+        slice.setSegmentationResult(res);
 
-    // qDebug() << "cv::Mat " << labels.rows << "rows; " << labels.cols << "cols;";
-
-    for( int y = 0; y < labels.rows; y++) {
-        for( int x = 0; x < labels.cols; x++) {
-            res[ y*labels.cols + x] = labels.at<uchar>(y, x);
-        }
+        delete segmenter;
     }
 
     return res;
-
 }
 
 bool SegmentationManager::isEmpty()
