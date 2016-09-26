@@ -180,7 +180,7 @@ void MainWindow::drawSeeds()
 }
 
 QPixmap MainWindow::convertSegmentationResult(cv::Mat labels) {
-    QImage result(labels.cols, labels.rows, QImage::Format_RGB888);
+    QImage result(labels.cols, labels.rows, QImage::Format_ARGB32);
 
     for( int y = 0; y < labels.rows; y++ ) {
         for( int x = 0; x < labels.cols; x++ ) {
