@@ -79,7 +79,7 @@ public:
             }
         }
 
-        if( !sum ) return Point( 0, 0);
+        if( !sum ) return Point( (this->a.x + this->b.x) / 2.f, (this->a.y + this->b.y) / 2.f );
         return Point(sumProductX / sum, sumProductY / sum);
     }
 
