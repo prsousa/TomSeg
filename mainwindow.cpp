@@ -204,17 +204,15 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_nextSliceButton_released()
 {
-    if( !segManager.isEmpty() ) {
-        currentSliceIndex = std::min( currentSliceIndex + 1, (int) segManager.size() - 1 );
-        setCurrentSlice(currentSliceIndex);
+    if( segManager.size() > (currentSliceIndex + 1) ) {
+        setCurrentSlice(++currentSliceIndex);
     }
 }
 
 void MainWindow::on_previousSliceButton_released()
 {
-    if( !segManager.isEmpty() ) {
-        currentSliceIndex = std::max( 0, currentSliceIndex - 1);
-        setCurrentSlice(currentSliceIndex);
+    if( !segManager.isEmpty() && currentSliceIndex > 0 ) {
+        setCurrentSlice(--currentSliceIndex);
     }
 }
 
