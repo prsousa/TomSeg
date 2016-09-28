@@ -220,7 +220,7 @@ void MainWindow::on_previousSliceButton_released()
 
 void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
 {
-    if( newSliceNumber > 0 && newSliceNumber <= segManager.size()) {
+    if( newSliceNumber > 0 && newSliceNumber <= segManager.size() && newSliceNumber != (currentSliceIndex + 1) ) {
         currentSliceIndex = newSliceNumber - 1;
         setCurrentSlice(currentSliceIndex);
         updateSeedsTable();
@@ -252,7 +252,7 @@ void MainWindow::on_goButton_released()
 
     qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 
-    setCurrentSlice(currentSliceIndex);
+    sliceScene->updateResultDisplayer();
 }
 
 void MainWindow::on_resetButton_released()
@@ -281,11 +281,11 @@ void MainWindow::on_resultOpacitySlider_valueChanged( int newOpacity )
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-   QMainWindow::resizeEvent(event);
+    QMainWindow::resizeEvent(event);
 
-   if ( !segManager.isEmpty() ){
+    if ( !segManager.isEmpty() ){
        ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
-   }
+    }
 }
 
 void MainWindow::seedCreated( float x, float y, float width, float height )
