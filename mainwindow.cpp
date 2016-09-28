@@ -38,26 +38,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-const char* colors[] = {
-    "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF",
-    "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080",
-    "#C00000", "#00C000", "#0000C0", "#C0C000", "#C000C0", "#00C0C0", "#C0C0C0",
-    "#400000", "#004000", "#000040", "#404000", "#400040", "#004040", "#404040",
-    "#200000", "#002000", "#000020", "#202000", "#200020", "#002020", "#202020",
-    "#600000", "#006000", "#000060", "#606000", "#600060", "#006060", "#606060",
-    "#A00000", "#00A000", "#0000A0", "#A0A000", "#A000A0", "#00A0A0", "#A0A0A0",
-    "#E00000", "#00E000", "#0000E0", "#E0E000", "#E000E0", "#00E0E0", "#E0E0E0"
-};
-
-QColor getColor(int seedId)
-{
-    int colorIndex = seedId % 55;
-    QColor color;
-    color.setNamedColor( colors[colorIndex] );
-    return color;
-}
-
-
 void MainWindow::updateSeedsTable()
 {
     ui->seedsTableWidget->setRowCount(0);
@@ -74,7 +54,7 @@ void MainWindow::updateSeedsTable()
         QTableWidgetItem* widthItem = new QTableWidgetItem();
         QTableWidgetItem* heightItem = new QTableWidgetItem();
 
-        colorItem->setData(Qt::BackgroundRole, getColor(seed.id));
+        // colorItem->setData(Qt::BackgroundRole, getColor(seed.id));
         colorItem->setCheckState( seed.active ? Qt::Checked : Qt::Unchecked );
         xItem->setText( QString::number(seed.a.x) );
         yItem->setText( QString::number(seed.a.y) );
@@ -138,7 +118,7 @@ void MainWindow::on_seedsTableWidget_itemChanged(QTableWidgetItem* item)
         break;
     }
 
-    showSlice(currentSliceIndex);
+    sliceScene->updateSeedsDisplayer();
 }
 
 void MainWindow::on_removeSeedButton_released()
@@ -152,8 +132,8 @@ void MainWindow::on_removeSeedButton_released()
         slice->removeSeed(rowIndex); // possible bug: seeds indexes will chage after erase.
     }
 
-    showSlice(currentSliceIndex);
     updateSeedsTable();
+    sliceScene->updateSeedsDisplayer();
 }
 
 void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize)
@@ -164,58 +144,24 @@ void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeature
     slice->setMinimumFeatureSize(newMinimumFeatureSize);
 }
 
-void MainWindow::drawSeeds()
+void MainWindow::setCurrentSlice(int sliceNumber = 0)
 {
-    sliceScene->resetSeedsDisplayer();
-    Slice* slice = segManager.getSlice(currentSliceIndex);
-    std::vector<Seed> seeds = slice->getSeeds();
-
-    for( int i = 0; i < seeds.size(); i++ ) {
-        Seed seed = seeds[i];
-        if( seed.active ) {
-            QPen pen( getColor(seed.id), 4 );
-            sliceScene->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, pen);
-        }
-    }
-}
-
-QPixmap MainWindow::convertSegmentationResult(cv::Mat labels) {
-    QImage result(labels.cols, labels.rows, QImage::Format_ARGB32);
-
-    for( int y = 0; y < labels.rows; y++ ) {
-        for( int x = 0; x < labels.cols; x++ ) {
-            uchar label = labels.at<uchar>(y, x);
-            if( label != EMPTY ) {
-                result.setPixel(x, y, getColor(label).rgb());
-            }
-        }
-    }
-
-    return QPixmap::fromImage(result);
-}
-
-void MainWindow::showSlice(int sliceNumber = 0)
-{
-    qDebug() << "Show Slice";
+    qDebug() << "Set Current Slice";
 
     currentSliceIndex = sliceNumber;
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
 
     Slice* slice = segManager.getSlice(sliceNumber);
+    cv::Mat& image = slice->getImg();
 
-    QPixmap image( slice->getFilename().data() );
-    this->slicePixmapItem = sliceScene->setSlicePixmap( image );
+    sliceScene->setSlice(slice);
+    ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
 
-    QPixmap segmentationResult = convertSegmentationResult(slice->getSegmentationResult());
-    QGraphicsPixmapItem* r = sliceScene->setResultPixmap( segmentationResult );
-
-    drawSeeds();
-
-    ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
-
-    ui->currentSliceWidthLabel->setText( QString::number( image.width() ) );
-    ui->currentSliceHeightLabel->setText( QString::number( image.height() ) );
+    ui->currentSliceWidthLabel->setText( QString::number( image.cols ) );
+    ui->currentSliceHeightLabel->setText( QString::number( image.rows ) );
     ui->minimumFeatureSizeSpinBox->setValue( slice->getMinimumFeatureSize() );
+
+    updateSeedsTable();
 }
 
 void MainWindow::on_addSeedButton_released()
@@ -247,8 +193,7 @@ void MainWindow::openFileDialog()
         ui->seedsTableWidget->setEnabled(true);
         ui->addSeedButton->setEnabled(true);
 
-        // showSlice();
-        updateSeedsTable();
+        this->setCurrentSlice(0);
     }
 }
 
@@ -261,8 +206,7 @@ void MainWindow::on_nextSliceButton_released()
 {
     if( !segManager.isEmpty() ) {
         currentSliceIndex = std::min( currentSliceIndex + 1, (int) segManager.size() - 1 );
-        showSlice(currentSliceIndex);
-        updateSeedsTable();
+        setCurrentSlice(currentSliceIndex);
     }
 }
 
@@ -270,8 +214,7 @@ void MainWindow::on_previousSliceButton_released()
 {
     if( !segManager.isEmpty() ) {
         currentSliceIndex = std::max( 0, currentSliceIndex - 1);
-        showSlice(currentSliceIndex);
-        updateSeedsTable();
+        setCurrentSlice(currentSliceIndex);
     }
 }
 
@@ -279,7 +222,7 @@ void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
 {
     if( newSliceNumber > 0 && newSliceNumber <= segManager.size()) {
         currentSliceIndex = newSliceNumber - 1;
-        showSlice(currentSliceIndex);
+        setCurrentSlice(currentSliceIndex);
         updateSeedsTable();
     } else {
         ui->currentSliceNumberSpinner->setValue(currentSliceIndex + 1);
@@ -309,7 +252,7 @@ void MainWindow::on_goButton_released()
 
     qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 
-    showSlice(currentSliceIndex);
+    setCurrentSlice(currentSliceIndex);
 }
 
 void MainWindow::on_resetButton_released()
@@ -317,7 +260,7 @@ void MainWindow::on_resetButton_released()
     if( !segManager.isEmpty() ) {
         Slice* slice = segManager.getSlice(currentSliceIndex);
         slice->resetSegmentationResult();
-        showSlice(currentSliceIndex);
+        sliceScene->updateResultDisplayer();
     }
 }
 
@@ -341,7 +284,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
    QMainWindow::resizeEvent(event);
 
    if ( !segManager.isEmpty() ){
-       ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
+       ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
    }
 }
 
@@ -353,7 +296,7 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
     Seed newSeed( slice->getImg(), seeds.size(), Point(x, y), Point(x + width, y + height) );
     seeds.push_back(newSeed);
 
-    showSlice(currentSliceIndex);
+    sliceScene->updateSeedsDisplayer();
     updateSeedsTable();
 }
 

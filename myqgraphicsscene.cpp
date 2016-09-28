@@ -6,6 +6,8 @@
 MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
 {
+    slice = NULL;
+
     firstClick = true;
 
     sliceZone = createItemGroup(sliceDraw);
@@ -25,7 +27,16 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     this->addItem(placeHolder);
 }
 
-void MyQGraphicsScene::resetSliceDisplayer()
+void MyQGraphicsScene::setSlice(Slice *slice)
+{
+    this->slice = slice;
+
+    this->updateSliceDisplayer();
+    this->updateSeedsDisplayer();
+    this->updateResultDisplayer();
+}
+
+void MyQGraphicsScene::updateSliceDisplayer()
 {
     QList<QGraphicsItem *>::iterator i;
     for( i = sliceDraw.begin(); i != sliceDraw.end(); i++) {
@@ -34,14 +45,15 @@ void MyQGraphicsScene::resetSliceDisplayer()
         sliceDraw.removeOne(oldSlice);
         delete oldSlice;
     }
+
+    if( slice ) {
+        QPixmap image( slice->getFilename().data() );
+        this->slicePixmapItem = this->setSlicePixmap( image );
+    }
 }
 
 QGraphicsPixmapItem *MyQGraphicsScene::setSlicePixmap(QPixmap pix)
 {
-    this->resetSliceDisplayer();
-    this->resetResultDisplayer();
-    this->resetSeedsDisplayer();
-
     QGraphicsPixmapItem* p = new QGraphicsPixmapItem(pix);
     sliceDraw.append(p);
     sliceZone->addToGroup(p);
@@ -49,7 +61,26 @@ QGraphicsPixmapItem *MyQGraphicsScene::setSlicePixmap(QPixmap pix)
     return p;
 }
 
-void MyQGraphicsScene::resetSeedsDisplayer()
+const char* colors[] = {
+    "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF",
+    "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080",
+    "#C00000", "#00C000", "#0000C0", "#C0C000", "#C000C0", "#00C0C0", "#C0C0C0",
+    "#400000", "#004000", "#000040", "#404000", "#400040", "#004040", "#404040",
+    "#200000", "#002000", "#000020", "#202000", "#200020", "#002020", "#202020",
+    "#600000", "#006000", "#000060", "#606000", "#600060", "#006060", "#606060",
+    "#A00000", "#00A000", "#0000A0", "#A0A000", "#A000A0", "#00A0A0", "#A0A0A0",
+    "#E00000", "#00E000", "#0000E0", "#E0E000", "#E000E0", "#00E0E0", "#E0E0E0"
+};
+
+QColor getColor(int seedId)
+{
+    int colorIndex = seedId % 55;
+    QColor color;
+    color.setNamedColor( colors[colorIndex] );
+    return color;
+}
+
+void MyQGraphicsScene::updateSeedsDisplayer()
 {
     QList<QGraphicsItem *>::iterator i;
     for( i = seedsDraw.begin(); i != seedsDraw.end(); i++) {
@@ -57,6 +88,18 @@ void MyQGraphicsScene::resetSeedsDisplayer()
         seedsZone->removeFromGroup(oldSeed);
         seedsDraw.removeOne(oldSeed);
         delete oldSeed;
+    }
+
+    if( slice ) {
+        std::vector<Seed>& seeds = slice->getSeeds();
+
+        for( int i = 0; i < seeds.size(); i++ ) {
+            Seed seed = seeds[i];
+            if( seed.active ) {
+                QPen pen( getColor(seed.id), 4 );
+                this->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, pen);
+            }
+        }
     }
 }
 
@@ -71,9 +114,23 @@ QGraphicsRectItem *MyQGraphicsScene::addSeed(qreal x, qreal y, qreal w, qreal h,
     return r;
 }
 
-void MyQGraphicsScene::resetResultDisplayer()
+QPixmap convertSegmentationResult(cv::Mat labels) {
+    QImage result(labels.cols, labels.rows, QImage::Format_ARGB32);
+
+    for( int y = 0; y < labels.rows; y++ ) {
+        for( int x = 0; x < labels.cols; x++ ) {
+            uchar label = labels.at<uchar>(y, x);
+            if( label != EMPTY ) {
+                result.setPixel(x, y, getColor(label).rgb());
+            }
+        }
+    }
+
+    return QPixmap::fromImage(result);
+}
+
+void MyQGraphicsScene::updateResultDisplayer()
 {
-    // setResultPixmap
     QList<QGraphicsItem *>::iterator i;
     for( i = resultDraw.begin(); i != resultDraw.end(); i++) {
         QGraphicsItem *oldResult = *i;
@@ -81,12 +138,15 @@ void MyQGraphicsScene::resetResultDisplayer()
         resultDraw.removeOne(oldResult);
         delete oldResult;
     }
+
+    if( slice ) {
+        QPixmap segmentationResult = convertSegmentationResult(slice->getSegmentationResult());
+        QGraphicsPixmapItem* r = this->setResultPixmap( segmentationResult );
+    }
 }
 
 QGraphicsPixmapItem *MyQGraphicsScene::setResultPixmap(QPixmap result)
 {
-    this->resetResultDisplayer();
-
     QGraphicsPixmapItem* r = new QGraphicsPixmapItem(result);
     resultDraw.append(r);
     resultZone->addToGroup(r);
@@ -97,6 +157,11 @@ QGraphicsPixmapItem *MyQGraphicsScene::setResultPixmap(QPixmap result)
 QGraphicsItemGroup *MyQGraphicsScene::getResultItemGroup()
 {
     return this->resultZone;
+}
+
+QGraphicsPixmapItem *MyQGraphicsScene::getSlicePixmapItem()
+{
+    return this->slicePixmapItem;
 }
 
 void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )

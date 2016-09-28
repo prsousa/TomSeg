@@ -44,15 +44,13 @@ public slots:
 private:
     Ui::MainWindow *ui;
     MyQGraphicsScene* sliceScene;
-    QGraphicsPixmapItem* slicePixmapItem;
 
     SegmentationManager segManager;
 
     int currentSliceIndex;
 
     void openFileDialog();
-    void drawSeeds();
-    void showSlice(int sliceNumber);
+    void setCurrentSlice(int sliceNumber);
     void updateSeedsTable();
     QPixmap convertSegmentationResult(cv::Mat labels);
 };
