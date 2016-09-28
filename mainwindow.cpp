@@ -150,6 +150,7 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
 
     currentSliceIndex = sliceNumber;
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
+    ui->sliceSlider->setValue( sliceNumber + 1 );
 
     Slice* slice = segManager.getSlice(sliceNumber);
     cv::Mat& image = slice->getImg();
@@ -186,9 +187,13 @@ void MainWindow::openFileDialog()
 
         segManager.setSlices( filenamesSegManager );
 
-        ui->currentSliceNumberSpinner->setMaximum( filenames.size() );
+        ui->currentSliceNumberSpinner->setMaximum( segManager.size() );
         ui->currentSliceNumberSpinner->setMinimum( 1 );
-        ui->sliceTotalLabel->setText( QString::number(filenames.size()) );
+
+        ui->sliceSlider->setMaximum( segManager.size() );
+        ui->sliceSlider->setMinimum( 1 );
+
+        ui->sliceTotalLabel->setText( QString::number(segManager.size()) );
 
         ui->seedsTableWidget->setEnabled(true);
         ui->addSeedButton->setEnabled(true);
@@ -213,6 +218,13 @@ void MainWindow::on_previousSliceButton_released()
 {
     if( !segManager.isEmpty() && currentSliceIndex > 0 ) {
         setCurrentSlice(--currentSliceIndex);
+    }
+}
+
+void MainWindow::on_sliceSlider_valueChanged(int newSliceNumber)
+{
+    if( newSliceNumber > 0 && newSliceNumber <= segManager.size() && (newSliceNumber - 1) != currentSliceIndex ) {
+        setCurrentSlice(newSliceNumber - 1);
     }
 }
 

@@ -130,6 +130,16 @@
          </layout>
         </item>
         <item>
+         <widget class="QSlider" name="sliceSlider">
+          <property name="maximum">
+           <number>0</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="Line" name="verticalLine">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

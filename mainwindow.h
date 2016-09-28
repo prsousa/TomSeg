@@ -31,6 +31,7 @@ public slots:
     void on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize);
     void on_nextSliceButton_released();
     void on_previousSliceButton_released();
+    void on_sliceSlider_valueChanged(int newSliceNumber);
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);
     void on_goButton_released();
     void on_resetButton_released();
