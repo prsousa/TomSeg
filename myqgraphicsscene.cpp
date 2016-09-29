@@ -40,6 +40,27 @@ void MyQGraphicsScene::setSlice(Slice *slice)
     this->updateResultDisplayer();
 }
 
+QPixmap convertSliceImage(cv::Mat& image) {
+    static QVector<QRgb> sColorTable_Gray(256);
+    static bool tableColorsAlreadyLoaded_Gray = false;
+
+    if( !tableColorsAlreadyLoaded_Gray ) {
+        tableColorsAlreadyLoaded_Gray = true;
+        for ( int i = 0; i < 256; i++ ) {
+            sColorTable_Gray[i] = qRgb( i, i, i );
+        }
+    }
+
+    QImage result( image.data,
+                  image.cols, image.rows,
+                  static_cast<int>(image.step),
+                  QImage::Format_Indexed8 );
+
+    result.setColorTable( sColorTable_Gray );
+
+    return QPixmap::fromImage(result);
+}
+
 void MyQGraphicsScene::updateSliceDisplayer()
 {
     QList<QGraphicsItem *>::iterator i;
@@ -51,8 +72,7 @@ void MyQGraphicsScene::updateSliceDisplayer()
     }
 
     if( slice ) {
-        QPixmap image( slice->getFilename().data() );
-        this->slicePixmapItem = this->setSlicePixmap( image );
+        this->slicePixmapItem = this->setSlicePixmap( convertSliceImage( slice->getImg() ) );
     }
 }
 
@@ -121,13 +141,13 @@ QGraphicsRectItem *MyQGraphicsScene::addSeed(qreal x, qreal y, qreal w, qreal h,
 }
 
 QPixmap convertSegmentationResult(cv::Mat& labels) {
-    static QVector<QRgb> sColorTable(256);
-    static bool colorsAlreadyLoaded = false;
+    static QVector<QRgb> sColorTable_Labels(256);
+    static bool colorsAlreadyLoaded_Labels = false;
 
-    if( !colorsAlreadyLoaded ) {
-        colorsAlreadyLoaded = true;
+    if( !colorsAlreadyLoaded_Labels ) {
+        colorsAlreadyLoaded_Labels = true;
         for ( int i = 0; i < 256; i++ ) {
-            sColorTable[i] = getColor(i).rgb();
+            sColorTable_Labels[i] = getColor(i).rgb();
         }
     }
 
@@ -136,7 +156,7 @@ QPixmap convertSegmentationResult(cv::Mat& labels) {
                   static_cast<int>(labels.step),
                   QImage::Format_Indexed8 );
 
-    result.setColorTable(sColorTable);
+    result.setColorTable(sColorTable_Labels);
 
     return QPixmap::fromImage(result);
 }
