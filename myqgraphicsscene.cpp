@@ -123,11 +123,16 @@ QGraphicsRectItem *MyQGraphicsScene::addSeed(qreal x, qreal y, qreal w, qreal h,
 QPixmap convertSegmentationResult(cv::Mat labels) {
     QImage result(labels.cols, labels.rows, QImage::Format_ARGB32);
 
+    QRgb colors[256];
+    for( int i = 0; i < 255; i++) {
+        colors[i] = getColor(i).rgb();
+    }
+
     for( int y = 0; y < labels.rows; y++ ) {
         for( int x = 0; x < labels.cols; x++ ) {
             uchar label = labels.at<uchar>(y, x);
             if( label != EMPTY ) {
-                result.setPixel(x, y, getColor(label).rgb());
+                result.setPixel(x, y, colors[label]);
             }
         }
     }
