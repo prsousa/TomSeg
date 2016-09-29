@@ -183,9 +183,15 @@ void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
             firstPoint = currentPosition;
         } else {
             QGraphicsRectItem *rectangle = drawRectangle(firstPoint, currentPosition);
-            QPen pen(QColor(0, 200, 0), 2);
+            QColor rectangleColor(0, 114, 202);
+            QPen pen(rectangleColor, 2);
             pen.setCosmetic(true);
             rectangle->setPen(pen);
+
+            rectangleColor.setAlpha(30);
+            QBrush brush(rectangleColor);
+            rectangle->setBrush(brush);
+
             if(itemDraw.size() > 0){
                 QGraphicsItem *item = itemDraw.at(0);
                 itemDraw.clear();
