@@ -120,22 +120,23 @@ QGraphicsRectItem *MyQGraphicsScene::addSeed(qreal x, qreal y, qreal w, qreal h,
     return r;
 }
 
-QPixmap convertSegmentationResult(cv::Mat labels) {
-    QImage result(labels.cols, labels.rows, QImage::Format_ARGB32);
+QPixmap convertSegmentationResult(cv::Mat& labels) {
+    static QVector<QRgb> sColorTable(256);
+    static bool colorsAlreadyLoaded = false;
 
-    QRgb colors[256];
-    for( int i = 0; i < 255; i++) {
-        colors[i] = getColor(i).rgb();
-    }
-
-    for( int y = 0; y < labels.rows; y++ ) {
-        for( int x = 0; x < labels.cols; x++ ) {
-            uchar label = labels.at<uchar>(y, x);
-            if( label != EMPTY ) {
-                result.setPixel(x, y, colors[label]);
-            }
+    if( !colorsAlreadyLoaded ) {
+        colorsAlreadyLoaded = true;
+        for ( int i = 0; i < 256; i++ ) {
+            sColorTable[i] = getColor(i).rgb();
         }
     }
+
+    QImage result( labels.data,
+                  labels.cols, labels.rows,
+                  static_cast<int>(labels.step),
+                  QImage::Format_Indexed8 );
+
+    result.setColorTable(sColorTable);
 
     return QPixmap::fromImage(result);
 }
