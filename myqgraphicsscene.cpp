@@ -2,6 +2,8 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItemGroup>
+#include <QTime>
+#include <QDebug>
 
 MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
@@ -96,18 +98,20 @@ void MyQGraphicsScene::updateSeedsDisplayer()
         for( int i = 0; i < seeds.size(); i++ ) {
             Seed seed = seeds[i];
             if( seed.active ) {
-                QPen pen( getColor(seed.id), 4 );
-                this->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, pen);
+                QColor seedColor(seed.c_r, seed.c_g, seed.c_b);
+                this->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, seedColor);
             }
         }
     }
 }
 
-QGraphicsRectItem *MyQGraphicsScene::addSeed(qreal x, qreal y, qreal w, qreal h, const QPen &pen, const QBrush &brush)
+QGraphicsRectItem *MyQGraphicsScene::addSeed(qreal x, qreal y, qreal w, qreal h, const QColor& seedColor)
 {
+    QPen pen( seedColor, 3 );
+    pen.setCosmetic(true);
+
     QGraphicsRectItem* r = new QGraphicsRectItem(x, y, w, h);
     r->setPen(pen);
-    r->setBrush(brush);
     seedsDraw.append(r);
     seedsZone->addToGroup(r);
 
@@ -140,8 +144,11 @@ void MyQGraphicsScene::updateResultDisplayer()
     }
 
     if( slice ) {
+        QTime myTimer;
+        myTimer.start();
         QPixmap segmentationResult = convertSegmentationResult(slice->getSegmentationResult());
         QGraphicsPixmapItem* r = this->setResultPixmap( segmentationResult );
+        qDebug() << "Conversion Time: " << myTimer.elapsed() << " ms";
     }
 }
 
@@ -176,7 +183,9 @@ void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
             firstPoint = currentPosition;
         } else {
             QGraphicsRectItem *rectangle = drawRectangle(firstPoint, currentPosition);
-            rectangle->setPen(QPen(QColor(0, 200, 0), 3));
+            QPen pen(QColor(0, 200, 0), 2);
+            pen.setCosmetic(true);
+            rectangle->setPen(pen);
             if(itemDraw.size() > 0){
                 QGraphicsItem *item = itemDraw.at(0);
                 itemDraw.clear();

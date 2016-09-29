@@ -44,7 +44,7 @@ private:
 
 
     QGraphicsPixmapItem* setSlicePixmap( QPixmap pix );
-    QGraphicsRectItem* addSeed( qreal x, qreal y, qreal w, qreal h, const QPen &pen = QPen(), const QBrush &brush = QBrush() );
+    QGraphicsRectItem* addSeed( qreal x, qreal y, qreal w, qreal h, const QColor& seedColor = QColor() );
     QGraphicsPixmapItem* setResultPixmap( QPixmap pix );
 
     QGraphicsRectItem *drawRectangle( QPointF pointHG, QPointF pointBD );
