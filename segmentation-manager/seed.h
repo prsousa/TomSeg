@@ -10,19 +10,18 @@
 
 #define EMPTY 255
 
-static cv::RNG rng(12345);
-
 class Seed : public Region
 {
 public:
     int id;
     float average, relativeStdDev;
-    uchar c_r, c_g, c_b;
     bool active;
 
     Seed();
     Seed(cv::Mat& img, Point a, Point b);
     Seed(cv::Mat& img, int id, Point a, Point b);
+
+    static void getColor(int id, uchar color[3]);
 
     void draw(cv::Mat img);
     Seed* getSimilarSeed(std::vector<Seed>&);

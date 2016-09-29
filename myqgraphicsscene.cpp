@@ -85,25 +85,6 @@ QGraphicsPixmapItem *MyQGraphicsScene::setSlicePixmap(QPixmap pix)
     return p;
 }
 
-const char* colors[] = {
-    "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF",
-    "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080",
-    "#C00000", "#00C000", "#0000C0", "#C0C000", "#C000C0", "#00C0C0", "#C0C0C0",
-    "#400000", "#004000", "#000040", "#404000", "#400040", "#004040", "#404040",
-    "#200000", "#002000", "#000020", "#202000", "#200020", "#002020", "#202020",
-    "#600000", "#006000", "#000060", "#606000", "#600060", "#006060", "#606060",
-    "#A00000", "#00A000", "#0000A0", "#A0A000", "#A000A0", "#00A0A0", "#A0A0A0",
-    "#E00000", "#00E000", "#0000E0", "#E0E000", "#E000E0", "#00E0E0", "#E0E0E0"
-};
-
-QColor getColor(int seedId)
-{
-    int colorIndex = seedId % 55;
-    QColor color;
-    color.setNamedColor( colors[colorIndex] );
-    return color;
-}
-
 void MyQGraphicsScene::updateSeedsDisplayer()
 {
     QList<QGraphicsItem *>::iterator i;
@@ -116,11 +97,13 @@ void MyQGraphicsScene::updateSeedsDisplayer()
 
     if( slice ) {
         std::vector<Seed>& seeds = slice->getSeeds();
+        uchar color[3];
 
         for( int i = 0; i < seeds.size(); i++ ) {
             Seed seed = seeds[i];
             if( seed.active ) {
-                QColor seedColor(seed.c_r, seed.c_g, seed.c_b);
+                Seed::getColor(seed.id, color);
+                QColor seedColor(color[0], color[1], color[2]);
                 this->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, seedColor);
             }
         }
@@ -146,8 +129,10 @@ QPixmap convertSegmentationResult(cv::Mat& labels) {
 
     if( !colorsAlreadyLoaded_Labels ) {
         colorsAlreadyLoaded_Labels = true;
+        uchar color[3];
         for ( int i = 0; i < 256; i++ ) {
-            sColorTable_Labels[i] = getColor(i).rgb();
+            Seed::getColor(i, color);
+            sColorTable_Labels[i] = qRgb(color[0], color[1], color[2]);
         }
     }
 

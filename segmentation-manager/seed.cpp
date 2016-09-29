@@ -20,9 +20,6 @@ Seed::Seed(cv::Mat& img, Point a, Point b) :
 
     // if stdDev is lower than 1: relativeStdDev = 1; else: relativeStdDev = stdDev
     this->relativeStdDev = fmax( this->getStandardDeviation(this->average), 1.0f );
-    this->c_r = rng.uniform(0, 255);
-    this->c_g = rng.uniform(0,255);
-    this->c_b = rng.uniform(0,255);
 }
 
 Seed::Seed(cv::Mat& img, int id, Point a, Point b) :
@@ -31,12 +28,32 @@ Seed::Seed(cv::Mat& img, int id, Point a, Point b) :
     this->id = id;
 }
 
+const uchar colors[][3] = {
+    { 255, 0, 0 }, { 0, 255, 00 }, { 0, 0, 255 }, { 255, 0, 255 }, { 0, 255, 255 },
+    { 128, 0, 0 }, { 0, 128, 00 }, { 0, 0, 128 }, { 128, 0, 128 }, { 0, 255, 255 },
+    { 192, 0, 0 }, { 0, 192, 00 }, { 0, 0, 192 }, { 192, 0, 192 }, { 0, 192, 192 },
+    { 064, 0, 0 }, { 0, 064, 00 }, { 0, 0, 064 }, { 064, 0, 064 }, { 0, 064, 064 },
+    { 032, 0, 0 }, { 0, 032, 00 }, { 0, 0, 032 }, { 032, 0, 032 }, { 0, 032, 032 },
+    { 160, 0, 0 }, { 0, 160, 00 }, { 0, 0, 160 }, { 160, 0, 160 }, { 0, 160, 160 },
+    { 224, 0, 0 }, { 0, 224, 00 }, { 0, 0, 224 }, { 224, 0, 224 }, { 0, 224, 224 }
+};
+
+void Seed::getColor(int id, uchar color[])
+{
+    int colorIndex = id % 35;
+    color[0] = colors[colorIndex][0];
+    color[1] = colors[colorIndex][1];
+    color[2] = colors[colorIndex][2];
+}
+
 void Seed::draw(cv::Mat img) {
+    uchar color[3];
+    Seed::getColor(this->id, color);
+
     cv::Point a( this->a.x, this->a.y );
     cv::Point b( this->b.x, this->b.y );
-    cv::Scalar color(c_r, c_g, c_b);
 
-    cv::rectangle( img, a, b, color, 3 );
+    cv::rectangle( img, a, b, cv::Scalar(color[0], color[1], color[2]), 3 );
 }
 
 std::ostream& operator<<(std::ostream& os, const Seed& s) {

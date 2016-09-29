@@ -60,13 +60,21 @@ cv::Mat CliApplication::colorizeLabels(cv::Mat labels, std::vector<Seed> seeds)
     cv::Mat res(labels.rows, labels.cols, CV_8UC3);
     res = cv::Scalar( 0 );
 
+    std::vector<cv::Vec3b> colorTable( 256 ); // could be static
+    uchar color[3];
+
+    for(int i = 0; i < 256; i++) {
+        Seed::getColor(i, color);
+        colorTable[i][0] = color[0];
+        colorTable[i][1] = color[1];
+        colorTable[i][2] = color[2];
+    }
+
     for(int i = 0; i < labels.rows; i++) {
         for(int j = 0; j < labels.cols; j++) {
             int label = labels.at<uchar>(i, j);
             if(label != EMPTY) {
-                res.at<cv::Vec3b>(i, j)[0] = seeds[label].c_r;
-                res.at<cv::Vec3b>(i, j)[1] = seeds[label].c_g;
-                res.at<cv::Vec3b>(i, j)[2] = seeds[label].c_b;
+                res.at<cv::Vec3b>(i, j) = colorTable[label];
             }
         }
     }
@@ -83,14 +91,26 @@ int CliApplication::exec()
 
     this->definePhasisSeeds(0);
 
-    Slice* slice = segManager.getSlice(0);
-    cv::vector<Seed>& seeds = slice->getSeeds();
+    cv::vector<Slice>& slices = segManager.getSlices();
+
+    Slice* slice = &slices[0];
+
+    std::vector<Seed>& seeds = slice->getSeeds();
     slice->setMinimumFeatureSize(15);
 
     segManager.apply(0);
 
 
-    cv::Mat res = colorizeLabels(slice->getSegmentationResult(), seeds);
+    for( int i = 0; i < slices.size(); i++ ) {
+        Slice& s = slices[i];
+
+        cv::Mat res = colorizeLabels(s.getSegmentationResult(), seeds);
+
+         // cv::imwrite( "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/result/sliceRes_" + std::to_string(i+1) + ".jpg", res);
+
+        // displayImage("Slice " + std::to_string(i+1) + " Subtracted", res, 650);
+    }
+
 
     cv::Mat imgWithSeeds;
     cv::cvtColor(slice->getImg(), imgWithSeeds, cv::COLOR_GRAY2BGR);
@@ -99,7 +119,7 @@ int CliApplication::exec()
     }
 
     displayImage("Original With Seeds", imgWithSeeds);
-    displayImage("Result", res, 650);
+
 
     cv::waitKey(0);
 

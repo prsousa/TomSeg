@@ -45,6 +45,8 @@ void MainWindow::updateSeedsTable()
     Slice* slice = segManager.getSlice(currentSliceIndex);
     std::vector<Seed> seeds = slice->getSeeds();
 
+    uchar color[3];
+
     for( size_t i = 0; i < seeds.size(); i++ ) {
         Seed seed = seeds[i];
 
@@ -54,7 +56,8 @@ void MainWindow::updateSeedsTable()
         QTableWidgetItem* widthItem = new QTableWidgetItem();
         QTableWidgetItem* heightItem = new QTableWidgetItem();
 
-        // colorItem->setData(Qt::BackgroundRole, getColor(seed.id));
+        Seed::getColor( seed.id, color );
+        colorItem->setData(Qt::BackgroundRole, QColor( color[0], color[1], color[2] ));
         colorItem->setCheckState( seed.active ? Qt::Checked : Qt::Unchecked );
         xItem->setText( QString::number(seed.a.x) );
         yItem->setText( QString::number(seed.a.y) );
