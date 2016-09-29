@@ -2,6 +2,7 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItemGroup>
+#include <QPainter>
 #include <QTime>
 #include <QDebug>
 
@@ -11,6 +12,7 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     slice = NULL;
 
     firstClick = true;
+    gridVisible = false;
 
     sliceZone = createItemGroup(sliceDraw);
     sliceZone->setZValue(1);
@@ -161,6 +163,11 @@ QGraphicsPixmapItem *MyQGraphicsScene::setResultPixmap(QPixmap result)
     return r;
 }
 
+void MyQGraphicsScene::setGridVisibility(bool visible)
+{
+    this->gridVisible = visible;
+}
+
 QGraphicsItemGroup *MyQGraphicsScene::getResultItemGroup()
 {
     return this->resultZone;
@@ -210,6 +217,7 @@ void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
     emit mouseMoved( currentPosition );
 }
 
+
 void MyQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
     if(!firstClick && itemDraw.size() > 0){
@@ -231,6 +239,40 @@ void MyQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent 
 
         delete addedRectangle;
         firstClick = true;
+    }
+}
+
+inline qreal round(qreal val, int step) {
+   int tmp = int(val) + step /2;
+   tmp -= tmp % step;
+   return qreal(tmp);
+}
+
+void MyQGraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
+{
+    if( slice && gridVisible ) {
+        int step = slice->getMinimumFeatureSize();
+        QPen pen(QColor(200, 200, 255, 100), 2);
+        pen.setCosmetic(true);
+        painter->setPen(pen);
+        // draw horizontal grid
+        qreal start = round(rect.top(), step);
+        if (start > rect.top()) {
+            start -= step;
+        }
+        for (qreal y = start - step; y < rect.bottom(); ) {
+            y += step;
+            painter->drawLine(rect.left(), y, rect.right(), y);
+        }
+        // now draw vertical grid
+        start = round(rect.left(), step);
+        if (start > rect.left()) {
+            start -= step;
+        }
+        for (qreal x = start - step; x < rect.right(); ) {
+            x += step;
+            painter->drawLine(x, rect.top(), x, rect.bottom());
+        }
     }
 }
 

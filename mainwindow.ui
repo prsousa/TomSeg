@@ -264,13 +264,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Min. Feature Size</string>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
@@ -311,6 +304,13 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="gridVisibleCheckBox">
+            <property name="text">
+             <string>Min. Feature Size</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

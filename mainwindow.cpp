@@ -136,12 +136,22 @@ void MainWindow::on_removeSeedButton_released()
     sliceScene->updateSeedsDisplayer();
 }
 
+void MainWindow::on_gridVisibleCheckBox_toggled(bool gridVisible)
+{
+    sliceScene->setGridVisibility(gridVisible);
+    sliceScene->update();
+}
+
 void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize)
 {
     if( segManager.isEmpty() ) return;
 
     Slice* slice = segManager.getSlice(currentSliceIndex);
     slice->setMinimumFeatureSize(newMinimumFeatureSize);
+
+    if( ui->gridVisibleCheckBox->checkState() == Qt::Checked ) {
+        sliceScene->update();
+    }
 }
 
 void MainWindow::setCurrentSlice(int sliceNumber = 0)

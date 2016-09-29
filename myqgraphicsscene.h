@@ -18,16 +18,19 @@ public:
     void updateResultDisplayer();
     QGraphicsItemGroup* getResultItemGroup();
     QGraphicsPixmapItem* getSlicePixmapItem();
+    void setGridVisibility( bool visible );
 
 public slots:
     void mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent );
     void mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent );
+    void drawForeground( QPainter *painter, const QRectF &rect );
 
 private:
     Slice* slice;
     bool firstClick;
     QPointF firstPoint;
     QPointF lastPoint;
+    bool gridVisible;
     QGraphicsPixmapItem* slicePixmapItem;
 
     QList<QGraphicsItem *> resultDraw;
