@@ -128,20 +128,68 @@ void Seed::getDistances(cv::Mat& labels, size_t* dists, int nLabels) {
     }
 }
 
-Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, int* grade)
+template <class T>
+void normalize(T* arr, size_t size) {
+    float max = 0;
+    float min = FLT_MAX;
+
+    for( size_t i = 0; i < size; i++ ) {
+        if( arr[i] > max ) {
+            max = arr[i];
+        }
+
+        if( arr[i] < min ) {
+            min = arr[i];
+        }
+    }
+
+    T amplitude = max - min;
+    for( size_t i = 0; i < size; i++ ) {
+        arr[i] = (arr[i] - min) / amplitude;
+    }
+}
+
+Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, float* bestGrade)
 {
     size_t* dists = new size_t[seeds.size()];
 
     this->getDistances(labels, dists, seeds.size());
+    float maxDist = sqrt(this->img->cols*this->img->cols + this->img->rows * this->img->rows);
 
-    for( Seed s : seeds ) {
-        float avgDiff = std::abs( this->average - s.average );
-        float stdDevDiff = std::abs( this->relativeStdDev - s.relativeStdDev );
-        int distance = dists[s.id];
-        float density = 0.0;
+    float* avgDiffs = new float[seeds.size()];
+    float* stdDevDiffs = new float[seeds.size()];
 
-        cout << avgDiff << "\t" << stdDevDiff << "\t" << distance << "\t" << density << endl;
+    for( size_t i = 0; i < seeds.size(); i++ ) {
+        Seed s = seeds[i];
+
+        avgDiffs[i] = std::abs( this->average - s.average );
+        stdDevDiffs[i] = std::abs( this->relativeStdDev - s.relativeStdDev );
     }
 
+    normalize(avgDiffs, seeds.size());
+    normalize(stdDevDiffs, seeds.size());
+    normalize(dists, seeds.size());
+
+    Seed* res = NULL;
+    *bestGrade = 0.f;
+
+    for( size_t i = 0; i < seeds.size(); i++ ) {
+        float avgGrade = -100 * avgDiffs[i] + 100;
+        float stdDevGrade = -100 * stdDevDiffs[i] + 100;
+        float distanceGrade = dists[i] / maxDist;
+        float finalGrade = (avgGrade * 0.45) + (0.45 * stdDevGrade) + (0.1 * distanceGrade);
+
+        if( finalGrade > *bestGrade ) {
+            *bestGrade = finalGrade;
+            res = &seeds[i];
+        }
+
+        cout << "Grade (#"<< i << ")" << finalGrade << endl;
+    }
+
+    delete avgDiffs;
+    delete stdDevDiffs;
     delete dists;
+
+    return res;
 }

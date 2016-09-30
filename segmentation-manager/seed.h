@@ -27,7 +27,7 @@ public:
     Seed* getSimilarSeed(std::vector<Seed>&);
     Seed getMoreSimilarSeedByAvg(std::vector<Seed>&);
     Seed getMoreSimilarSeedByStdDev(std::vector<Seed>&);
-    Seed* getBestGradedSeed(std::vector<Seed>&, cv::Mat& labels, int* grade);
+    Seed* getBestGradedSeed(std::vector<Seed>&, cv::Mat& labels, float* bestGrade);
 
     friend std::ostream& operator<<(std::ostream& os, const Seed& s);
 

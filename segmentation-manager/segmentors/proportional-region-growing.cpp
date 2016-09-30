@@ -204,7 +204,7 @@ bool standardDeviationJudge(int intensity, void* aditionalJudgeParams) {
     int* judgeParams = (int*) aditionalJudgeParams;
     int seedAvg = judgeParams[0];
     int seedStdDev = judgeParams[1];
-    int relax = 5;
+    int relax = 2;
     return ( intensity >= (seedAvg - relax*seedStdDev) && intensity < (seedAvg + relax*seedStdDev) );
 }
 
@@ -253,9 +253,11 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
             cout << nextSeed << endl;
 
 //            Seed similarByAvg = nextSeed.getMoreSimilarSeedByAvg( this->seeds );
-            Seed similarByStdDev = nextSeed.getMoreSimilarSeedByStdDev( this->seeds );
+//            Seed similarByStdDev = nextSeed.getMoreSimilarSeedByStdDev( this->seeds );
 
-//            nextSeed.getBestGradedSeed(this->seeds, res, NULL);
+            float grade;
+            Seed* bestGradedSeed = nextSeed.getBestGradedSeed(this->seeds, res, &grade);
+            cout << "Similar: \t" << bestGradedSeed->id << "\tGrade: " << grade << endl;
 
 //            {
 //                cv::Mat imgWithNewSeed;
@@ -267,9 +269,8 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 //            }
 
 //            cout << "Similar By Avg: \t" << similarByAvg.id << endl;
-            cout << "Similar By StdDev: \t" << similarByStdDev.id << endl;
 
-            nextSeed.id = similarByStdDev.id;
+            nextSeed.id = bestGradedSeed->id;
 
             int seedAvgAndStdDev[2];
             seedAvgAndStdDev[0] = nextSeed.average;
