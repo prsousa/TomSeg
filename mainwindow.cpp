@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sliceScene = new MyQGraphicsScene(this);
     ui->sliceView->setScene(sliceScene);
     ui->sliceView->setMouseTracking(true);
+    ui->sliceView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
                          this, SLOT(seedCreated(float, float, float, float)));
@@ -215,9 +216,49 @@ void MainWindow::openFileDialog()
     }
 }
 
+void MainWindow::zoomIn()
+{
+    ui->sliceView->scale(1.15, 1.15);
+}
+
+void MainWindow::zoomOut()
+{
+    ui->sliceView->scale(0.85, 0.85);
+}
+
+void MainWindow::zoomZero()
+{
+    ui->sliceView->resetMatrix();
+}
+
+void MainWindow::zoomFit()
+{
+    ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     openFileDialog();
+}
+
+void MainWindow::on_actionZoom_In_triggered()
+{
+    zoomIn();
+}
+
+void MainWindow::on_actionZoom_Out_triggered()
+{
+    zoomOut();
+}
+
+void MainWindow::on_action100_triggered()
+{
+    zoomZero();
+}
+
+void MainWindow::on_actionFit_on_Screen_triggered()
+{
+    zoomFit();
 }
 
 void MainWindow::on_nextSliceButton_released()
@@ -289,12 +330,22 @@ void MainWindow::on_resetButton_released()
 
 void MainWindow::on_moreZoomButton_released()
 {
-    ui->sliceView->scale(1.15, 1.15);
+    zoomIn();
 }
 
 void MainWindow::on_lessZoomButton_released()
 {
-    ui->sliceView->scale(0.75, 0.75);
+    zoomOut();
+}
+
+void MainWindow::on_noZoomButton_released()
+{
+    zoomZero();
+}
+
+void MainWindow::on_fitZoomButton_released()
+{
+    zoomFit();
 }
 
 void MainWindow::on_resultOpacitySlider_valueChanged( int newOpacity )
@@ -307,7 +358,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     QMainWindow::resizeEvent(event);
 
     if ( !segManager.isEmpty() ){
-       ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
+       zoomFit();
     }
 }
 

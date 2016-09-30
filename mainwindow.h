@@ -24,6 +24,10 @@ public:
 
 public slots:
     void on_actionOpen_triggered();
+    void on_actionZoom_In_triggered();
+    void on_actionZoom_Out_triggered();
+    void on_action100_triggered();
+    void on_actionFit_on_Screen_triggered();
     void on_addSeedButton_released();
     void on_seedsTableWidget_itemSelectionChanged();
     void on_seedsTableWidget_itemChanged(QTableWidgetItem* item);
@@ -38,6 +42,8 @@ public slots:
     void on_resetButton_released();
     void on_moreZoomButton_released();
     void on_lessZoomButton_released();
+    void on_noZoomButton_released();
+    void on_fitZoomButton_released();
     void on_resultOpacitySlider_valueChanged(int newOpacity);
     void resizeEvent(QResizeEvent* event);
     void seedCreated(float x, float y, float width, float height);
@@ -52,6 +58,10 @@ private:
     int currentSliceIndex;
 
     void openFileDialog();
+    void zoomIn();
+    void zoomOut();
+    void zoomZero();
+    void zoomFit();
     void setCurrentSlice(int sliceNumber);
     void updateSeedsTable();
     QPixmap convertSegmentationResult(cv::Mat labels);
