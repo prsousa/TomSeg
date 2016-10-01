@@ -7,7 +7,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "../seed.h"
+#include "../slice.h"
 #include "segmenter.h"
 
 class ProportionalRegionGrowing : public Segmenter
@@ -26,7 +26,7 @@ private:
 
     bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
 public:
-    ProportionalRegionGrowing(cv::Mat img, std::vector<Seed> seeds, int minimumFeatureSize = 35);
+    ProportionalRegionGrowing(Slice slice);
     ~ProportionalRegionGrowing();
     cv::Mat Apply();
 };

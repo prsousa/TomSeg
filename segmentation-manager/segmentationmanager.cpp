@@ -53,7 +53,7 @@ cv::Mat SegmentationManager::apply(size_t sliceNumber)
     if( sliceNumber < this->slices.size() ) {
         Slice& slice = this->slices[sliceNumber];
 
-        Segmenter* segmenter = new ProportionalRegionGrowing(slice.getImg(), slice.getSeeds(), slice.getMinimumFeatureSize());
+        Segmenter* segmenter = new ProportionalRegionGrowing(slice);
         res = segmenter->Apply();
 
         slice.setSegmentationResult(res);
