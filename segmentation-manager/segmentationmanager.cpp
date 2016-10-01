@@ -29,7 +29,7 @@ void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Se
     slice.setSeeds( seeds );
 }
 
-cv::vector<Slice> &SegmentationManager::getSlices()
+std::vector<Slice> &SegmentationManager::getSlices()
 {
     return this->slices;
 }
