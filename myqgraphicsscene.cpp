@@ -102,7 +102,7 @@ void MyQGraphicsScene::updateSeedsDisplayer()
         for( int i = 0; i < seeds.size(); i++ ) {
             Seed seed = seeds[i];
             if( seed.active ) {
-                Seed::getColor(seed.id, color);
+                Seed::getColor(seed.getId(), color);
                 QColor seedColor(color[0], color[1], color[2]);
                 this->addSeed(seed.a.x, seed.a.y, seed.b.x - seed.a.x, seed.b.y - seed.a.y, seedColor);
             }

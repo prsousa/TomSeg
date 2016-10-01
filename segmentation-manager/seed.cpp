@@ -56,6 +56,16 @@ void Seed::draw(cv::Mat img) {
     cv::rectangle( img, a, b, cv::Scalar(color[0], color[1], color[2]), 3 );
 }
 
+int Seed::getId()
+{
+    return this->id;
+}
+
+void Seed::setId(int id)
+{
+    this->id = id;
+}
+
 std::ostream& operator<<(std::ostream& os, const Seed& s) {
     os << "Seed #" << s.id << "\t[(" << s.a.x << ", " << s.a.y << "), (" << s.b.x << ", " << s.b.y << ")]" << "\tμ: " << s.average << "\tσ: " << s.relativeStdDev;
     return os;
@@ -164,7 +174,11 @@ Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, float* 
 
         avgDiffs[i] = std::abs( this->average - s.average );
         stdDevDiffs[i] = std::abs( this->relativeStdDev - s.relativeStdDev );
+
+        cout << "Parcelar Grade (#"<< i << ")\t" << avgDiffs[i] << "\t" << stdDevDiffs[i] << "\t" << dists[i] << endl;
     }
+
+    cout << endl;
 
     normalize(avgDiffs, seeds.size());
     normalize(stdDevDiffs, seeds.size());
@@ -184,7 +198,7 @@ Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, float* 
             res = &seeds[i];
         }
 
-        cout << "Grade (#"<< i << ")" << finalGrade << endl;
+        cout << "Grade (#"<< i << ")" << finalGrade << "\t" << avgGrade << "\t" << stdDevGrade << "\t" << distanceGrade << endl;
     }
 
     delete avgDiffs;

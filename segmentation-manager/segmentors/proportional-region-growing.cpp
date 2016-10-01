@@ -30,8 +30,8 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(cv::Mat img, std::vector<Se
 
     for( size_t i = 0; i < sortedSeeds.size(); i++ ) {
         Seed s = sortedSeeds[i];
-        cout << "-" << s.id << endl;
-        this->intervals[s.id] = std::make_pair(chunks[i], chunks[i+1]);
+        cout << "-" << s.getId() << endl;
+        this->intervals[s.getId()] = std::make_pair(chunks[i], chunks[i+1]);
     }
 
 
@@ -139,6 +139,8 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
 // instead of receiving the aditionalJudgeParams arg, it might be better
 // to create an object ProportinalJudge that encapsulates it
 void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams ) {
+    const int seedId = seed.getId();
+
     vector<Point> queue;
     cv::Mat visited(img.rows, img.cols, CV_8U);
     visited = cv::Scalar( 0 );
@@ -174,7 +176,7 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
             }
 
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
-                res.at<uchar>(p.y, p.x) = seed.id;
+                res.at<uchar>(p.y, p.x) = seedId;
 
                 queue.push_back(Point(p.x + 1, p.y));
                 queue.push_back(Point(p.x - 1, p.y));
@@ -212,7 +214,7 @@ void ProportionalRegionGrowing::InitialConquer(cv::Mat& res) {
     int proportionalSeedIntervals[2];
 
     for(Seed seed : this->seeds) {
-        std::pair<int, int> localInterval = this->intervals[seed.id];
+        std::pair<int, int> localInterval = this->intervals[seed.getId()];
         proportionalSeedIntervals[0] = localInterval.first;    // inferior histogram limmit
         proportionalSeedIntervals[1] = localInterval.second;  // superior histogram limmit
 
@@ -236,14 +238,14 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 
         Seed* similarSeed = nextSeed.getSimilarSeed( this->seeds );
         if( similarSeed ) {
-            nextSeed.id = similarSeed->id;
+            nextSeed.setId( similarSeed->getId() );
 
             int proportionalSeedIntervals[2];
-            std::pair<int, int> localInterval = this->intervals[nextSeed.id];
+            std::pair<int, int> localInterval = this->intervals[nextSeed.getId()];
             proportionalSeedIntervals[0] = localInterval.first;     // inferior histogram limmit
             proportionalSeedIntervals[1] = localInterval.second;    // superior histogram limmit
 
-            cout << "Similar Seed: " << nextSeed.id << endl;
+            cout << "Similar Seed: " << nextSeed.getId() << endl;
 
             this->RegionGrowing( res, nextSeed, proportionalJudge, proportionalSeedIntervals);
         } else {
@@ -257,7 +259,7 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 
             float grade;
             Seed* bestGradedSeed = nextSeed.getBestGradedSeed(this->seeds, res, &grade);
-            cout << "Similar: \t" << bestGradedSeed->id << "\tGrade: " << grade << endl;
+            cout << "Similar: \t" << bestGradedSeed->getId() << "\tGrade: " << grade << endl;
 
 //            {
 //                cv::Mat imgWithNewSeed;
@@ -270,7 +272,7 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 
 //            cout << "Similar By Avg: \t" << similarByAvg.id << endl;
 
-            nextSeed.id = bestGradedSeed->id;
+            nextSeed.setId( bestGradedSeed->getId() );
 
             int seedAvgAndStdDev[2];
             seedAvgAndStdDev[0] = nextSeed.average;
@@ -339,12 +341,12 @@ void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
 //                int bestAvgDiff = INT_MAX;
                 int bestSeedID = INT_MAX;
                 for(Seed s : this->seeds) {
-                    if( accessiblePhasesID.find( s.id ) != accessiblePhasesID.end() ) {
+                    if( accessiblePhasesID.find( s.getId() ) != accessiblePhasesID.end() ) {
 //                        cout << "#" << s.id << endl;
 //                        int localDiff = abs(s.average - avg);
 //                        if( localDiff < bestAvgDiff ) {
 //                            bestAvgDiff = localDiff;
-                        bestSeedID = s.id;
+                        bestSeedID = s.getId();
                         break;
 //                        }
                     }

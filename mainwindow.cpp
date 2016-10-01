@@ -57,7 +57,7 @@ void MainWindow::updateSeedsTable()
         QTableWidgetItem* widthItem = new QTableWidgetItem();
         QTableWidgetItem* heightItem = new QTableWidgetItem();
 
-        Seed::getColor( seed.id, color );
+        Seed::getColor( seed.getId(), color );
         colorItem->setData(Qt::BackgroundRole, QColor( color[0], color[1], color[2] ));
         colorItem->setCheckState( seed.active ? Qt::Checked : Qt::Unchecked );
         xItem->setText( QString::number(seed.a.x) );

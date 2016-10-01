@@ -13,7 +13,6 @@
 class Seed : public Region
 {
 public:
-    int id;
     float average, relativeStdDev;
     bool active;
 
@@ -24,6 +23,8 @@ public:
     static void getColor(int id, uchar color[3]);
 
     void draw(cv::Mat img);
+    int getId();
+    void setId(int id);
     Seed* getSimilarSeed(std::vector<Seed>&);
     Seed getMoreSimilarSeedByAvg(std::vector<Seed>&);
     Seed getMoreSimilarSeedByStdDev(std::vector<Seed>&);
@@ -32,6 +33,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Seed& s);
 
 private:
+    int id;
     void getDistances(cv::Mat& labels, size_t* dists, int nLabels);
 };
 
