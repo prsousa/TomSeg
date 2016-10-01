@@ -53,10 +53,19 @@ void Differentiator::apply()
 
         // displayImageApagar2("Diff", diff);
 
-        int morph_size = 3;
-        cv::Mat element = cv::getStructuringElement( cv::MORPH_RECT, cv::Size( 2*morph_size + 1, 2*morph_size+1 ), cv::Point( morph_size, morph_size ) );
-        cv::morphologyEx( diff, diff, cv::MORPH_OPEN, element, cv::Point(-1,-1), 1 );
-        // displayImageApagar2("Diff", diff);
+        int morph_size_Erode = 3;
+        int morph_size_Dilate = 7;
+        cv::Mat element_Erode = cv::getStructuringElement( cv::MORPH_RECT, cv::Size( 2*morph_size_Erode + 1, 2*morph_size_Erode+1 ), cv::Point( morph_size_Erode, morph_size_Erode ) );
+        cv::Mat element_Dilate = cv::getStructuringElement( cv::MORPH_RECT, cv::Size( 2*morph_size_Dilate + 1, 2*morph_size_Dilate+1 ), cv::Point( morph_size_Dilate, morph_size_Dilate ) );
+
+        cv::Mat eroded;
+        cv::erode( diff, eroded, element_Erode );
+        cv::dilate( eroded, diff, element_Dilate );
+        // displayImageApagar2("Erode + Dilate", diff, 500);
+
+        // cv::morphologyEx( diff, diff, cv::MORPH_OPEN, element_3, cv::Point(-1,-1), 1 );
+        //displayImageApagar2("Open", diff);
+
 
         cv::Mat res1 = slice0.getSegmentationResult().clone();
         for( int y = 0; y < res1.rows; y++ ) {
