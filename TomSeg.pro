@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     segmentation-manager/slice.cpp \
     segmenterthread.cpp \
     cliapplication.cpp \
-    segmentation-manager/differentiators/differentiator.cpp
+    segmentation-manager/differentiators/differentiator.cpp \
+    segmentation-manager/preprocessors/aligner.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     segmentation-manager/slice.h \
     segmenterthread.h \
     cliapplication.h \
-    segmentation-manager/differentiators/differentiator.h
+    segmentation-manager/differentiators/differentiator.h \
+    segmentation-manager/preprocessors/aligner.h
 
 
 FORMS    += mainwindow.ui
