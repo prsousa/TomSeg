@@ -32,7 +32,11 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QGraphicsView" name="sliceView"/>
+         <widget class="QGraphicsView" name="sliceView">
+          <property name="cursor" stdset="0">
+           <cursorShape>CrossCursor</cursorShape>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="zoomHorizontalLayout">
