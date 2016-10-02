@@ -22,7 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->sliceView->setScene(sliceScene);
     ui->sliceView->setMouseTracking(true);
     ui->sliceView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    autoFitScreen = true;
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
                          this, SLOT(seedCreated(float, float, float, float)));
@@ -214,6 +213,7 @@ void MainWindow::openFileDialog()
 
         ui->seedsTableWidget->setEnabled(true);
         ui->addSeedButton->setEnabled(true);
+        autoFitScreen = true;
 
         this->setCurrentSlice(0);
     }
@@ -241,7 +241,12 @@ void MainWindow::zoomFit()
 {
     QGraphicsPixmapItem* slicePixmapItem = sliceScene->getSlicePixmapItem();
     if( slicePixmapItem ) {
-        ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
+        // scroll bars interfer with fitInView, so it has to be called twice
+        // http://stackoverflow.com/questions/22614337/qt-qgraphicsscene-does-not-fitinview-with-scrollbars
+        ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
+
         autoFitScreen = true;
     }
 }
