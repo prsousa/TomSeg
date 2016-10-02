@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/appbar.fullscreen.box.svg</file>
+        <file>icons/appbar.magnify.add.svg</file>
+        <file>icons/appbar.magnify.minus.svg</file>
+        <file>icons/appbar.magnify.svg</file>
+    </qresource>
+</RCC>
