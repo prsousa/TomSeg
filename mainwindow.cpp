@@ -175,8 +175,7 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
         zoomFit();
     }
 
-    ui->currentSliceWidthLabel->setText( QString::number( image.cols ) );
-    ui->currentSliceHeightLabel->setText( QString::number( image.rows ) );
+    ui->currentSliceSizeLabel->setText( QString::number( image.cols ) + " x " + QString::number( image.rows ) );
     ui->minimumFeatureSizeSpinBox->setValue( slice->getMinimumFeatureSize() );
 
     updateSeedsTable();
@@ -247,6 +246,8 @@ void MainWindow::zoomFit()
     if( slicePixmapItem ) {
         // scroll bars interfer with fitInView, so it has to be called twice
         // http://stackoverflow.com/questions/22614337/qt-qgraphicsscene-does-not-fitinview-with-scrollbars
+
+        // TODO/Bug: when slices are accessed very quickly it may throw a SEGFAULT
         ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
@@ -353,6 +354,20 @@ void MainWindow::on_resetButton_released()
     }
 }
 
+void MainWindow::on_alignButton_released()
+{
+    Point a;
+    a.x = ui->referenceAreaInitXSpinBox->value();
+    a.y = ui->referenceAreaInitYSpinBox->value();
+    int width = ui->referenceAreaWidthSpinBox->value();
+    int height = ui->referenceAreaHeightSpinBox->value();
+
+    if( a.x > 0 && a.y > 0 && width > 0 && height > 0 ) {
+        segManager.alignSlices(currentSliceIndex, a, width, height);
+        this->sliceScene->updateSliceDisplayer();
+    }
+}
+
 void MainWindow::on_moreZoomButton_released()
 {
     zoomIn();
@@ -389,14 +404,33 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::seedCreated( float x, float y, float width, float height )
 {
-    Slice* slice = segManager.getSlice(currentSliceIndex);
-    std::vector<Seed>& seeds = slice->getSeeds();
+    switch ( ui->tabWidget->currentIndex() ) {
+    case 0:
+    {
+        // Segmentation Tab is selected
+        Slice* slice = segManager.getSlice(currentSliceIndex);
+        std::vector<Seed>& seeds = slice->getSeeds();
 
-    Seed newSeed( slice->getImg(), seeds.size(), Point(x, y), Point(x + width, y + height) );
-    seeds.push_back(newSeed);
+        Seed newSeed( slice->getImg(), seeds.size(), Point(x, y), Point(x + width, y + height) );
+        seeds.push_back(newSeed);
 
-    sliceScene->updateSeedsDisplayer();
-    updateSeedsTable();
+        sliceScene->updateSeedsDisplayer();
+        updateSeedsTable();
+
+        break;
+    }
+    case 1:
+    {
+        // Align Tab is selected
+        ui->referenceAreaInitXSpinBox->setValue(x);
+        ui->referenceAreaInitYSpinBox->setValue(y);
+        ui->referenceAreaWidthSpinBox->setValue(width);
+        ui->referenceAreaHeightSpinBox->setValue(height);
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void MainWindow::sliceSceneMouseMoved(QPointF mousePosition)
