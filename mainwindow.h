@@ -52,6 +52,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     MyQGraphicsScene* sliceScene;
+    bool autoFitScreen;
 
     SegmentationManager segManager;
 

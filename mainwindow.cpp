@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->sliceView->setScene(sliceScene);
     ui->sliceView->setMouseTracking(true);
     ui->sliceView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    autoFitScreen = true;
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
                          this, SLOT(seedCreated(float, float, float, float)));
@@ -170,7 +171,9 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
     cv::Mat& image = slice->getImg();
 
     sliceScene->setSlice(slice);
-    ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
+    if( autoFitScreen ) {
+        zoomFit();
+    }
 
     ui->currentSliceWidthLabel->setText( QString::number( image.cols ) );
     ui->currentSliceHeightLabel->setText( QString::number( image.rows ) );
@@ -219,21 +222,28 @@ void MainWindow::openFileDialog()
 void MainWindow::zoomIn()
 {
     ui->sliceView->scale(1.15, 1.15);
+    autoFitScreen = false;
 }
 
 void MainWindow::zoomOut()
 {
     ui->sliceView->scale(0.85, 0.85);
+    autoFitScreen = false;
 }
 
 void MainWindow::zoomZero()
 {
     ui->sliceView->resetMatrix();
+    autoFitScreen = false;
 }
 
 void MainWindow::zoomFit()
 {
-    ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
+    QGraphicsPixmapItem* slicePixmapItem = sliceScene->getSlicePixmapItem();
+    if( slicePixmapItem ) {
+        ui->sliceView->fitInView(sliceScene->getSlicePixmapItem(), Qt::KeepAspectRatio);
+        autoFitScreen = true;
+    }
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -357,7 +367,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
 
-    if ( !segManager.isEmpty() ){
+    if ( autoFitScreen ){
        zoomFit();
     }
 }

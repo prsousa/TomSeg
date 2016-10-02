@@ -14,6 +14,8 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     firstClick = true;
     gridVisible = false;
 
+    slicePixmapItem = NULL;
+
     sliceZone = createItemGroup(sliceDraw);
     sliceZone->setZValue(1);
 
