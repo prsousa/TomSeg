@@ -63,6 +63,7 @@ private:
     void zoomOut();
     void zoomZero();
     void zoomFit();
+    void updateCurrentZoomInfo();
     void setCurrentSlice(int sliceNumber);
     void updateSeedsTable();
     QPixmap convertSegmentationResult(cv::Mat labels);

@@ -222,18 +222,21 @@ void MainWindow::openFileDialog()
 void MainWindow::zoomIn()
 {
     ui->sliceView->scale(1.15, 1.15);
+    this->updateCurrentZoomInfo();
     autoFitScreen = false;
 }
 
 void MainWindow::zoomOut()
 {
     ui->sliceView->scale(0.85, 0.85);
+    this->updateCurrentZoomInfo();
     autoFitScreen = false;
 }
 
 void MainWindow::zoomZero()
 {
     ui->sliceView->resetMatrix();
+    this->updateCurrentZoomInfo();
     autoFitScreen = false;
 }
 
@@ -247,8 +250,14 @@ void MainWindow::zoomFit()
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
 
+        this->updateCurrentZoomInfo();
         autoFitScreen = true;
     }
+}
+
+void MainWindow::updateCurrentZoomInfo() {
+    int currentZoom = ui->sliceView->matrix().m11() * 100;
+    ui->currentZoomFactorLabel->setText( QString::number(currentZoom) +  "%");
 }
 
 void MainWindow::on_actionOpen_triggered()

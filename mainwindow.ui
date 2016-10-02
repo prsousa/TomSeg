@@ -56,6 +56,21 @@
            </spacer>
           </item>
           <item>
+           <widget class="QLabel" name="currentZoomFactorLabel">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #555555;</string>
+            </property>
+            <property name="text">
+             <string>100%</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="moreZoomButton">
             <property name="minimumSize">
              <size>
