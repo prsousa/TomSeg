@@ -47,6 +47,12 @@ void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t 
     cv::Rect roi(a.x, a.y, width, height);
     const cv::Mat templ = masterImg(roi);
 
+    std::vector<Point> deltas(slices.size());
+    int cutLeft = 0;
+    int cutRight = 0;
+    int cutUp = 0;
+    int cutDown = 0;
+
     displayImageApagar("ROI", templ);
     cv::waitKey(0);
 
@@ -65,11 +71,35 @@ void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t 
         cv::minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
         matchLoc = maxLoc;
 
-        int deltaX = matchLoc.x - a.x;
-        int deltaY = matchLoc.y - a.y;
+        int deltaX = a.x - matchLoc.x;
+        int deltaY = a.y - matchLoc.y;
 
-        qDebug() << "x: " << deltaX << "\ty: "<< deltaY;
-        translateImg(sliceImg, deltaX, deltaY);
+        deltas[i] = Point(deltaX, deltaY);
+
+        if( deltaX > 0 && deltaX > cutLeft ) {
+            cutLeft = deltaX;
+        }
+        if( deltaX < 0 && abs(deltaX) > cutRight ) {
+            cutRight = abs(deltaX);
+        }
+        if( deltaY > 0 && deltaY > cutUp ) {
+            cutUp = deltaY;
+        }
+        if( deltaY < 0 && abs(deltaY) > cutDown ) {
+            cutUp = abs(deltaY);
+        }
+
+        qDebug() << "x: " << deltas[i].x << "\ty: "<< deltas[i].y;
+    }
+
+    for( size_t i = 0; i < deltas.size(); i++ ) {
+        Point delta = deltas[i];
+        Slice& slice = this->slices[i];
+        cv::Mat& sliceImg = slice.getImg();
+
+        translateImg(sliceImg, delta.x, delta.y);
+        cv::Rect cut(cutLeft, cutUp, sliceImg.cols - cutLeft - cutRight, sliceImg.rows - cutUp - cutDown);
+        sliceImg = sliceImg(cut);
 //        std::string name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/aligned/" + std::to_string(i) + ".jpg";
 //        cv::imwrite(name, sliceImg);
     }
