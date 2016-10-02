@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->sliceView->setScene(sliceScene);
     ui->sliceView->setMouseTracking(true);
     ui->sliceView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    ui->splitter->setStretchFactor(0,1);
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
                          this, SLOT(seedCreated(float, float, float, float)));
