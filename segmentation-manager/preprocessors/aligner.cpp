@@ -11,10 +11,12 @@ Aligner::Aligner()
 
 }
 
-Aligner::Aligner(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice)
+Aligner::Aligner(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice, int maxDeltaX, int maxDeltaY)
 {
     this->firstSlice = firstSlice;
     this->lastSlice = lastSlice;
+    this->maxDeltaX = maxDeltaX;
+    this->maxDeltaY = maxDeltaY;
 }
 
 cv::Mat translateImg(cv::Mat &img, int offsetx, int offsety){
@@ -48,8 +50,10 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
         cv::minMaxLoc( matchResult, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
         matchLoc = maxLoc;
 
-        int deltaX = a.x - matchLoc.x;
-        int deltaY = a.y - matchLoc.y;
+        int deltaX = std::min( abs(a.x - matchLoc.x), this->maxDeltaX );
+        int deltaY = std::min( abs(a.y - matchLoc.y), this->maxDeltaY );
+        if(a.x < matchLoc.x ) deltaX *= -1;
+        if(a.y < matchLoc.y ) deltaY *= -1;
 
         deltas[i] = Point(deltaX, deltaY);
 
@@ -73,11 +77,14 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
         Point delta = deltas[i];
         Slice& slice = *(i + firstSlice);
         cv::Mat& sliceImg = slice.getImg();
+//        std::string name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/original/" + std::to_string(i) + ".jpg";
+//        cv::imwrite(name, sliceImg);
+
 
         translateImg(sliceImg, delta.x, delta.y);
         cv::Rect cut(cutLeft, cutUp, sliceImg.cols - cutLeft - cutRight, sliceImg.rows - cutUp - cutDown);
         sliceImg = sliceImg(cut);
-//        std::string name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/aligned/" + std::to_string(i) + ".jpg";
+//        name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/aligned/" + std::to_string(i) + ".jpg";
 //        cv::imwrite(name, sliceImg);
     }
 

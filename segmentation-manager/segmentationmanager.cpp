@@ -31,12 +31,12 @@ void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Se
     slice.setSeeds( seeds );
 }
 
-void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t width, size_t height )
+void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX, int maxDeltaY )
 {
     if( masterSliceNumber < this->slices.size() ) {
         Slice& masterSlice = this->slices[masterSliceNumber];
 
-        Aligner aligner(this->slices.begin(), this->slices.end());
+        Aligner aligner(this->slices.begin(), this->slices.end(), maxDeltaX, maxDeltaY);
         aligner.apply( masterSlice.getImg(), a, width, height );
     }
 }

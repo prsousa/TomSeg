@@ -361,10 +361,15 @@ void MainWindow::on_alignButton_released()
     a.y = ui->referenceAreaInitYSpinBox->value();
     int width = ui->referenceAreaWidthSpinBox->value();
     int height = ui->referenceAreaHeightSpinBox->value();
+    int maxDeltaX = ui->referenceAreaMaxDeltaXSpinBox->value();
+    int maxDeltaY = ui->referenceAreaMaxDeltaYSpinBox->value();
 
     if( a.x > 0 && a.y > 0 && width > 0 && height > 0 ) {
-        segManager.alignSlices(currentSliceIndex, a, width, height);
+        segManager.alignSlices(currentSliceIndex, a, width, height, maxDeltaX, maxDeltaY);
         this->sliceScene->updateSliceDisplayer();
+        if( autoFitScreen ) {
+            zoomFit();
+        }
     }
 }
 
