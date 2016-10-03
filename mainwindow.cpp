@@ -354,6 +354,18 @@ void MainWindow::on_resetButton_released()
     }
 }
 
+void MainWindow::on_exportSlicesButton_released()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Destination Directory"),
+                                                QDir::homePath(),
+                                                QFileDialog::ShowDirsOnly
+                                                | QFileDialog::DontResolveSymlinks);
+
+    if( !dir.isEmpty() ) {
+        segManager.exportSlicesImages( dir.toStdString() );
+    }
+}
+
 void MainWindow::on_alignButton_released()
 {
     Point a;

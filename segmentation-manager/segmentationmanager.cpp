@@ -4,6 +4,7 @@
 #include "segmentors/proportional-region-growing.h"
 #include "differentiators/differentiator.h"
 #include "preprocessors/aligner.h"
+#include "exporter.h"
 
 #include <QDebug>
 
@@ -39,6 +40,12 @@ void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t 
         Aligner aligner(this->slices.begin(), this->slices.end(), maxDeltaX, maxDeltaY);
         aligner.apply( masterSlice.getImg(), a, width, height );
     }
+}
+
+void SegmentationManager::exportSlicesImages(string path)
+{
+    Exporter exporter(this->slices.begin(), this->slices.end());
+    exporter.exportSlicesImages(path);
 }
 
 std::vector<Slice> &SegmentationManager::getSlices()

@@ -40,6 +40,7 @@ public slots:
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);
     void on_goButton_released();
     void on_resetButton_released();
+    void on_exportSlicesButton_released();
     void on_alignButton_released();
     void on_moreZoomButton_released();
     void on_lessZoomButton_released();

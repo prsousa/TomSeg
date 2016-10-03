@@ -628,6 +628,13 @@ border:-3px;</string>
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="exportSlicesButton">
+              <property name="text">
+               <string>Export Slices</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="alignButton">
               <property name="text">
                <string>Align</string>

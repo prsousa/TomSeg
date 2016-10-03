@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     segmenterthread.cpp \
     cliapplication.cpp \
     segmentation-manager/differentiators/differentiator.cpp \
-    segmentation-manager/preprocessors/aligner.cpp
+    segmentation-manager/preprocessors/aligner.cpp \
+    segmentation-manager/exporter.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     segmenterthread.h \
     cliapplication.h \
     segmentation-manager/differentiators/differentiator.h \
-    segmentation-manager/preprocessors/aligner.h
+    segmentation-manager/preprocessors/aligner.h \
+    segmentation-manager/exporter.h
 
 
 FORMS    += mainwindow.ui
