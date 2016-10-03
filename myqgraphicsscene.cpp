@@ -14,10 +14,9 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     firstClick = true;
     gridVisible = false;
 
-    slicePixmapItem = NULL;
-
-    sliceZone = createItemGroup(sliceDraw);
-    sliceZone->setZValue(1);
+    slicePixmapItem = new QGraphicsPixmapItem();
+    slicePixmapItem->setZValue(1);
+    this->addItem(slicePixmapItem);
 
     seedsZone = createItemGroup(seedsDraw);
     seedsZone->setZValue(2);
@@ -65,26 +64,9 @@ QPixmap convertSliceImage(cv::Mat& image) {
 
 void MyQGraphicsScene::updateSliceDisplayer()
 {
-    QList<QGraphicsItem *>::iterator i;
-    for( i = sliceDraw.begin(); i != sliceDraw.end(); i++) {
-        QGraphicsItem *oldSlice = *i;
-        sliceZone->removeFromGroup(oldSlice);
-        sliceDraw.removeOne(oldSlice);
-        delete oldSlice;
-    }
-
     if( slice ) {
-        this->slicePixmapItem = this->setSlicePixmap( convertSliceImage( slice->getImg() ) );
+        this->slicePixmapItem->setPixmap( convertSliceImage( slice->getImg() ) );
     }
-}
-
-QGraphicsPixmapItem *MyQGraphicsScene::setSlicePixmap(QPixmap pix)
-{
-    QGraphicsPixmapItem* p = new QGraphicsPixmapItem(pix);
-    sliceDraw.append(p);
-    sliceZone->addToGroup(p);
-
-    return p;
 }
 
 void MyQGraphicsScene::updateSeedsDisplayer()
@@ -195,7 +177,7 @@ void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
     QPointF currentPosition = mouseEvent->scenePos();
 
-    if( sliceDraw.isEmpty() || !sliceDraw.back()->boundingRect().contains(currentPosition) ) return;
+    if( !this->slicePixmapItem->boundingRect().contains(currentPosition) ) return;
 
     if( mouseEvent->buttons() & Qt::LeftButton ) {
         if( firstClick ) {

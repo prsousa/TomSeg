@@ -36,9 +36,6 @@ private:
     QList<QGraphicsItem *> resultDraw;
     QGraphicsItemGroup * resultZone;
 
-    QList<QGraphicsItem *> sliceDraw;
-    QGraphicsItemGroup * sliceZone;
-
     QList<QGraphicsItem *> seedsDraw;
     QGraphicsItemGroup * seedsZone;
 
@@ -46,7 +43,6 @@ private:
     QGraphicsItemGroup * drawZone;
 
 
-    QGraphicsPixmapItem* setSlicePixmap( QPixmap pix );
     QGraphicsRectItem* addSeed( qreal x, qreal y, qreal w, qreal h, const QColor& seedColor = QColor() );
     QGraphicsPixmapItem* setResultPixmap( QPixmap pix );
 

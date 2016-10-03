@@ -19,9 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     sliceScene = new MyQGraphicsScene(this);
+    slicePixmapItem = sliceScene->getSlicePixmapItem();
     ui->sliceView->setScene(sliceScene);
     ui->sliceView->setMouseTracking(true);
     ui->sliceView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
     ui->splitter->setStretchFactor(0,1);
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
@@ -242,19 +244,15 @@ void MainWindow::zoomZero()
 
 void MainWindow::zoomFit()
 {
-    QGraphicsPixmapItem* slicePixmapItem = sliceScene->getSlicePixmapItem();
-    if( slicePixmapItem ) {
-        // scroll bars interfer with fitInView, so it has to be called twice
-        // http://stackoverflow.com/questions/22614337/qt-qgraphicsscene-does-not-fitinview-with-scrollbars
+    // scroll bars interfer with fitInView, so it has to be called twice
+    // http://stackoverflow.com/questions/22614337/qt-qgraphicsscene-does-not-fitinview-with-scrollbars
 
-        // TODO/Bug: when slices are accessed very quickly it may throw a SEGFAULT
-        ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
-        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
+    ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    ui->sliceView->fitInView(slicePixmapItem, Qt::KeepAspectRatio);
 
-        this->updateCurrentZoomInfo();
-        autoFitScreen = true;
-    }
+    this->updateCurrentZoomInfo();
+    autoFitScreen = true;
 }
 
 void MainWindow::updateCurrentZoomInfo() {
