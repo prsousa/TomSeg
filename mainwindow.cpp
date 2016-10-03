@@ -287,17 +287,17 @@ void MainWindow::on_actionFit_on_Screen_triggered()
     zoomFit();
 }
 
-void MainWindow::on_nextSliceButton_released()
+void MainWindow::on_lastSliceButton_released()
 {
-    if( segManager.size() > (currentSliceIndex + 1) ) {
-        setCurrentSlice(++currentSliceIndex);
+    if( !segManager.isEmpty() && currentSliceIndex < segManager.size() - 1 ) {
+        setCurrentSlice(segManager.size() - 1);
     }
 }
 
-void MainWindow::on_previousSliceButton_released()
+void MainWindow::on_firstSliceButton_released()
 {
     if( !segManager.isEmpty() && currentSliceIndex > 0 ) {
-        setCurrentSlice(--currentSliceIndex);
+        setCurrentSlice(0);
     }
 }
 
