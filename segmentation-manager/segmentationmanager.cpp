@@ -42,6 +42,12 @@ void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t 
     }
 }
 
+void SegmentationManager::exportResult(string path)
+{
+    Exporter exporter(this->slices.begin(), this->slices.end());
+    exporter.exportResult(path);
+}
+
 void SegmentationManager::exportSlicesImages(string path)
 {
     Exporter exporter(this->slices.begin(), this->slices.end());

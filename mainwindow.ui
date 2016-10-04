@@ -507,6 +507,13 @@ border:-3px;</string>
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="exportButton">
+              <property name="text">
+               <string>Export</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="goButton">
               <property name="text">
                <string>Go!</string>
