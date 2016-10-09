@@ -190,6 +190,7 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
 
 void MainWindow::updateCrop()
 {
+    qDebug() << "Update Crop";
     size_t left = ui->leftCropSpinBox->value();
     size_t right = ui->rightCropSpinBox->value();
     size_t top = ui->topCropSpinBox->value();
@@ -506,10 +507,25 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
     {
         cv::Mat& sliceImg = slice->getImg();
 
+        // Disable value changed signal :: prevent redrawing ROI 4x
+        ui->leftCropSpinBox->blockSignals(true);
+        ui->rightCropSpinBox->blockSignals(true);
+        ui->topCropSpinBox->blockSignals(true);
+        ui->bottomCropSpinBox->blockSignals(true);
+
+        // Set new values
         ui->leftCropSpinBox->setValue( x );
         ui->rightCropSpinBox->setValue( sliceImg.cols - x - width );
         ui->topCropSpinBox->setValue( y );
         ui->bottomCropSpinBox->setValue( sliceImg.rows - y - height );
+
+        // Enable back signals
+        ui->leftCropSpinBox->blockSignals(false);
+        ui->rightCropSpinBox->blockSignals(false);
+        ui->topCropSpinBox->blockSignals(false);
+        ui->bottomCropSpinBox->blockSignals(false);
+
+        updateCrop();
 
         break;
     }
