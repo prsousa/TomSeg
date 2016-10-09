@@ -222,6 +222,11 @@ QGraphicsPixmapItem *MyQGraphicsScene::getSlicePixmapItem()
     return this->slicePixmapItem;
 }
 
+void MyQGraphicsScene::setROIVisibility(bool visible)
+{
+    this->cropZone->setVisible( visible );
+}
+
 void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
     QPointF currentPosition = mouseEvent->scenePos();

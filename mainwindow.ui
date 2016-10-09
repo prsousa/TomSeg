@@ -320,9 +320,9 @@ border:-5px;</string>
          </widget>
         </item>
         <item>
-         <widget class="QTabWidget" name="tabWidget">
+         <widget class="QTabWidget" name="toolsTab">
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="alignTab">
            <attribute name="title">

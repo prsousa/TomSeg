@@ -493,6 +493,11 @@ void MainWindow::on_cropButton_released()
     }
 }
 
+void MainWindow::on_toolsTab_currentChanged(int newTabIndex)
+{
+    sliceScene->setROIVisibility( newTabIndex == 1 );
+}
+
 void MainWindow::on_moreZoomButton_released()
 {
     zoomIn();
@@ -533,7 +538,7 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
 
     Slice* slice = segManager.getSlice(currentSliceIndex);
 
-    switch ( ui->tabWidget->currentIndex() ) {
+    switch ( ui->toolsTab->currentIndex() ) {
     case 2:
     {
         // Segmentation Tab is selected

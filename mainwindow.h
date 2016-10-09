@@ -50,6 +50,8 @@ public slots:
     void on_bottomCropSpinBox_valueChanged(int newCropBottom);
     void on_cropButton_released();
 
+    void on_toolsTab_currentChanged(int newTabIndex);
+
     void on_moreZoomButton_released();
     void on_lessZoomButton_released();
     void on_noZoomButton_released();

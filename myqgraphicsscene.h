@@ -19,6 +19,7 @@ public:
     void updateResultDisplayer();
     QGraphicsItemGroup* getResultItemGroup();
     QGraphicsPixmapItem* getSlicePixmapItem();
+    void setROIVisibility( bool visible );
     void setGridVisibility( bool visible );
 
 public slots:
