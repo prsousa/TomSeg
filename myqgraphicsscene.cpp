@@ -69,6 +69,7 @@ void MyQGraphicsScene::updateSliceDisplayer()
 {
     if( slice ) {
         this->slicePixmapItem->setPixmap( convertSliceImage( slice->getImg() ) );
+        this->setSceneRect( this->slicePixmapItem->boundingRect() );
     }
 }
 
