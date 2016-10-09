@@ -69,3 +69,9 @@ void Slice::removeSeed(int seedPos)
 {
     this->seeds.erase( seeds.begin() + seedPos );
 }
+
+void Slice::crop(Point a, size_t width, size_t height)
+{
+    cv::Rect roi(a.x, a.y, width, height);
+    img = img(roi);
+}

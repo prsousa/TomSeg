@@ -203,6 +203,57 @@ void MainWindow::on_addSeedButton_released()
     this->seedCreated(0, 0, 10, 10);
 }
 
+void MainWindow::updateSlicesUI() {
+    size_t numberOfSlices = segManager.size();
+
+    ui->currentSliceNumberSpinner->setMaximum( numberOfSlices );
+    ui->currentSliceNumberSpinner->setMinimum( 1 );
+
+    ui->sliceSlider->setMaximum( numberOfSlices );
+    ui->sliceSlider->setMinimum( 1 );
+
+    ui->sliceTotalLabel->setText( QString::number(numberOfSlices) );
+
+    ui->seedsTableWidget->setEnabled(true);
+    ui->addSeedButton->setEnabled(true);
+    autoFitScreen = true;
+
+    this->setCurrentSlice(0);
+
+    ui->firstCropSliceSlider->setEnabled(true);
+    ui->lastCropSliceSlider->setEnabled(true);
+    ui->leftCropSpinBox->setEnabled(true);
+    ui->rightCropSpinBox->setEnabled(true);
+    ui->topCropSpinBox->setEnabled(true);
+    ui->bottomCropSpinBox->setEnabled(true);
+
+    ui->lastCropSliceSlider->setMaximum( numberOfSlices );
+    ui->firstCropSliceSlider->setMaximum( numberOfSlices );
+    ui->firstCropSliceSlider->setValue( 1 );
+    ui->firstCropSliceSlider->setMinimum( 1 );
+    ui->lastCropSliceSlider->setValue( numberOfSlices );
+
+
+    // Disable value changed signal :: prevent redrawing ROI 4x
+    ui->leftCropSpinBox->blockSignals(true);
+    ui->rightCropSpinBox->blockSignals(true);
+    ui->topCropSpinBox->blockSignals(true);
+    ui->bottomCropSpinBox->blockSignals(true);
+
+    // Set new values
+    ui->leftCropSpinBox->setValue( 0 );
+    ui->rightCropSpinBox->setValue( 0 );
+    ui->topCropSpinBox->setValue( 0 );
+    ui->bottomCropSpinBox->setValue( 0 );
+
+    // Enable back signals
+    ui->leftCropSpinBox->blockSignals(false);
+    ui->rightCropSpinBox->blockSignals(false);
+    ui->topCropSpinBox->blockSignals(false);
+    ui->bottomCropSpinBox->blockSignals(false);
+    updateCrop();
+}
+
 void MainWindow::openFileDialog()
 {
     QStringList filenames = QFileDialog::getOpenFileNames( this,
@@ -212,39 +263,13 @@ void MainWindow::openFileDialog()
                                                           );
 
     if( !filenames.isEmpty() ) {
-
         std::vector<std::string> filenamesSegManager;
         for (int i = 0; i < filenames.count(); i++) {
             filenamesSegManager.push_back( filenames[i].toStdString() );
         }
 
         segManager.setSlices( filenamesSegManager );
-
-        ui->currentSliceNumberSpinner->setMaximum( segManager.size() );
-        ui->currentSliceNumberSpinner->setMinimum( 1 );
-
-        ui->sliceSlider->setMaximum( segManager.size() );
-        ui->sliceSlider->setMinimum( 1 );
-
-        ui->sliceTotalLabel->setText( QString::number(segManager.size()) );
-
-        ui->seedsTableWidget->setEnabled(true);
-        ui->addSeedButton->setEnabled(true);
-        autoFitScreen = true;
-
-        this->setCurrentSlice(0);
-
-        ui->firstCropSliceSlider->setEnabled(true);
-        ui->lastCropSliceSlider->setEnabled(true);
-        ui->leftCropSpinBox->setEnabled(true);
-        ui->rightCropSpinBox->setEnabled(true);
-        ui->topCropSpinBox->setEnabled(true);
-        ui->bottomCropSpinBox->setEnabled(true);
-
-        size_t numberOfSlices = segManager.size();
-        ui->lastCropSliceSlider->setMaximum( numberOfSlices );
-        ui->firstCropSliceSlider->setMaximum( numberOfSlices );
-        ui->lastCropSliceSlider->setValue( numberOfSlices );
+        updateSlicesUI();
     }
 }
 
@@ -447,6 +472,25 @@ void MainWindow::on_topCropSpinBox_valueChanged(int newCropTop)
 void MainWindow::on_bottomCropSpinBox_valueChanged(int newCropBottom)
 {
     this->updateCrop();
+}
+
+void MainWindow::on_cropButton_released()
+{
+    if( !segManager.isEmpty() ) {
+        Slice* slice = segManager.getSlice(currentSliceIndex);
+        cv::Mat& sliceImg = slice->getImg();
+
+        size_t firstSlice = ui->firstCropSliceSlider->value();
+        size_t lastSlice = ui->lastCropSliceSlider->value();
+        size_t left = ui->leftCropSpinBox->value();
+        size_t right = ui->rightCropSpinBox->value();
+        size_t top = ui->topCropSpinBox->value();
+        size_t bottom = ui->bottomCropSpinBox->value();
+
+        segManager.cropSlices(firstSlice, lastSlice, Point(left, top), sliceImg.cols - left - right, sliceImg.rows - top - bottom);
+
+        updateSlicesUI();
+    }
 }
 
 void MainWindow::on_moreZoomButton_released()

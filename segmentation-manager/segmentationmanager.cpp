@@ -42,6 +42,27 @@ void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t 
     }
 }
 
+void SegmentationManager::cropSlices(size_t firstSlice, size_t lastSlice, Point a, size_t width, size_t height)
+{
+    vector<Slice>::iterator begin = slices.begin();
+    vector<Slice>::iterator end = slices.end();
+
+    firstSlice--;
+    lastSlice--;
+
+    if( firstSlice > 0 ) {
+        slices.erase(begin, begin + firstSlice);
+    }
+
+    if( begin + lastSlice < end ) {
+        slices.erase(begin + lastSlice + 1, end);
+    }
+
+    for( Slice& slice : slices ) {
+        slice.crop(a, width, height);
+    }
+}
+
 void SegmentationManager::exportResult(string path)
 {
     Exporter exporter(this->slices.begin(), this->slices.end());

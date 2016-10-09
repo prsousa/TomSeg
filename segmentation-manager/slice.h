@@ -20,6 +20,7 @@ public:
     void setMinimumFeatureSize(int minimumFeautureSize);
     int getMinimumFeatureSize();
     void removeSeed(int seedPos);
+    void crop(Point a, size_t width, size_t height);
 
 protected:
     cv::Mat img;

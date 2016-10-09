@@ -48,6 +48,7 @@ public slots:
     void on_rightCropSpinBox_valueChanged(int newCropRight);
     void on_topCropSpinBox_valueChanged(int newCropTop);
     void on_bottomCropSpinBox_valueChanged(int newCropBottom);
+    void on_cropButton_released();
 
     void on_moreZoomButton_released();
     void on_lessZoomButton_released();
@@ -68,6 +69,7 @@ private:
 
     int currentSliceIndex;
 
+    void updateSlicesUI();
     void openFileDialog();
     void zoomIn();
     void zoomOut();
