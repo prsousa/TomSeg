@@ -387,7 +387,14 @@ void MainWindow::on_alignButton_released()
     int maxDeltaY = ui->referenceAreaMaxDeltaYSpinBox->value();
 
     if( a.x > 0 && a.y > 0 && width > 0 && height > 0 ) {
+
+        QTime myTimer;
+        myTimer.start();
+
         segManager.alignSlices(currentSliceIndex, a, width, height, maxDeltaX, maxDeltaY);
+
+        qDebug() << "Align Time: " << myTimer.elapsed() << " ms";
+
         this->sliceScene->updateSliceDisplayer();
         if( autoFitScreen ) {
             zoomFit();
@@ -432,7 +439,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 void MainWindow::seedCreated( float x, float y, float width, float height )
 {
     switch ( ui->tabWidget->currentIndex() ) {
-    case 0:
+    case 1:
     {
         // Segmentation Tab is selected
         Slice* slice = segManager.getSlice(currentSliceIndex);
@@ -446,7 +453,7 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
 
         break;
     }
-    case 1:
+    case 0:
     {
         // Align Tab is selected
         ui->referenceAreaInitXSpinBox->setValue(x);
