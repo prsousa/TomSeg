@@ -14,6 +14,7 @@ public:
 
     void setSlice( Slice* slice );
     void updateSliceDisplayer();
+    void updateCropDisplayer(size_t left, size_t right, size_t top, size_t bottom);
     void updateSeedsDisplayer();
     void updateResultDisplayer();
     QGraphicsItemGroup* getResultItemGroup();
@@ -38,6 +39,9 @@ private:
 
     QList<QGraphicsItem *> seedsDraw;
     QGraphicsItemGroup * seedsZone;
+
+    QList<QGraphicsItem *> cropDraw;
+    QGraphicsItemGroup * cropZone;
 
     QList<QGraphicsItem *> itemDraw;
     QGraphicsItemGroup * drawZone;

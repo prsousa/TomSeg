@@ -21,11 +21,14 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     seedsZone = createItemGroup(seedsDraw);
     seedsZone->setZValue(2);
 
-    drawZone = createItemGroup(itemDraw);
-    drawZone->setZValue(3);
-
     resultZone = createItemGroup(resultDraw);
-    resultZone->setZValue(4);
+    resultZone->setZValue(3);
+
+    cropZone = createItemGroup(cropDraw);
+    cropZone->setZValue(4);
+
+    drawZone = createItemGroup(itemDraw);
+    drawZone->setZValue(5);
 
     QGraphicsTextItem* placeHolder = new QGraphicsTextItem();
     placeHolder->setHtml("<h3 style='color: #999'><i>Slice Viewer</i></h3>");
@@ -66,6 +69,51 @@ void MyQGraphicsScene::updateSliceDisplayer()
 {
     if( slice ) {
         this->slicePixmapItem->setPixmap( convertSliceImage( slice->getImg() ) );
+    }
+}
+
+void MyQGraphicsScene::updateCropDisplayer(size_t left, size_t right, size_t top, size_t bottom)
+{
+    QList<QGraphicsItem *>::iterator i;
+    for( i = cropDraw.begin(); i != cropDraw.end(); i++) {
+        QGraphicsItem *oldArea = *i;
+        cropZone->removeFromGroup(oldArea);
+        cropDraw.removeOne(oldArea);
+        delete oldArea;
+    }
+
+    if( slice ) {
+        cv::Mat& sliceImg = slice->getImg();
+
+        QBrush brush( QColor(0, 0, 150, 100) );
+        QPen pen( QColor(0, 0, 0, 0) );
+        pen.setWidth(0);
+
+
+        QGraphicsRectItem* leftRect = new QGraphicsRectItem(0, 0, left, sliceImg.rows);
+        QGraphicsRectItem* rightRect = new QGraphicsRectItem(sliceImg.cols - right, 0, right, sliceImg.rows);
+        QGraphicsRectItem* topRect = new QGraphicsRectItem(left, 0, std::max(0, sliceImg.cols - (int) (right + left)), top);
+        QGraphicsRectItem* bottomRect = new QGraphicsRectItem(left, sliceImg.rows - bottom, std::max(0, sliceImg.cols - (int) (right + left)), bottom);
+
+        leftRect->setBrush(brush);
+        rightRect->setBrush(brush);
+        topRect->setBrush(brush);
+        bottomRect->setBrush(brush);
+
+        leftRect->setPen(pen);
+        rightRect->setPen(pen);
+        topRect->setPen(pen);
+        bottomRect->setPen(pen);
+
+        cropDraw.append(leftRect);
+        cropDraw.append(rightRect);
+        cropDraw.append(topRect);
+        cropDraw.append(bottomRect);
+
+        cropZone->addToGroup(leftRect);
+        cropZone->addToGroup(rightRect);
+        cropZone->addToGroup(topRect);
+        cropZone->addToGroup(bottomRect);
     }
 }
 

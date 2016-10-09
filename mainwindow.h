@@ -43,6 +43,12 @@ public slots:
     void on_resetButton_released();
     void on_exportSlicesButton_released();
     void on_alignButton_released();
+
+    void on_leftCropSpinBox_valueChanged(int newCropLeft);
+    void on_rightCropSpinBox_valueChanged(int newCropRight);
+    void on_topCropSpinBox_valueChanged(int newCropTop);
+    void on_bottomCropSpinBox_valueChanged(int newCropBottom);
+
     void on_moreZoomButton_released();
     void on_lessZoomButton_released();
     void on_noZoomButton_released();
@@ -69,6 +75,7 @@ private:
     void zoomFit();
     void updateCurrentZoomInfo();
     void setCurrentSlice(int sliceNumber);
+    void updateCrop();
     void updateSeedsTable();
     QPixmap convertSegmentationResult(cv::Mat labels);
 };

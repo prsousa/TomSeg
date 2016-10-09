@@ -180,7 +180,21 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
     ui->currentSliceSizeLabel->setText( QString::number( image.cols ) + " x " + QString::number( image.rows ) );
     ui->minimumFeatureSizeSpinBox->setValue( slice->getMinimumFeatureSize() );
 
+    ui->leftCropSpinBox->setMaximum( image.cols );
+    ui->rightCropSpinBox->setMaximum( image.cols );
+    ui->topCropSpinBox->setMaximum( image.rows );
+    ui->bottomCropSpinBox->setMaximum( image.rows );
+
     updateSeedsTable();
+}
+
+void MainWindow::updateCrop()
+{
+    size_t left = ui->leftCropSpinBox->value();
+    size_t right = ui->rightCropSpinBox->value();
+    size_t top = ui->topCropSpinBox->value();
+    size_t bottom = ui->bottomCropSpinBox->value();
+    this->sliceScene->updateCropDisplayer(left, right, top, bottom);
 }
 
 void MainWindow::on_addSeedButton_released()
@@ -218,6 +232,18 @@ void MainWindow::openFileDialog()
         autoFitScreen = true;
 
         this->setCurrentSlice(0);
+
+        ui->firstCropSliceSlider->setEnabled(true);
+        ui->lastCropSliceSlider->setEnabled(true);
+        ui->leftCropSpinBox->setEnabled(true);
+        ui->rightCropSpinBox->setEnabled(true);
+        ui->topCropSpinBox->setEnabled(true);
+        ui->bottomCropSpinBox->setEnabled(true);
+
+        size_t numberOfSlices = segManager.size();
+        ui->lastCropSliceSlider->setMaximum( numberOfSlices );
+        ui->firstCropSliceSlider->setMaximum( numberOfSlices );
+        ui->lastCropSliceSlider->setValue( numberOfSlices );
     }
 }
 
@@ -402,6 +428,26 @@ void MainWindow::on_alignButton_released()
     }
 }
 
+void MainWindow::on_leftCropSpinBox_valueChanged(int newCropLeft)
+{
+    this->updateCrop();
+}
+
+void MainWindow::on_rightCropSpinBox_valueChanged(int newCropRight)
+{
+    this->updateCrop();
+}
+
+void MainWindow::on_topCropSpinBox_valueChanged(int newCropTop)
+{
+    this->updateCrop();
+}
+
+void MainWindow::on_bottomCropSpinBox_valueChanged(int newCropBottom)
+{
+    this->updateCrop();
+}
+
 void MainWindow::on_moreZoomButton_released()
 {
     zoomIn();
@@ -438,11 +484,14 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::seedCreated( float x, float y, float width, float height )
 {
+    if( segManager.isEmpty() ) return;
+
+    Slice* slice = segManager.getSlice(currentSliceIndex);
+
     switch ( ui->tabWidget->currentIndex() ) {
-    case 1:
+    case 2:
     {
         // Segmentation Tab is selected
-        Slice* slice = segManager.getSlice(currentSliceIndex);
         std::vector<Seed>& seeds = slice->getSeeds();
 
         Seed newSeed( slice->getImg(), seeds.size(), Point(x, y), Point(x + width, y + height) );
@@ -450,6 +499,17 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
 
         sliceScene->updateSeedsDisplayer();
         updateSeedsTable();
+
+        break;
+    }
+    case 1:
+    {
+        cv::Mat& sliceImg = slice->getImg();
+
+        ui->leftCropSpinBox->setValue( x );
+        ui->rightCropSpinBox->setValue( sliceImg.cols - x - width );
+        ui->topCropSpinBox->setValue( y );
+        ui->bottomCropSpinBox->setValue( sliceImg.rows - y - height );
 
         break;
     }
