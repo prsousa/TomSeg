@@ -14,6 +14,7 @@ public:
 
     void setSlice( Slice* slice );
     void updateSliceDisplayer();
+    void updateAlignDisplayer(size_t left, size_t right, size_t top, size_t bottom);
     void updateCropDisplayer(size_t left, size_t right, size_t top, size_t bottom);
     void updateSeedsDisplayer();
     void updateResultDisplayer();
@@ -21,6 +22,8 @@ public:
     QGraphicsPixmapItem* getSlicePixmapItem();
     void setROIVisibility( bool visible );
     void setGridVisibility( bool visible );
+    void setResultVisibility( bool visible );
+    void setReferenceAreaVisibility( bool visible );
 
 public slots:
     void mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent );
@@ -34,6 +37,7 @@ private:
     QPointF lastPoint;
     bool gridVisible;
     QGraphicsPixmapItem* slicePixmapItem;
+    QGraphicsRectItem* referenceAreaItem;
 
     QList<QGraphicsItem *> resultDraw;
     QGraphicsItemGroup * resultZone;

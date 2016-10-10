@@ -322,7 +322,7 @@ border:-5px;</string>
         <item>
          <widget class="QTabWidget" name="toolsTab">
           <property name="currentIndex">
-           <number>3</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="alignTab">
            <attribute name="title">

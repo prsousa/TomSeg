@@ -18,6 +18,14 @@ MyQGraphicsScene::MyQGraphicsScene(QObject *parent) :
     slicePixmapItem->setZValue(1);
     this->addItem(slicePixmapItem);
 
+    referenceAreaItem = new QGraphicsRectItem();
+    QPen referencePen( QColor(0, 100, 200), 2 );
+    referencePen.setCosmetic( true );
+    referenceAreaItem->setPen( referencePen );
+    referenceAreaItem->setVisible( false );
+    referenceAreaItem->setZValue(2);
+    this->addItem(referenceAreaItem);
+
     seedsZone = createItemGroup(seedsDraw);
     seedsZone->setZValue(2);
 
@@ -71,6 +79,12 @@ void MyQGraphicsScene::updateSliceDisplayer()
         this->slicePixmapItem->setPixmap( convertSliceImage( slice->getImg() ) );
         this->setSceneRect( this->slicePixmapItem->boundingRect() );
     }
+}
+
+void MyQGraphicsScene::updateAlignDisplayer(size_t left, size_t right, size_t top, size_t bottom)
+{
+    this->referenceAreaItem->setRect( QRect(left, right, top, bottom) );
+    this->referenceAreaItem->update();
 }
 
 void MyQGraphicsScene::updateCropDisplayer(size_t left, size_t right, size_t top, size_t bottom)
@@ -210,6 +224,16 @@ QGraphicsPixmapItem *MyQGraphicsScene::setResultPixmap(QPixmap result)
 void MyQGraphicsScene::setGridVisibility(bool visible)
 {
     this->gridVisible = visible;
+}
+
+void MyQGraphicsScene::setResultVisibility(bool visible)
+{
+    this->resultZone->setVisible(visible);
+}
+
+void MyQGraphicsScene::setReferenceAreaVisibility(bool visible)
+{
+    referenceAreaItem->setVisible( visible );
 }
 
 QGraphicsItemGroup *MyQGraphicsScene::getResultItemGroup()

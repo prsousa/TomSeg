@@ -534,7 +534,9 @@ void MainWindow::on_exportAllSlicesCheckBox_toggled(bool exportAllSlices)
 
 void MainWindow::on_toolsTab_currentChanged(int newTabIndex)
 {
+    sliceScene->setReferenceAreaVisibility( newTabIndex == 0 );
     sliceScene->setROIVisibility( newTabIndex == 1 );
+    sliceScene->setResultVisibility( newTabIndex >= 2 );
 }
 
 void MainWindow::on_moreZoomButton_released()
@@ -624,6 +626,9 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
         ui->referenceAreaInitYSpinBox->setValue(y);
         ui->referenceAreaWidthSpinBox->setValue(width);
         ui->referenceAreaHeightSpinBox->setValue(height);
+
+        sliceScene->updateAlignDisplayer(x, y, width, height);
+
         break;
     }
     default:
