@@ -220,13 +220,6 @@ void MainWindow::resetCrop()
 {
     size_t numberOfSlices = segManager.size();
 
-    ui->firstCropSliceSlider->setEnabled(true);
-    ui->lastCropSliceSlider->setEnabled(true);
-    ui->leftCropSpinBox->setEnabled(true);
-    ui->rightCropSpinBox->setEnabled(true);
-    ui->topCropSpinBox->setEnabled(true);
-    ui->bottomCropSpinBox->setEnabled(true);
-
     ui->lastCropSliceSlider->setMaximum( numberOfSlices );
     ui->firstCropSliceSlider->setMaximum( numberOfSlices );
     ui->firstCropSliceSlider->setValue( 1 );
@@ -542,6 +535,16 @@ void MainWindow::on_topCropSpinBox_valueChanged(int newCropTop)
 void MainWindow::on_bottomCropSpinBox_valueChanged(int newCropBottom)
 {
     this->updateCrop();
+}
+
+void MainWindow::on_setCurrentIndexAsFirstCutSliceButton_released()
+{
+    ui->firstCropSliceSlider->setValue( currentSliceIndex + 1 );
+}
+
+void MainWindow::on_setCurrentIndexAsLastCutSliceButton_released()
+{
+    ui->lastCropSliceSlider->setValue( currentSliceIndex + 1 );
 }
 
 void MainWindow::on_resetROIButton_released()
