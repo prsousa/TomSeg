@@ -65,13 +65,33 @@ void SegmentationManager::cropSlices(size_t firstSlice, size_t lastSlice, Point 
 
 void SegmentationManager::exportResult(string path)
 {
-    Exporter exporter(this->slices.begin(), this->slices.end());
+    this->exportResult(path, 1, this->size());
+}
+
+void SegmentationManager::exportResult(string path, size_t firstSlice, size_t lastSlice)
+{
+    if (lastSlice < firstSlice ) return;
+
+    size_t startOffset = std::min( firstSlice - 1,  this->slices.size() - 1 );
+    size_t endOffset = std::min( lastSlice,  this->slices.size() );
+
+    Exporter exporter( this->slices.begin() + startOffset, this->slices.begin() + endOffset );
     exporter.exportResult(path);
 }
 
 void SegmentationManager::exportSlicesImages(string path)
 {
-    Exporter exporter(this->slices.begin(), this->slices.end());
+    this->exportSlicesImages(path, 1, this->size());
+}
+
+void SegmentationManager::exportSlicesImages(string path, size_t firstSlice, size_t lastSlice)
+{
+    if (lastSlice < firstSlice ) return;
+
+    size_t startOffset = std::min( firstSlice - 1,  this->slices.size() - 1 );
+    size_t endOffset = std::min( lastSlice,  this->slices.size() );
+
+    Exporter exporter( this->slices.begin() + startOffset, this->slices.begin() + endOffset );
     exporter.exportSlicesImages(path);
 }
 

@@ -251,6 +251,12 @@ void MainWindow::updateSlicesUI() {
     ui->sliceSlider->setMaximum( numberOfSlices );
     ui->sliceSlider->setMinimum( 1 );
 
+    ui->firstExportSliceBox->setMinimum( 1 );
+    ui->firstExportSliceBox->setMaximum( numberOfSlices );
+    ui->lastExportSliceBox->setMinimum( 1 );
+    ui->lastExportSliceBox->setMaximum( numberOfSlices );
+    ui->lastExportSliceBox->setValue( numberOfSlices );
+
     ui->sliceTotalLabel->setText( QString::number(numberOfSlices) );
 
     ui->seedsTableWidget->setEnabled(true);
@@ -411,7 +417,15 @@ void MainWindow::on_exportSegmentationButton_released()
                                                 | QFileDialog::DontResolveSymlinks);
 
     if( !dir.isEmpty() ) {
-        segManager.exportResult( dir.toStdString() );
+        bool exportAllSlices = ui->exportAllSlicesCheckBox->isChecked();
+
+        if( exportAllSlices ) {
+            segManager.exportResult( dir.toStdString() );
+        } else {
+            size_t firstSlice = ui->firstExportSliceBox->value();
+            size_t lastSlice = ui->lastExportSliceBox->value();
+            segManager.exportResult( dir.toStdString(), firstSlice, lastSlice );
+        }
     }
 }
 
@@ -432,7 +446,15 @@ void MainWindow::on_exportSlicesButton_released()
                                                 | QFileDialog::DontResolveSymlinks);
 
     if( !dir.isEmpty() ) {
-        segManager.exportSlicesImages( dir.toStdString() );
+        bool exportAllSlices = ui->exportAllSlicesCheckBox->isChecked();
+
+        if( exportAllSlices ) {
+            segManager.exportSlicesImages( dir.toStdString() );
+        } else {
+            size_t firstSlice = ui->firstExportSliceBox->value();
+            size_t lastSlice = ui->lastExportSliceBox->value();
+            segManager.exportSlicesImages( dir.toStdString(), firstSlice, lastSlice );
+        }
     }
 }
 
@@ -504,6 +526,13 @@ void MainWindow::on_cropButton_released()
 
         updateSlicesUI();
     }
+}
+
+void MainWindow::on_exportAllSlicesCheckBox_toggled(bool exportAllSlices)
+{
+    ui->toExportLabel->setEnabled( !exportAllSlices );
+    ui->firstExportSliceBox->setEnabled( !exportAllSlices );
+    ui->lastExportSliceBox->setEnabled( !exportAllSlices );
 }
 
 void MainWindow::on_toolsTab_currentChanged(int newTabIndex)

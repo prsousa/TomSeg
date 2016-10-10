@@ -49,6 +49,7 @@ public slots:
     void on_resetROIButton_released();
     void on_cropButton_released();
 
+    void on_exportAllSlicesCheckBox_toggled(bool exportAllSlices);
     void on_exportSlicesButton_released();
     void on_exportSegmentationButton_released();
 

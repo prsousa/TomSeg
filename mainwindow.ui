@@ -843,14 +843,14 @@ border:-5px;</string>
               <item row="0" column="1">
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <item>
-                 <widget class="QSpinBox" name="spinBox">
+                 <widget class="QSpinBox" name="firstExportSliceBox">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="label_17">
+                 <widget class="QLabel" name="toExportLabel">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -860,7 +860,7 @@ border:-5px;</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QSpinBox" name="spinBox_2">
+                 <widget class="QSpinBox" name="lastExportSliceBox">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -869,7 +869,7 @@ border:-5px;</string>
                </layout>
               </item>
               <item row="0" column="0">
-               <widget class="QCheckBox" name="checkBox">
+               <widget class="QCheckBox" name="exportAllSlicesCheckBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -903,7 +903,7 @@ border:-5px;</string>
             <item>
              <widget class="QPushButton" name="exportSegmentationButton">
               <property name="text">
-               <string>Segmentation Result</string>
+               <string>Result</string>
               </property>
              </widget>
             </item>
