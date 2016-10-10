@@ -322,15 +322,18 @@ border:-5px;</string>
         <item>
          <widget class="QTabWidget" name="toolsTab">
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="alignTab">
            <attribute name="title">
-            <string>Align Slices</string>
+            <string>Align</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
              <layout class="QFormLayout" name="formLayout">
+              <property name="horizontalSpacing">
+               <number>15</number>
+              </property>
               <item row="0" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="text">
@@ -437,13 +440,6 @@ border:-5px;</string>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="exportSlicesButton">
-              <property name="text">
-               <string>Export Slices</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="alignButton">
               <property name="text">
                <string>Align</string>
@@ -461,6 +457,9 @@ border:-5px;</string>
              <layout class="QFormLayout" name="formLayout_2">
               <property name="fieldGrowthPolicy">
                <enum>QFormLayout::ExpandingFieldsGrow</enum>
+              </property>
+              <property name="horizontalSpacing">
+               <number>15</number>
               </property>
               <item row="0" column="0">
                <widget class="QLabel" name="label_11">
@@ -610,6 +609,13 @@ border:-5px;</string>
              <widget class="Line" name="line_4">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="resetROIButton">
+              <property name="text">
+               <string>Reset</string>
               </property>
              </widget>
             </item>
@@ -809,23 +815,95 @@ border:-5px;</string>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="resetButton">
+             <widget class="QPushButton" name="resetSegmentationButton">
               <property name="text">
                <string>Reset</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="exportButton">
+             <widget class="QPushButton" name="goButton">
               <property name="text">
-               <string>Export</string>
+               <string>Segment</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>Export</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QFormLayout" name="formLayout_3">
+              <property name="horizontalSpacing">
+               <number>15</number>
+              </property>
+              <item row="0" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QSpinBox" name="spinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_17">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>to</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBox_2">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>All Slices</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="goButton">
+             <widget class="QPushButton" name="exportSlicesButton">
               <property name="text">
-               <string>Go!</string>
+               <string>Slices</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="exportSegmentationButton">
+              <property name="text">
+               <string>Segmentation Result</string>
               </property>
              </widget>
             </item>

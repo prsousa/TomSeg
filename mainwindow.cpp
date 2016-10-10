@@ -198,27 +198,9 @@ void MainWindow::updateCrop()
     this->sliceScene->updateCropDisplayer(left, right, top, bottom);
 }
 
-void MainWindow::on_addSeedButton_released()
+void MainWindow::resetCrop()
 {
-    this->seedCreated(0, 0, 10, 10);
-}
-
-void MainWindow::updateSlicesUI() {
     size_t numberOfSlices = segManager.size();
-
-    ui->currentSliceNumberSpinner->setMaximum( numberOfSlices );
-    ui->currentSliceNumberSpinner->setMinimum( 1 );
-
-    ui->sliceSlider->setMaximum( numberOfSlices );
-    ui->sliceSlider->setMinimum( 1 );
-
-    ui->sliceTotalLabel->setText( QString::number(numberOfSlices) );
-
-    ui->seedsTableWidget->setEnabled(true);
-    ui->addSeedButton->setEnabled(true);
-    autoFitScreen = true;
-
-    this->setCurrentSlice(0);
 
     ui->firstCropSliceSlider->setEnabled(true);
     ui->lastCropSliceSlider->setEnabled(true);
@@ -251,7 +233,33 @@ void MainWindow::updateSlicesUI() {
     ui->rightCropSpinBox->blockSignals(false);
     ui->topCropSpinBox->blockSignals(false);
     ui->bottomCropSpinBox->blockSignals(false);
+
     updateCrop();
+}
+
+void MainWindow::on_addSeedButton_released()
+{
+    this->seedCreated(0, 0, 10, 10);
+}
+
+void MainWindow::updateSlicesUI() {
+    size_t numberOfSlices = segManager.size();
+
+    ui->currentSliceNumberSpinner->setMaximum( numberOfSlices );
+    ui->currentSliceNumberSpinner->setMinimum( 1 );
+
+    ui->sliceSlider->setMaximum( numberOfSlices );
+    ui->sliceSlider->setMinimum( 1 );
+
+    ui->sliceTotalLabel->setText( QString::number(numberOfSlices) );
+
+    ui->seedsTableWidget->setEnabled(true);
+    ui->addSeedButton->setEnabled(true);
+    autoFitScreen = true;
+
+    this->setCurrentSlice(0);
+
+    resetCrop();
 }
 
 void MainWindow::openFileDialog()
@@ -395,7 +403,7 @@ void MainWindow::on_goButton_released()
     sliceScene->updateResultDisplayer();
 }
 
-void MainWindow::on_exportButton_released()
+void MainWindow::on_exportSegmentationButton_released()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Destination Directory"),
                                                 QDir::homePath(),
@@ -407,7 +415,7 @@ void MainWindow::on_exportButton_released()
     }
 }
 
-void MainWindow::on_resetButton_released()
+void MainWindow::on_resetSegmentationButton_released()
 {
     if( !segManager.isEmpty() ) {
         Slice* slice = segManager.getSlice(currentSliceIndex);
@@ -472,6 +480,11 @@ void MainWindow::on_topCropSpinBox_valueChanged(int newCropTop)
 void MainWindow::on_bottomCropSpinBox_valueChanged(int newCropBottom)
 {
     this->updateCrop();
+}
+
+void MainWindow::on_resetROIButton_released()
+{
+    resetCrop();
 }
 
 void MainWindow::on_cropButton_released()
