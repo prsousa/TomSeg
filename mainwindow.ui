@@ -112,9 +112,15 @@
               <height>20</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Increase Zoom</string>
+            </property>
             <property name="styleSheet">
-             <string notr="true">border-image: url(:/icons/appbar.magnify.add.svg) 0 0 0 0 stretch;
-border:-5px;</string>
+             <string notr="true">QPushButton {
+	border-image: url(:/icons/appbar.magnify.add.svg) 0 0 0 0 stretch;
+	border:-5px;
+}
+</string>
             </property>
             <property name="text">
              <string/>
@@ -135,9 +141,14 @@ border:-5px;</string>
               <height>20</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Decrease Zoom</string>
+            </property>
             <property name="styleSheet">
-             <string notr="true">border-image: url(:/icons/appbar.magnify.minus.svg) 0 0 0 0 stretch;
-border:-5px;</string>
+             <string notr="true">QPushButton {
+	border-image: url(:/icons/appbar.magnify.minus.svg) 0 0 0 0 stretch;
+	border:-5px;
+}</string>
             </property>
             <property name="text">
              <string/>
@@ -158,9 +169,14 @@ border:-5px;</string>
               <height>20</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>100%</string>
+            </property>
             <property name="styleSheet">
-             <string notr="true">border-image: url(:/icons/appbar.magnify.svg) 0 0 0 0 stretch;
-border:-5px;</string>
+             <string notr="true">QPushButton {
+	border-image: url(:/icons/appbar.magnify.svg) 0 0 0 0 stretch;
+	border:-5px;
+}</string>
             </property>
             <property name="text">
              <string/>
@@ -181,8 +197,13 @@ border:-5px;</string>
               <height>20</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Fit Screen</string>
+            </property>
             <property name="styleSheet">
-             <string notr="true">border-image: url(:/icons/appbar.fitscreen.box.svg) 0 0 0 0 stretch;</string>
+             <string notr="true">QPushButton {
+	border-image: url(:/icons/appbar.fitscreen.box.svg) 0 0 0 0 stretch;
+}</string>
             </property>
             <property name="text">
              <string/>
