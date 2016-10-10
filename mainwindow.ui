@@ -182,7 +182,7 @@ border:-5px;</string>
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">border-image: url(:/icons/appbar.fullscreen.box.svg) 0 0 0 0 stretch;</string>
+             <string notr="true">border-image: url(:/icons/appbar.fitscreen.box.svg) 0 0 0 0 stretch;</string>
             </property>
             <property name="text">
              <string/>
