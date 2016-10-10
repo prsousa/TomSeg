@@ -63,6 +63,13 @@ void SegmentationManager::cropSlices(size_t firstSlice, size_t lastSlice, Point 
     }
 }
 
+void SegmentationManager::resetResults()
+{
+    for( Slice& slice : slices ) {
+        slice.resetSegmentationResult();
+    }
+}
+
 void SegmentationManager::exportResult(string path)
 {
     this->exportResult(path, 1, this->size());

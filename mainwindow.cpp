@@ -431,11 +431,8 @@ void MainWindow::on_exportSegmentationButton_released()
 
 void MainWindow::on_resetSegmentationButton_released()
 {
-    if( !segManager.isEmpty() ) {
-        Slice* slice = segManager.getSlice(currentSliceIndex);
-        slice->resetSegmentationResult();
-        sliceScene->updateResultDisplayer();
-    }
+    segManager.resetResults();
+    sliceScene->updateResultDisplayer();
 }
 
 void MainWindow::on_exportSlicesButton_released()
