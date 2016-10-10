@@ -44,18 +44,21 @@ void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t 
 
 void SegmentationManager::cropSlices(size_t firstSlice, size_t lastSlice, Point a, size_t width, size_t height)
 {
-    vector<Slice>::iterator begin = slices.begin();
-    vector<Slice>::iterator end = slices.end();
-
     firstSlice--;
     lastSlice--;
 
+    vector<Slice>::iterator cutStrt = slices.begin();
+    vector<Slice>::iterator cutStop = cutStrt + firstSlice;
+
     if( firstSlice > 0 ) {
-        slices.erase(begin, begin + firstSlice);
+        slices.erase(slices.begin(), slices.begin() + firstSlice);
     }
 
-    if( begin + lastSlice < end ) {
-        slices.erase(begin + lastSlice + 1, end);
+    cutStrt = slices.begin() + (lastSlice - firstSlice + 1);
+    cutStop = slices.end();
+
+    if( cutStrt < cutStop ) {
+        slices.erase(cutStrt, cutStop);
     }
 
     for( Slice& slice : slices ) {
