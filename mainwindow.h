@@ -40,6 +40,12 @@ public slots:
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);
     void on_goButton_released();
     void on_resetSegmentationButton_released();
+
+    void on_referenceAreaInitXSpinBox_valueChanged( int newInitX );
+    void on_referenceAreaInitYSpinBox_valueChanged( int newInitY );
+    void on_referenceAreaWidthSpinBox_valueChanged( int newWidth );
+    void on_referenceAreaHeightSpinBox_valueChanged( int newHeight );
+    void on_resetAlignButton_released();
     void on_alignButton_released();
 
     void on_leftCropSpinBox_valueChanged(int newCropLeft);
@@ -82,6 +88,8 @@ private:
     void zoomFit();
     void updateCurrentZoomInfo();
     void setCurrentSlice(int sliceNumber);
+    void updateAlign();
+    void resetAlign();
     void updateCrop();
     void resetCrop();
     void updateSeedsTable();

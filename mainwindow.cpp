@@ -188,6 +188,24 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
     updateSeedsTable();
 }
 
+void MainWindow::updateAlign()
+{
+    size_t x = ui->referenceAreaInitXSpinBox->value();
+    size_t y = ui->referenceAreaInitYSpinBox->value();
+    size_t width = ui->referenceAreaWidthSpinBox->value();
+    size_t height = ui->referenceAreaHeightSpinBox->value();
+
+    sliceScene->updateAlignDisplayer(x, y, width, height);
+}
+
+void MainWindow::resetAlign()
+{
+    ui->referenceAreaInitXSpinBox->setValue( 0 );
+    ui->referenceAreaInitYSpinBox->setValue( 0 );
+    ui->referenceAreaWidthSpinBox->setValue( 0 );
+    ui->referenceAreaHeightSpinBox->setValue( 0 );
+}
+
 void MainWindow::updateCrop()
 {
     qDebug() << "Update Crop";
@@ -435,6 +453,31 @@ void MainWindow::on_resetSegmentationButton_released()
     sliceScene->updateResultDisplayer();
 }
 
+void MainWindow::on_referenceAreaInitXSpinBox_valueChanged(int newInitX)
+{
+    updateAlign();
+}
+
+void MainWindow::on_referenceAreaInitYSpinBox_valueChanged(int newInitY)
+{
+    updateAlign();
+}
+
+void MainWindow::on_referenceAreaWidthSpinBox_valueChanged(int newWidth)
+{
+    updateAlign();
+}
+
+void MainWindow::on_referenceAreaHeightSpinBox_valueChanged(int newHeight)
+{
+    updateAlign();
+}
+
+void MainWindow::on_resetAlignButton_released()
+{
+    resetAlign();
+}
+
 void MainWindow::on_exportSlicesButton_released()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Destination Directory"),
@@ -626,8 +669,6 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
         ui->referenceAreaInitYSpinBox->setValue(y);
         ui->referenceAreaWidthSpinBox->setValue(width);
         ui->referenceAreaHeightSpinBox->setValue(height);
-
-        sliceScene->updateAlignDisplayer(x, y, width, height);
 
         break;
     }

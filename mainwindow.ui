@@ -367,12 +367,18 @@ border:-5px;</string>
                 <property name="maximum">
                  <number>10000</number>
                 </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
                </widget>
               </item>
               <item row="1" column="1">
                <widget class="QSpinBox" name="referenceAreaInitYSpinBox">
                 <property name="maximum">
                  <number>10000</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
                 </property>
                </widget>
               </item>
@@ -381,12 +387,18 @@ border:-5px;</string>
                 <property name="maximum">
                  <number>10000</number>
                 </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
                </widget>
               </item>
               <item row="3" column="1">
                <widget class="QSpinBox" name="referenceAreaHeightSpinBox">
                 <property name="maximum">
                  <number>10000</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
                 </property>
                </widget>
               </item>
@@ -436,6 +448,13 @@ border:-5px;</string>
              <widget class="Line" name="line_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="resetAlignButton">
+              <property name="text">
+               <string>Reset</string>
               </property>
              </widget>
             </item>
