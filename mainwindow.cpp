@@ -547,6 +547,28 @@ void MainWindow::on_setCurrentIndexAsLastCutSliceButton_released()
     ui->lastCropSliceSlider->setValue( currentSliceIndex + 1 );
 }
 
+void MainWindow::on_firstCropSliceSlider_valueChanged(int newFirstSlice)
+{
+    int lastCropSlice = ui->lastCropSliceSlider->value();
+
+    if( newFirstSlice > lastCropSlice ) {
+        ui->firstCropSliceSlider->setValue( lastCropSlice );
+    } else if( ui->firstSliceROICheckBox->isChecked() ) {
+        ui->sliceSlider->setValue( newFirstSlice );
+    }
+}
+
+void MainWindow::on_lastCropSliceSlider_valueChanged(int newLastSlice)
+{
+    int firstCropSlice = ui->firstCropSliceSlider->value();
+
+    if( newLastSlice < firstCropSlice ) {
+        ui->lastCropSliceSlider->setValue( firstCropSlice );
+    } else if( ui->lastSliceROICheckBox->isChecked() ) {
+        ui->sliceSlider->setValue( newLastSlice );
+    }
+}
+
 void MainWindow::on_resetROIButton_released()
 {
     resetCrop();

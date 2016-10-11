@@ -584,13 +584,6 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>First Slice</string>
-                </property>
-               </widget>
-              </item>
               <item row="4" column="1">
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
@@ -636,13 +629,6 @@
                 </item>
                </layout>
               </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>Last Slice</string>
-                </property>
-               </widget>
-              </item>
               <item row="5" column="1">
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
@@ -687,6 +673,20 @@
                  </widget>
                 </item>
                </layout>
+              </item>
+              <item row="4" column="0">
+               <widget class="QCheckBox" name="firstSliceROICheckBox">
+                <property name="text">
+                 <string>First Slice</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QCheckBox" name="lastSliceROICheckBox">
+                <property name="text">
+                 <string>Last Slice</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

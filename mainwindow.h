@@ -54,6 +54,8 @@ public slots:
     void on_bottomCropSpinBox_valueChanged(int newCropBottom);
     void on_setCurrentIndexAsFirstCutSliceButton_released();
     void on_setCurrentIndexAsLastCutSliceButton_released();
+    void on_firstCropSliceSlider_valueChanged( int newFirstSlice );
+    void on_lastCropSliceSlider_valueChanged( int newLastSlice );
     void on_resetROIButton_released();
     void on_cropButton_released();
 
