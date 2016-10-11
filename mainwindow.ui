@@ -608,8 +608,29 @@
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>Set Current as First Slice</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+	border-image: url(:/icons/appbar.layer.arrange.solid.bringforward.svg) 0 0 0 0 stretch;
+	border:-3px;
+}</string>
+                  </property>
                   <property name="text">
-                   <string>Current</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -639,8 +660,29 @@
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>Set Current as Last Slice</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+	border-image: url(:/icons/appbar.layer.arrange.solid.sendbackward.svg) 0 0 0 0 stretch;
+	border:-3px;
+}</string>
+                  </property>
                   <property name="text">
-                   <string>Current</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -926,6 +968,31 @@
                  <bool>true</bool>
                 </property>
                </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Z Proportion</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QSpinBox" name="zProportionSpinBox">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_18">
+                  <property name="text">
+                   <string> : 1</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>

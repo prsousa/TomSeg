@@ -4,5 +4,7 @@
         <file>icons/appbar.magnify.minus.svg</file>
         <file>icons/appbar.magnify.svg</file>
         <file>icons/appbar.fitscreen.box.svg</file>
+        <file>icons/appbar.layer.arrange.solid.bringforward.svg</file>
+        <file>icons/appbar.layer.arrange.solid.sendbackward.svg</file>
     </qresource>
 </RCC>
