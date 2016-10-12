@@ -19,8 +19,6 @@ public:
     void addSeed(const Seed seed);
     int seedsNumber();
     std::vector<Seed> &getSeeds();
-    void setMinimumFeatureSize(int minimumFeautureSize);
-    int getMinimumFeatureSize();
     void removeSeed(int seedPos);
     void crop(Point a, size_t width, size_t height);
 
@@ -29,7 +27,6 @@ protected:
     cv::Mat segmentationResult;
     std::string filename;
     std::vector<Seed> seeds;
-    int minimumFeatureSize;
 };
 
 #endif // SLICE_H

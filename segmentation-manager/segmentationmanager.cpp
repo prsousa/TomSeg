@@ -13,6 +13,7 @@ using namespace std;
 
 SegmentationManager::SegmentationManager()
 {
+    minimumFeatureSize = 15;
     xLen = yLen = zLen = 1.f;
 }
 
@@ -154,7 +155,7 @@ cv::Mat SegmentationManager::segment()
         int lastSliceIndex = slicesWithSeedsIndex[i + 1];
 
         Slice& slice = this->slices[ firstSliceIndex ];
-        ProportionalRegionGrowing segmenter(slice);
+        ProportionalRegionGrowing segmenter(slice, this->minimumFeatureSize);
         res = segmenter.Apply();
         slice.setSegmentationResult(res);
 
@@ -188,4 +189,14 @@ void SegmentationManager::setYLen(float value)
 void SegmentationManager::setZLen(float value)
 {
     zLen = value;
+}
+
+void SegmentationManager::setMinimumFeatureSize(int value)
+{
+    minimumFeatureSize = value;
+}
+
+int SegmentationManager::getMinimumFeatureSize() const
+{
+    return minimumFeatureSize;
 }

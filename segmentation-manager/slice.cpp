@@ -7,7 +7,7 @@ using namespace std;
 
 Slice::Slice()
 {
-    this->minimumFeatureSize = 35;
+
 }
 
 Slice::Slice(string filename) : Slice()
@@ -63,16 +63,6 @@ int Slice::seedsNumber()
 std::vector<Seed> &Slice::getSeeds()
 {
     return this->seeds;
-}
-
-void Slice::setMinimumFeatureSize(int minimumFeautureSize)
-{
-    this->minimumFeatureSize = std::max(minimumFeautureSize, 5);
-}
-
-int Slice::getMinimumFeatureSize()
-{
-    return this->minimumFeatureSize;
 }
 
 void Slice::removeSeed(int seedPos)

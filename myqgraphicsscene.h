@@ -25,6 +25,8 @@ public:
     void setResultVisibility( bool visible );
     void setReferenceAreaVisibility( bool visible );
 
+    void setGridSize(int value);
+
 public slots:
     void mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent );
     void mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent );
@@ -36,6 +38,8 @@ private:
     QPointF firstPoint;
     QPointF lastPoint;
     bool gridVisible;
+    int gridSize;
+
     QGraphicsPixmapItem* slicePixmapItem;
     QGraphicsRectItem* referenceAreaItem;
 

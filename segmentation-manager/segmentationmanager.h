@@ -30,8 +30,12 @@ public:
     void setYLen(float value);
     void setZLen(float value);
 
+    void setMinimumFeatureSize(int value);
+    int getMinimumFeatureSize() const;
+
 private:
     std::vector<Slice> slices;
+    int minimumFeatureSize;
     float xLen;
     float yLen;
     float zLen;

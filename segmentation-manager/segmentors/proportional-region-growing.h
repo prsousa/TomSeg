@@ -26,7 +26,7 @@ private:
 
     bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
 public:
-    ProportionalRegionGrowing(Slice slice);
+    ProportionalRegionGrowing(Slice slice, int minimumFeatureSize = 15);
     ~ProportionalRegionGrowing();
     cv::Mat Apply();
 };

@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     cliapplication.cpp \
     segmentation-manager/differentiators/differentiator.cpp \
     segmentation-manager/preprocessors/aligner.cpp \
-    segmentation-manager/exporter.cpp
+    segmentation-manager/exporter.cpp \
+    segmentation-manager/seedpropagater.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -41,10 +42,16 @@ HEADERS  += mainwindow.h \
     cliapplication.h \
     segmentation-manager/differentiators/differentiator.h \
     segmentation-manager/preprocessors/aligner.h \
-    segmentation-manager/exporter.h
+    segmentation-manager/exporter.h \
+    segmentation-manager/seedpropagater.h
 
 
 FORMS    += mainwindow.ui
+
+# <OPENMP>
+LIBS += /usr/local/lib/libiomp5.dylib
+QMAKE_CXXFLAGS += -fopenmp
+# </OPENMP>
 
 # <OpenCV>
 INCLUDEPATH += /usr/local/include/

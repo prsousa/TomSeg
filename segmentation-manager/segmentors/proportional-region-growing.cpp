@@ -8,10 +8,10 @@ using namespace std;
 
 bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
 
-ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice) {
+ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice, int minimumFeatureSize) {
     this->img = slice.getImg();
     this->seeds = slice.getSeeds();
-    this->minimumFeatureSize = slice.getMinimumFeatureSize();
+    this->minimumFeatureSize = minimumFeatureSize;
 
     vector<Seed> sortedSeeds = seeds;
 

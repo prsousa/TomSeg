@@ -151,10 +151,8 @@ void MainWindow::on_gridVisibleCheckBox_toggled(bool gridVisible)
 
 void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize)
 {
-    if( segManager.isEmpty() ) return;
-
-    Slice* slice = segManager.getSlice(currentSliceIndex);
-    slice->setMinimumFeatureSize(newMinimumFeatureSize);
+    segManager.setMinimumFeatureSize(newMinimumFeatureSize);
+    sliceScene->setGridSize(newMinimumFeatureSize);
 
     if( ui->gridVisibleCheckBox->checkState() == Qt::Checked ) {
         sliceScene->update();
@@ -178,7 +176,6 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
     }
 
     ui->currentSliceSizeLabel->setText( QString::number( image.cols ) + " x " + QString::number( image.rows ) );
-    ui->minimumFeatureSizeSpinBox->setValue( slice->getMinimumFeatureSize() );
 
     ui->leftCropSpinBox->setMaximum( image.cols );
     ui->rightCropSpinBox->setMaximum( image.cols );
@@ -295,6 +292,7 @@ void MainWindow::openFileDialog()
 
         segManager.setSlices( filenamesSegManager );
         updateSlicesUI();
+        ui->minimumFeatureSizeSpinBox->setValue( segManager.getMinimumFeatureSize() );
     }
 }
 

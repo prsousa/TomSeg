@@ -324,7 +324,7 @@ inline qreal round(qreal val, int step) {
 void MyQGraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
 {
     if( slice && gridVisible ) {
-        int step = slice->getMinimumFeatureSize();
+        int step = gridSize;
         QPen pen(QColor(200, 200, 255, 100), 2);
         pen.setCosmetic(true);
         painter->setPen(pen);
@@ -347,6 +347,11 @@ void MyQGraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
             painter->drawLine(x, rect.top(), x, rect.bottom());
         }
     }
+}
+
+void MyQGraphicsScene::setGridSize(int value)
+{
+    gridSize = value;
 }
 
 QGraphicsRectItem *MyQGraphicsScene::drawRectangle(QPointF pointHG, QPointF pointBD)
