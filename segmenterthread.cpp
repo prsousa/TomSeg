@@ -13,5 +13,5 @@ SegmenterThread::SegmenterThread(SegmentationManager *segManager, int sliceIndex
 
 void SegmenterThread::run()
 {
-    segManager->segment( sliceIndex );
+    segManager->segment();
 }

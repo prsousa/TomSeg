@@ -88,17 +88,18 @@ int CliApplication::exec()
         return 0;
     }
 
-
     this->definePhasisSeeds(0);
+
+    segManager.alignSlices(0, Point(176, 1375), 488-176, 1504-1375);
 
     cv::vector<Slice>& slices = segManager.getSlices();
 
     Slice* slice = &slices[0];
 
     std::vector<Seed>& seeds = slice->getSeeds();
-    slice->setMinimumFeatureSize(15);
+    slice->setMinimumFeatureSize(20);
 
-    segManager.apply(0);
+    segManager.segment();
 
 
     for( int i = 0; i < slices.size(); i++ ) {

@@ -413,7 +413,7 @@ void MainWindow::on_goButton_released()
     QTime myTimer;
     myTimer.start();
 
-    segManager.segment(currentSliceIndex);
+    segManager.segment();
 
     qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 

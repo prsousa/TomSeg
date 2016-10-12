@@ -16,6 +16,7 @@ public:
     cv::Mat& getSegmentationResult();
     std::string getFilename();
     void setSeeds(const std::vector<Seed> &seeds );
+    int seedsNumber();
     std::vector<Seed> &getSeeds();
     void setMinimumFeatureSize(int minimumFeautureSize);
     int getMinimumFeatureSize();

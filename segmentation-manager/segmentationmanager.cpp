@@ -115,27 +115,39 @@ Slice* SegmentationManager::getSlice(size_t sliceNumber)
     return &(this->slices[sliceNumber]);
 }
 
-void applyDifferences(vector<Slice>& slices)
+void applyDifferences(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice)
 {
-    Differentiator dif(slices.begin(), slices.end());
+    Differentiator dif(firstSlice, lastSlice);
     dif.apply();
 }
 
-cv::Mat SegmentationManager::segment(size_t sliceNumber)
+cv::Mat SegmentationManager::segment()
 {
     cv::Mat res;
+    std::vector<int> slicesWithSeedsIndex;
+    {
+        int i = 0;
+        for( Slice& slice : this->slices ) {
+            if( slice.seedsNumber() >= 2 ) {
+                slicesWithSeedsIndex.push_back(i);
+            }
+            i++;
+        }
+    }
 
-    if( sliceNumber < this->slices.size() ) {
-        Slice& slice = this->slices[sliceNumber];
+    slicesWithSeedsIndex.push_back( this->slices.size() ); // "hack" to make intervals work
 
-        Segmenter* segmenter = new ProportionalRegionGrowing(slice);
-        res = segmenter->Apply();
+    for( int i = 0; i < slicesWithSeedsIndex.size() - 1; i++ ) {
+        int firstSliceIndex = slicesWithSeedsIndex[i];
+        int lastSliceIndex = slicesWithSeedsIndex[i + 1];
 
+        Slice& slice = this->slices[ firstSliceIndex ];
+        ProportionalRegionGrowing segmenter(slice);
+        res = segmenter.Apply();
         slice.setSegmentationResult(res);
 
-        delete segmenter;
+        applyDifferences(this->slices.begin() + firstSliceIndex, this->slices.begin() + lastSliceIndex);
 
-        applyDifferences(this->slices);
     }
 
     return res;
