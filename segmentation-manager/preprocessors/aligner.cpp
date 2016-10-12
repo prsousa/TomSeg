@@ -30,19 +30,36 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
     cv::Rect roi(a.x, a.y, width, height);
     const cv::Mat templ = masterImg(roi);
 
-    std::vector<Point> deltas(lastSlice - firstSlice);
+    int numSlices = lastSlice - firstSlice;
+
+    std::vector<Point> deltas(numSlices);
     int cutLeft = 0;
     int cutRight = 0;
     int cutUp = 0;
     int cutDown = 0;
 
     std::vector<Slice>::iterator it;
-    for( int i = 0; firstSlice + i != lastSlice; i++) {
+
+
+
+    #pragma omp parallel for shared(templ) // num_threads(8)
+    for( int i = 0; i < numSlices; i++ ) {
         Slice& slice = *(i + firstSlice);
-        cv::Mat& sliceImg = slice.getImg();
+        cv::Mat sliceImg = slice.getImg();
+
+        int initROIX = std::max( 0, a.x - this->maxDeltaX );
+        int initROIY = std::max( 0, a.y - this->maxDeltaY );
+        int finalROIX = std::min( sliceImg.cols, a.x + (int) width + this->maxDeltaX );
+        int finalROIY = std::min( sliceImg.rows, a.y + (int) height + this->maxDeltaY );
+
+        int localTemplX = std::min( this->maxDeltaX, a.x );
+        int localTemplY = std::min( this->maxDeltaY, a.y );
+
+        cv::Rect searchAreaROI( initROIX, initROIY, finalROIX - initROIX, finalROIY - initROIY );
+        cv::Mat searchArea = sliceImg( searchAreaROI );
         cv::Mat matchResult;
 
-        cv::matchTemplate( sliceImg, templ, matchResult, cv::TM_CCOEFF_NORMED );
+        cv::matchTemplate( searchArea, templ, matchResult, cv::TM_CCOEFF_NORMED );
         cv::normalize( matchResult, matchResult, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
 
         double minVal; double maxVal; cv::Point minLoc; cv::Point maxLoc;
@@ -50,30 +67,29 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
         cv::minMaxLoc( matchResult, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
         matchLoc = maxLoc;
 
-        int deltaX = std::min( abs(a.x - matchLoc.x), this->maxDeltaX );
-        int deltaY = std::min( abs(a.y - matchLoc.y), this->maxDeltaY );
-        if(a.x < matchLoc.x ) deltaX *= -1;
-        if(a.y < matchLoc.y ) deltaY *= -1;
+        int deltaX = localTemplX - matchLoc.x;
+        int deltaY = localTemplY - matchLoc.y;
 
         deltas[i] = Point(deltaX, deltaY);
 
         if( deltaX > 0 && deltaX > cutLeft ) {
             cutLeft = deltaX;
         }
-        if( deltaX < 0 && abs(deltaX) > cutRight ) {
-            cutRight = abs(deltaX);
+        if( deltaX < 0 && std::abs(deltaX) > cutRight ) {
+            cutRight = std::abs(deltaX);
         }
         if( deltaY > 0 && deltaY > cutUp ) {
             cutUp = deltaY;
         }
-        if( deltaY < 0 && abs(deltaY) > cutDown ) {
-            cutUp = abs(deltaY);
+        if( deltaY < 0 && std::abs(deltaY) > cutDown ) {
+            cutUp = std::abs(deltaY);
         }
 
-        qDebug() << "x: " << deltas[i].x << "\ty: "<< deltas[i].y;
+        // qDebug() << "x: " << deltas[i].x << "\ty: "<< deltas[i].y;
     }
 
-    for( size_t i = 0; i < deltas.size(); i++ ) {
+    #pragma omp parallel for // num_threads(8)
+    for( size_t i = 0; i < numSlices; i++ ) {
         Point delta = deltas[i];
         Slice& slice = *(i + firstSlice);
         cv::Mat& sliceImg = slice.getImg();
