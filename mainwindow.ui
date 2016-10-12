@@ -473,7 +473,7 @@
               <item row="4" column="0">
                <widget class="QLabel" name="label_9">
                 <property name="text">
-                 <string>Max. Delta X</string>
+                 <string>Max. X Displacement</string>
                 </property>
                </widget>
               </item>
@@ -504,7 +504,7 @@
               <item row="5" column="0">
                <widget class="QLabel" name="label_10">
                 <property name="text">
-                 <string>Max. Delta Y</string>
+                 <string>Max. Y Displacement</string>
                 </property>
                </widget>
               </item>
@@ -1101,7 +1101,7 @@
                 <item>
                  <widget class="QLabel" name="label_18">
                   <property name="text">
-                   <string>nn</string>
+                   <string>nm</string>
                   </property>
                  </widget>
                 </item>
@@ -1129,7 +1129,7 @@
                 <item>
                  <widget class="QLabel" name="label_16">
                   <property name="text">
-                   <string>nn</string>
+                   <string>nm</string>
                   </property>
                  </widget>
                 </item>
@@ -1157,7 +1157,7 @@
                 <item>
                  <widget class="QLabel" name="label_20">
                   <property name="text">
-                   <string>nn</string>
+                   <string>nm</string>
                   </property>
                  </widget>
                 </item>
