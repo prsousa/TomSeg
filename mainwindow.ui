@@ -1017,6 +1017,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="propagateSeedsButton">
+              <property name="text">
+               <string>Propagate Seeds</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="goButton">
               <property name="text">
                <string>Segment</string>

@@ -50,6 +50,11 @@ void Slice::setSeeds(const std::vector<Seed>& seeds)
     }
 }
 
+void Slice::addSeed(const Seed seed)
+{
+    this->seeds.push_back(seed);
+}
+
 int Slice::seedsNumber()
 {
     return this->seeds.size();

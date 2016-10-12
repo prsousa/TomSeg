@@ -5,6 +5,7 @@
 #include "differentiators/differentiator.h"
 #include "preprocessors/aligner.h"
 #include "exporter.h"
+#include "seedpropagater.h"
 
 #include <QDebug>
 
@@ -113,6 +114,17 @@ std::vector<Slice> &SegmentationManager::getSlices()
 Slice* SegmentationManager::getSlice(size_t sliceNumber)
 {
     return &(this->slices[sliceNumber]);
+}
+
+void SegmentationManager::propagateSeeds(size_t sliceNumber)
+{
+    if( sliceNumber < this->slices.size() ) {
+        Slice& masterSlice = this->slices[sliceNumber];
+        if( masterSlice.seedsNumber() >= 2 ) {
+            SeedPropagater seedPropagater( this->slices.begin() + sliceNumber + 1, this->slices.end() );
+            seedPropagater.propagate( masterSlice.getSeeds() );
+        }
+    }
 }
 
 void applyDifferences(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice)

@@ -38,6 +38,8 @@ public slots:
     void on_firstSliceButton_released();
     void on_sliceSlider_valueChanged(int newSliceNumber);
     void on_currentSliceNumberSpinner_valueChanged(int newSliceNumber);
+
+    void on_propagateSeedsButton_released();
     void on_goButton_released();
     void on_resetSegmentationButton_released();
 

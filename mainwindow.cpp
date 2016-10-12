@@ -394,6 +394,11 @@ void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
     }
 }
 
+void MainWindow::on_propagateSeedsButton_released()
+{
+    segManager.propagateSeeds(currentSliceIndex);
+}
+
 void MainWindow::on_goButton_released()
 {
     QMessageBox messageBox;
