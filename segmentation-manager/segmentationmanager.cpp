@@ -121,7 +121,7 @@ void applyDifferences(vector<Slice>& slices)
     dif.apply();
 }
 
-cv::Mat SegmentationManager::apply(size_t sliceNumber)
+cv::Mat SegmentationManager::segment(size_t sliceNumber)
 {
     cv::Mat res;
 
