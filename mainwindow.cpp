@@ -511,6 +511,7 @@ void MainWindow::on_alignButton_released()
         myTimer.start();
 
         segManager.alignSlices(currentSliceIndex, a, width, height, maxDeltaX, maxDeltaY);
+        resetAlign();
 
         qDebug() << "Align Time: " << myTimer.elapsed() << " ms";
 
