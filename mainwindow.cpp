@@ -430,6 +430,10 @@ void MainWindow::on_exportSegmentationButton_released()
     if( !dir.isEmpty() ) {
         bool exportAllSlices = ui->exportAllSlicesCheckBox->isChecked();
 
+        segManager.setXLen( ui->xLenSpinBox->value() );
+        segManager.setYLen( ui->yLenSpinBox->value() );
+        segManager.setZLen( ui->zLenSpinBox->value() );
+
         if( exportAllSlices ) {
             segManager.exportResult( dir.toStdString() );
         } else {

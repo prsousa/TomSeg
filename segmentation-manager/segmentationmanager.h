@@ -25,8 +25,15 @@ public:
     bool isEmpty();
     size_t size();
 
+    void setXLen(float value);
+    void setYLen(float value);
+    void setZLen(float value);
+
 private:
     std::vector<Slice> slices;
+    float xLen;
+    float yLen;
+    float zLen;
 };
 
 #endif // SEGMENTATIONMANAGER_H

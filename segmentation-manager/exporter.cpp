@@ -17,7 +17,7 @@ Exporter::Exporter(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::
     this->lastSlice = lastSlice;
 }
 
-void Exporter::exportResult(std::string path)
+void Exporter::exportResult(std::string path, float xLen, float yLen, float zLen)
 {
     size_t phaseNum = 0;
     size_t size = lastSlice - firstSlice;
@@ -36,10 +36,13 @@ void Exporter::exportResult(std::string path)
     int mode = 0;
     int nxstart, nystart, nzstart;
     nxstart = nystart = nzstart = 0;
-    int mx, my, mz;
-    mx = my = mz = 0;
-    int xlen, ylen, zlen;
-    xlen = ylen = zlen = 1;
+    int mx = 1;
+    int my = 1;
+    int mz = 1;
+
+    float xlen = xLen;
+    float ylen = yLen;
+    float zlen = zLen;
 
     for( size_t i = 0; i < phaseNum; i++ ) {
         files[i].open( path + "/" + std::to_string(i) + ".mrc", std::ios::binary);
@@ -54,9 +57,9 @@ void Exporter::exportResult(std::string path)
         files[i].write(reinterpret_cast<const char *>(&mx), sizeof(int));
         files[i].write(reinterpret_cast<const char *>(&my), sizeof(int));
         files[i].write(reinterpret_cast<const char *>(&mz), sizeof(int));
-        files[i].write(reinterpret_cast<const char *>(&xlen), sizeof(int));
-        files[i].write(reinterpret_cast<const char *>(&ylen), sizeof(int));
-        files[i].write(reinterpret_cast<const char *>(&zlen), sizeof(int));
+        files[i].write(reinterpret_cast<const char *>(&xlen), sizeof(float));
+        files[i].write(reinterpret_cast<const char *>(&ylen), sizeof(float));
+        files[i].write(reinterpret_cast<const char *>(&zlen), sizeof(float));
 
         files[i].seekp (1024, std::ios::beg);
     }

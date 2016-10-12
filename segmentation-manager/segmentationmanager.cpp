@@ -12,7 +12,7 @@ using namespace std;
 
 SegmentationManager::SegmentationManager()
 {
-
+    xLen = yLen = zLen = 1.f;
 }
 
 void SegmentationManager::setSlices(vector<string> &filenames)
@@ -86,7 +86,7 @@ void SegmentationManager::exportResult(string path, size_t firstSlice, size_t la
     size_t endOffset = std::min( lastSlice,  this->slices.size() );
 
     Exporter exporter( this->slices.begin() + startOffset, this->slices.begin() + endOffset );
-    exporter.exportResult(path);
+    exporter.exportResult(path, this->xLen, this->yLen, this->zLen);
 }
 
 void SegmentationManager::exportSlicesImages(string path)
@@ -149,4 +149,19 @@ bool SegmentationManager::isEmpty()
 size_t SegmentationManager::size()
 {
     return slices.size();
+}
+
+void SegmentationManager::setXLen(float value)
+{
+    xLen = value;
+}
+
+void SegmentationManager::setYLen(float value)
+{
+    yLen = value;
+}
+
+void SegmentationManager::setZLen(float value)
+{
+    zLen = value;
 }
