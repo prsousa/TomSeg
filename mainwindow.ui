@@ -557,7 +557,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab">
+          <widget class="QWidget" name="roiTab">
            <attribute name="title">
             <string>3D ROI</string>
            </attribute>
@@ -823,7 +823,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="segmentationTab">
+          <widget class="QWidget" name="segTab">
            <attribute name="title">
             <string>Segmentation</string>
            </attribute>
@@ -1025,18 +1025,24 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_2">
+          <widget class="QWidget" name="exportTab">
            <attribute name="title">
             <string>Export</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <layout class="QFormLayout" name="formLayout_3">
+             <layout class="QFormLayout" name="formLayout_8">
               <property name="horizontalSpacing">
                <number>15</number>
               </property>
-              <item row="0" column="1">
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <property name="bottomMargin">
+               <number>10</number>
+              </property>
+              <item row="1" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="QSpinBox" name="firstExportSliceBox">
                   <property name="enabled">
@@ -1048,6 +1054,12 @@
                  <widget class="QLabel" name="toExportLabel">
                   <property name="enabled">
                    <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
                   <property name="text">
                    <string>to</string>
@@ -1063,10 +1075,10 @@
                 </item>
                </layout>
               </item>
-              <item row="0" column="0">
+              <item row="1" column="0">
                <widget class="QCheckBox" name="exportAllSlicesCheckBox">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -1079,91 +1091,116 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_17">
-                <property name="text">
-                 <string>Z Len</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <widget class="QDoubleSpinBox" name="zLenSpinBox">
-                  <property name="minimum">
-                   <double>1.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9999.989999999999782</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_18">
-                  <property name="text">
-                   <string>nm</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>X Len</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <item>
-                 <widget class="QDoubleSpinBox" name="xLenSpinBox">
-                  <property name="minimum">
-                   <double>1.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9999.989999999999782</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_16">
-                  <property name="text">
-                   <string>nm</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_19">
-                <property name="text">
-                 <string>Y Len</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <layout class="QHBoxLayout" name="horizontalLayout_8">
-                <item>
-                 <widget class="QDoubleSpinBox" name="yLenSpinBox">
-                  <property name="minimum">
-                   <double>1.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9999.989999999999782</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_20">
-                  <property name="text">
-                   <string>nm</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="title">
+               <string>Pixel Spacing</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_5">
+               <property name="horizontalSpacing">
+                <number>15</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>X Len</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QDoubleSpinBox" name="xLenSpinBox">
+                   <property name="minimum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>9999.989999999999782</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_16">
+                   <property name="text">
+                    <string>nm</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Y Len</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QDoubleSpinBox" name="yLenSpinBox">
+                   <property name="minimum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>9999.989999999999782</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_20">
+                   <property name="text">
+                    <string>nm</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Z Len</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QDoubleSpinBox" name="zLenSpinBox">
+                   <property name="minimum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>9999.989999999999782</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_18">
+                   <property name="text">
+                    <string>nm</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
              <widget class="Line" name="line_5">
