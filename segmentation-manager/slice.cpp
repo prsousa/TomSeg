@@ -74,4 +74,9 @@ void Slice::crop(Point a, size_t width, size_t height)
 {
     cv::Rect roi(a.x, a.y, width, height);
     img = img(roi);
+
+    // if already segmented
+    if( !segmentationResult.empty() ) {
+        segmentationResult = segmentationResult(roi);
+    }
 }
