@@ -39,9 +39,6 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
     int cutDown = 0;
 
     std::vector<Slice>::iterator it;
-
-
-
     #pragma omp parallel for shared(templ) // num_threads(8)
     for( int i = 0; i < numSlices; i++ ) {
         Slice& slice = *(i + firstSlice);
@@ -82,7 +79,7 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
             cutUp = deltaY;
         }
         if( deltaY < 0 && std::abs(deltaY) > cutDown ) {
-            cutUp = std::abs(deltaY);
+            cutDown = std::abs(deltaY);
         }
 
         // qDebug() << "x: " << deltas[i].x << "\ty: "<< deltas[i].y;
