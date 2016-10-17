@@ -12,6 +12,7 @@ public:
     SegmentationManager();
     void setSlices(std::vector<std::string>& filenames);
     void setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds);
+    void alignSlices();
     void alignSlices(size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX = INT_MAX, int maxDeltaY = INT_MAX);
     void cropSlices(size_t firstSlice, size_t lastSlice, Point a, size_t width, size_t height );
     void resetResults();

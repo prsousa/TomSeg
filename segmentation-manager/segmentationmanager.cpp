@@ -34,6 +34,12 @@ void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Se
     slice.setSeeds( seeds );
 }
 
+void SegmentationManager::alignSlices()
+{
+    Aligner aligner(this->slices.begin(), this->slices.end());
+    aligner.apply();
+}
+
 void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX, int maxDeltaY )
 {
     if( masterSliceNumber < this->slices.size() ) {
@@ -128,12 +134,6 @@ void SegmentationManager::propagateSeeds(size_t sliceNumber)
     }
 }
 
-void applyDifferences(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice)
-{
-    Differentiator dif(firstSlice, lastSlice);
-    dif.apply();
-}
-
 cv::Mat SegmentationManager::segment()
 {
     cv::Mat res;
@@ -159,8 +159,9 @@ cv::Mat SegmentationManager::segment()
         res = segmenter.Apply();
         slice.setSegmentationResult(res);
 
-        applyDifferences(this->slices.begin() + firstSliceIndex, this->slices.begin() + lastSliceIndex);
-
+        // Apply differences to slices in between
+        Differentiator dif(this->slices.begin() + firstSliceIndex, this->slices.begin() + lastSliceIndex);
+        dif.apply();
     }
 
     return res;

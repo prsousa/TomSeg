@@ -19,6 +19,50 @@ Aligner::Aligner(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::it
     this->maxDeltaY = maxDeltaY;
 }
 
+void Aligner::apply()
+{
+    int numSlices = lastSlice - firstSlice;
+    std::vector<Point> deltas(numSlices);
+
+
+    deltas[0] = Point(0, 0);
+
+    for( int i = 1; i < numSlices; i++ ) {
+        Slice& prevSlice = *(i - 1 + firstSlice);
+        Slice& slice = *(i + firstSlice);
+        cv::Mat sliceImg = slice.getImg();
+
+        this->maxDeltaX = 5;
+        this->maxDeltaY = 10;
+
+        int initROIX = this->maxDeltaX;
+        int initROIY = this->maxDeltaY;
+        int finalROIX = sliceImg.cols - 2*this->maxDeltaX;
+        int finalROIY = sliceImg.rows - 2*this->maxDeltaY;
+
+        cv::Rect searchAreaROI( initROIX, initROIY, finalROIX - initROIX, finalROIY - initROIY );
+        cv::Mat templ = sliceImg( searchAreaROI );
+
+        cv::Mat matchResult;
+        cv::matchTemplate( prevSlice.getImg(), templ, matchResult, cv::TM_CCOEFF_NORMED );
+        cv::normalize( matchResult, matchResult, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
+
+        double minVal; double maxVal; cv::Point minLoc; cv::Point maxLoc;
+        cv::Point matchLoc;
+        cv::minMaxLoc( matchResult, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
+        matchLoc = maxLoc;
+
+        deltas[i] = Point( matchLoc.x -  this->maxDeltaX, matchLoc.y - this->maxDeltaY );
+    }
+
+    for( int i = 1; i < numSlices; i++ ) {
+        deltas[i].x += deltas[i-1].x;
+        deltas[i].y += deltas[i-1].y;
+    }
+
+    applyDeltas( deltas );
+}
+
 cv::Mat translateImg(cv::Mat &img, int offsetx, int offsety){
     cv::Mat trans_mat = (cv::Mat_<double>(2,3) << 1, 0, offsetx, 0, 1, offsety);
     cv::warpAffine(img,img,trans_mat,img.size());
@@ -33,10 +77,6 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
     int numSlices = lastSlice - firstSlice;
 
     std::vector<Point> deltas(numSlices);
-    int cutLeft = 0;
-    int cutRight = 0;
-    int cutUp = 0;
-    int cutDown = 0;
 
     std::vector<Slice>::iterator it;
     #pragma omp parallel for shared(templ) // num_threads(8)
@@ -68,6 +108,23 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
         int deltaY = localTemplY - matchLoc.y;
 
         deltas[i] = Point(deltaX, deltaY);
+    }
+
+    applyDeltas( deltas );
+}
+
+void Aligner::applyDeltas(std::vector<Point> deltas)
+{
+    int numSlices = lastSlice - firstSlice;
+
+    int cutLeft = 0;
+    int cutRight = 0;
+    int cutUp = 0;
+    int cutDown = 0;
+
+    for( int i = 0; i < numSlices; i++ ) {
+        int deltaX = deltas[i].x;
+        int deltaY = deltas[i].y;
 
         if( deltaX > 0 && deltaX > cutLeft ) {
             cutLeft = deltaX;
@@ -82,7 +139,7 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
             cutDown = std::abs(deltaY);
         }
 
-        // qDebug() << "x: " << deltas[i].x << "\ty: "<< deltas[i].y;
+        qDebug() << "x: " <<deltaX << "\ty: "<< deltaY;
     }
 
     #pragma omp parallel for // num_threads(8)
@@ -90,15 +147,14 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
         Point delta = deltas[i];
         Slice& slice = *(i + firstSlice);
         cv::Mat& sliceImg = slice.getImg();
-//        std::string name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/original/" + std::to_string(i) + ".jpg";
-//        cv::imwrite(name, sliceImg);
+    //        std::string name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/original/" + std::to_string(i) + ".jpg";
+    //        cv::imwrite(name, sliceImg);
 
 
         translateImg(sliceImg, delta.x, delta.y);
         cv::Rect cut(cutLeft, cutUp, sliceImg.cols - cutLeft - cutRight, sliceImg.rows - cutUp - cutDown);
         sliceImg = sliceImg(cut);
-//        name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/aligned/" + std::to_string(i) + ".jpg";
-//        cv::imwrite(name, sliceImg);
+    //        name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/aligned/" + std::to_string(i) + ".jpg";
+    //        cv::imwrite(name, sliceImg);
     }
-
 }

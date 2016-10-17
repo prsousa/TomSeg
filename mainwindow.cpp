@@ -508,20 +508,22 @@ void MainWindow::on_alignButton_released()
     int maxDeltaX = ui->referenceAreaMaxDeltaXSpinBox->value();
     int maxDeltaY = ui->referenceAreaMaxDeltaYSpinBox->value();
 
+    QTime myTimer;
+    myTimer.start();
+
     if( a.x > 0 && a.y > 0 && width > 0 && height > 0 ) {
-
-        QTime myTimer;
-        myTimer.start();
-
         segManager.alignSlices(currentSliceIndex, a, width, height, maxDeltaX, maxDeltaY);
-        resetAlign();
+    } else {
+        segManager.alignSlices();
+    }
 
-        qDebug() << "Align Time: " << myTimer.elapsed() << " ms";
+    qDebug() << "Align Time: " << myTimer.elapsed() << " ms";
 
-        this->sliceScene->updateSliceDisplayer();
-        if( autoFitScreen ) {
-            zoomFit();
-        }
+    resetAlign();
+
+    this->sliceScene->updateSliceDisplayer();
+    if( autoFitScreen ) {
+        zoomFit();
     }
 }
 
