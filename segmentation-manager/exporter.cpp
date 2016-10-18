@@ -87,10 +87,15 @@ void Exporter::exportResult(std::string path, float xLen, float yLen, float zLen
 
 void Exporter::exportSlicesImages(std::string path, const std::string extension)
 {
-    for( size_t i = 0; (i + this->firstSlice) != this->lastSlice; i++ ) {
+    char str[16];
+
+    for( int i = 0; (i + this->firstSlice) != this->lastSlice; i++ ) {
         Slice& slice = *(i + this->firstSlice);
 
         const cv::Mat& image = slice.getImg();
-        cv::imwrite( path + "/" + std::to_string(i) + extension, image );
+
+        snprintf (str, 16, "%04d", i);
+
+        cv::imwrite( path + "/" + str + extension, image );
     }
 }
