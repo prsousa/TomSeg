@@ -177,10 +177,11 @@ QPixmap convertSegmentationResult(cv::Mat& labels) {
     if( !colorsAlreadyLoaded_Labels ) {
         colorsAlreadyLoaded_Labels = true;
         uchar color[3];
-        for ( int i = 0; i < 256; i++ ) {
+        for ( int i = 0; i < 255; i++ ) {
             Seed::getColor(i, color);
             sColorTable_Labels[i] = qRgb(color[0], color[1], color[2]);
         }
+        sColorTable_Labels[255] = qRgb(0, 0, 0);
     }
 
     QImage result( labels.data,
