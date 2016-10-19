@@ -87,43 +87,23 @@ void MainWindow::on_seedsTableWidget_itemSelectionChanged()
 
 void MainWindow::on_seedsTableWidget_itemChanged(QTableWidgetItem* item)
 {
+    if( ui->seedsTableWidget->selectedItems().isEmpty() ) return;
+
     int rowIndex = item->row();
     int colIndex = item->column();
 
     Slice* slice = segManager.getSlice(currentSliceIndex);
     Seed& seed = slice->getSeeds()[rowIndex];
 
-    switch (colIndex) {
-    case 0:
-    {
-        seed.active = item->checkState() == Qt::Checked;
-        break;
-    }
-    case 1:
-    {
-        seed.a.x = item->text().toInt();
-        break;
-    }
-    case 2:
-    {
-        seed.a.y = item->text().toInt();
-        break;
-    }
-    case 3:
-    {
-        int width = item->text().toInt();
-        seed.b.x = seed.a.x + width;
-        break;
-    }
-    case 4:
-    {
-        int height = item->text().toInt();
-        seed.b.y = seed.a.y + height;
-        break;
-    }
-    default:
-        break;
-    }
+    int x = ui->seedsTableWidget->item( rowIndex, 1 )->text().toInt();
+    int y = ui->seedsTableWidget->item( rowIndex, 2 )->text().toInt();
+    int width = ui->seedsTableWidget->item( rowIndex, 3 )->text().toInt();
+    int height = ui->seedsTableWidget->item( rowIndex, 4 )->text().toInt();
+    Point a( x, y );
+    Point b( x + width, y + height );
+    Seed newSeed(slice->getImg(), seed.getId(), a, b);
+
+    slice->getSeeds()[rowIndex] = newSeed;
 
     sliceScene->updateSeedsDisplayer();
 }
@@ -414,6 +394,7 @@ void MainWindow::on_resetSeedsButton_released()
     }
 
     sliceScene->updateSeedsDisplayer();
+    this->updateSeedsTable();
 }
 
 void MainWindow::on_propagateSeedsButton_released()
