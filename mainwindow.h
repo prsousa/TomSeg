@@ -75,7 +75,7 @@ public slots:
     void on_fitZoomButton_released();
     void on_resultOpacitySlider_valueChanged(int newOpacity);
     void resizeEvent(QResizeEvent* event);
-    void seedCreated(float x, float y, float width, float height);
+    void areaSelected(float x, float y, float width, float height);
     void sliceSceneMouseMoved(QPointF mousePosition);
 
 private:

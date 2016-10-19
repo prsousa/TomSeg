@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter->setStretchFactor(0,1);
 
     QObject::connect(sliceScene, SIGNAL(drawnRectangle(float, float, float, float)),
-                         this, SLOT(seedCreated(float, float, float, float)));
+                         this, SLOT(areaSelected(float, float, float, float)));
 
     QObject::connect(sliceScene, SIGNAL(mouseMoved(QPointF)),
                          this, SLOT(sliceSceneMouseMoved(QPointF)));
@@ -227,7 +227,7 @@ void MainWindow::resetCrop()
 
 void MainWindow::on_addSeedButton_released()
 {
-    this->seedCreated(0, 0, 10, 10);
+    this->areaSelected(0, 0, 10, 10);
 }
 
 void MainWindow::updateSlicesUI() {
@@ -656,7 +656,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     }
 }
 
-void MainWindow::seedCreated( float x, float y, float width, float height )
+void MainWindow::areaSelected( float x, float y, float width, float height )
 {
     if( segManager.isEmpty() ) return;
 
