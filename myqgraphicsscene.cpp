@@ -255,8 +255,16 @@ void MyQGraphicsScene::setROIVisibility(bool visible)
 void MyQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
     QPointF currentPosition = mouseEvent->scenePos();
+    QRectF boundingRect = this->slicePixmapItem->boundingRect();
 
-    if( !this->slicePixmapItem->boundingRect().contains(currentPosition) ) return;
+    qreal x = qMax( currentPosition.rx(), qreal(0) );
+    x = qMin( x, boundingRect.width() );
+
+    qreal y = qMax( currentPosition.ry(), qreal(0) );
+    y = qMin( y, boundingRect.height() );
+
+    currentPosition.setX( x );
+    currentPosition.setY( y );
 
     if( mouseEvent->buttons() & Qt::LeftButton ) {
         if( firstClick ) {

@@ -738,6 +738,8 @@ void MainWindow::seedCreated( float x, float y, float width, float height )
 
 void MainWindow::sliceSceneMouseMoved(QPointF mousePosition)
 {
+    if( segManager.isEmpty() ) return;
+
     ui->statusBar->showMessage( QString::number( mousePosition.x(), 'f', 0) + "x" + QString::number( mousePosition.y(), 'f', 0) );
     ui->statusBar->update();
 }
