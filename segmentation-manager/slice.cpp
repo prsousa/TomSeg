@@ -55,6 +55,11 @@ void Slice::addSeed(const Seed seed)
     this->seeds.push_back(seed);
 }
 
+void Slice::resetSeeds()
+{
+    this->seeds.clear();
+}
+
 int Slice::seedsNumber()
 {
     return this->seeds.size();

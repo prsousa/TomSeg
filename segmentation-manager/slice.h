@@ -17,6 +17,7 @@ public:
     std::string getFilename();
     void setSeeds(const std::vector<Seed> &seeds );
     void addSeed(const Seed seed);
+    void resetSeeds();
     int seedsNumber();
     std::vector<Seed> &getSeeds();
     void removeSeed(int seedPos);

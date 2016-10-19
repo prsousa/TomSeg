@@ -392,6 +392,30 @@ void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
     }
 }
 
+void MainWindow::on_resetSeedsButton_released()
+{
+    QMessageBox msgBox(QMessageBox::Question,
+                       "Reset Seeds", "Reset Seeds");
+
+    QAbstractButton* resetAllSeedsButton = msgBox.addButton(tr("All"), QMessageBox::YesRole);
+    QAbstractButton* startFromCurrentButton = msgBox.addButton(tr("From Current"), QMessageBox::NoRole);
+    QAbstractButton* justCurrentButton = msgBox.addButton(tr("Current"), QMessageBox::NoRole);
+
+    msgBox.exec();
+
+    QAbstractButton* clickedButton = msgBox.clickedButton();
+
+    if ( clickedButton == resetAllSeedsButton ) {
+        segManager.resetSeeds();
+    } else if( clickedButton == justCurrentButton ) {
+        segManager.resetSeeds( currentSliceIndex );
+    } else if( clickedButton == startFromCurrentButton ) {
+        segManager.resetSeedsFrom( currentSliceIndex );
+    }
+
+    sliceScene->updateSeedsDisplayer();
+}
+
 void MainWindow::on_propagateSeedsButton_released()
 {
     segManager.propagateSeeds(currentSliceIndex);

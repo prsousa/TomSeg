@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>967</width>
-    <height>576</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1003,6 +1003,20 @@
              </layout>
             </item>
             <item>
+             <widget class="QPushButton" name="resetSeedsButton">
+              <property name="text">
+               <string>Reset Seeds</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="propagateSeedsButton">
+              <property name="text">
+               <string>Propagate Seeds</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="Line" name="horizontalLine">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1013,13 +1027,6 @@
              <widget class="QPushButton" name="resetSegmentationButton">
               <property name="text">
                <string>Reset</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="propagateSeedsButton">
-              <property name="text">
-               <string>Propagate Seeds</string>
               </property>
              </widget>
             </item>

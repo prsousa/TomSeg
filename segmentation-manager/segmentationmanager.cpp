@@ -81,6 +81,32 @@ void SegmentationManager::resetResults()
     }
 }
 
+void SegmentationManager::resetSeeds()
+{
+    this->resetSeeds(0, slices.size());
+}
+
+void SegmentationManager::resetSeeds(int sliceIndex)
+{
+    this->resetSeeds(sliceIndex, sliceIndex + 1);
+}
+
+void SegmentationManager::resetSeeds(int start, int end)
+{
+    std::vector<Slice>::iterator it = slices.begin() + start;
+    std::vector<Slice>::iterator stop = slices.begin() + end;
+
+    for( ; it != stop; it++ ) {
+        Slice& slice = *it;
+        slice.resetSeeds();
+    }
+}
+
+void SegmentationManager::resetSeedsFrom(int start)
+{
+    this->resetSeeds( start, slices.size() );
+}
+
 void SegmentationManager::exportResult(string path)
 {
     this->exportResult(path, 1, this->size());
