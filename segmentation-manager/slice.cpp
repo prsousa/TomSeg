@@ -24,7 +24,7 @@ cv::Mat &Slice::getImg()
 void Slice::getHistogram(int histogram[])
 {
     for(int i = 0; i < 256; i++) {
-            histogram[i] = 0;
+        histogram[i] = 0;
     }
 
     for(int y = 0; y < img.rows; y++) {
