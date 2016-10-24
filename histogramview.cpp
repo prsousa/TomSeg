@@ -1,13 +1,21 @@
 #include "histogramview.h"
 
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QLogValueAxis>
 
 QT_CHARTS_USE_NAMESPACE
 
 HistogramView::HistogramView(QWidget *parent) : QChartView(parent)
 {
     this->setRenderHint(QPainter::Antialiasing);
+
+    chart = new QChart();
+    series = new QLineSeries();
+
+    chart->legend()->hide();
+
+
+    this->setChart(chart);
 }
 
 void HistogramView::setSlice(Slice *slice)
@@ -20,14 +28,10 @@ void HistogramView::update()
     int histogram[256];
     slice->getHistogram(histogram);
 
-    QLineSeries *series = new QLineSeries();
-    for( int i = 0; i < 256; i++) {
+    series->clear();
+    for( int i = 0; i < 256; i++ ) {
         *series << QPointF(i, histogram[i]);
     }
 
-    QChart *chart = new QChart();
-    chart->legend()->hide();
     chart->addSeries(series);
-
-    this->setChart(chart);
 }

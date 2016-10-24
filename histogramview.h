@@ -3,7 +3,8 @@
 
 #include "segmentation-manager/slice.h"
 
-#include <QChartView>
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
 
 class HistogramView : public QtCharts::QChartView
 {
@@ -18,6 +19,9 @@ signals:
 public slots:
 
 private:
+    QtCharts::QChart *chart;
+    QtCharts::QLineSeries *series;
+
     Slice* slice;
 };
 
