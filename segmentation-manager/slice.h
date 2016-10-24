@@ -11,6 +11,7 @@ public:
     Slice();
     Slice(std::string filename);
     cv::Mat &getImg();
+    void getHistogram(int histogram[]);
     void setSegmentationResult(cv::Mat& segmentationResult);
     void resetSegmentationResult();
     cv::Mat& getSegmentationResult();

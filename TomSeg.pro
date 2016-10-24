@@ -6,6 +6,10 @@
 
 QT       += core gui
 
+# <Charts>
+QT += charts
+# </Charts>
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = TomSeg
@@ -26,7 +30,8 @@ SOURCES += main.cpp\
     segmentation-manager/differentiators/differentiator.cpp \
     segmentation-manager/preprocessors/aligner.cpp \
     segmentation-manager/exporter.cpp \
-    segmentation-manager/seedpropagater.cpp
+    segmentation-manager/seedpropagater.cpp \
+    histogramview.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -43,7 +48,8 @@ HEADERS  += mainwindow.h \
     segmentation-manager/differentiators/differentiator.h \
     segmentation-manager/preprocessors/aligner.h \
     segmentation-manager/exporter.h \
-    segmentation-manager/seedpropagater.h
+    segmentation-manager/seedpropagater.h \
+    histogramview.h
 
 
 FORMS    += mainwindow.ui

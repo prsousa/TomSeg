@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "myqgraphicsscene.h"
+#include "histogramview.h"
 
 #include "segmentation-manager/segmentationmanager.h"
 
@@ -80,9 +81,12 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+
     MyQGraphicsScene* sliceScene;
     QGraphicsPixmapItem* slicePixmapItem;
     bool autoFitScreen;
+
+    HistogramView* histogramView;
 
     SegmentationManager segManager;
 

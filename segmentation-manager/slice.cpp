@@ -21,6 +21,19 @@ cv::Mat &Slice::getImg()
     return this->img;
 }
 
+void Slice::getHistogram(int histogram[])
+{
+    for(int i = 0; i < 256; i++) {
+            histogram[i] = 0;
+    }
+
+    for(int y = 0; y < img.rows; y++) {
+        for(int x = 0; x < img.cols; x++) {
+            histogram[ img.at<uchar>(y, x) ]++;
+        }
+    }
+}
+
 void Slice::setSegmentationResult(cv::Mat &segmentationResult)
 {
     this->segmentationResult = segmentationResult;

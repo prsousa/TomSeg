@@ -34,6 +34,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     currentSliceIndex = 0;
     ui->currentSliceNumberSpinner->setMaximum( 0 );
+
+    // charts
+    histogramView = new HistogramView(this);
+    ui->histogramVerticalLayout->removeWidget( ui->histogramDisplayer );
+    ui->histogramVerticalLayout->addWidget( histogramView );
 }
 
 
@@ -163,6 +168,9 @@ void MainWindow::setCurrentSlice(int sliceNumber = 0)
     ui->bottomCropSpinBox->setMaximum( image.rows );
 
     updateSeedsTable();
+
+    histogramView->setSlice( slice );
+    histogramView->update();
 }
 
 void MainWindow::updateAlign()

@@ -2,7 +2,7 @@
 #include "cliapplication.h"
 #include <QApplication>
 
-#define GUI 0
+#define GUI 1
 
 int main(int argc, char *argv[])
 {
