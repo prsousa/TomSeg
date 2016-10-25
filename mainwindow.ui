@@ -884,7 +884,7 @@
                    <number>5</number>
                   </property>
                   <property name="value">
-                   <number>35</number>
+                   <number>15</number>
                   </property>
                  </widget>
                 </item>
@@ -898,13 +898,6 @@
                </layout>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Erode/Dilate</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
                <widget class="QCheckBox" name="morphologicalCheckBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -913,9 +906,36 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string/>
+                 <string>Erode/Dilate</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
+              </item>
+              <item row="2" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <item>
+                 <widget class="QSpinBox" name="morphologicalSizeSpinBox">
+                  <property name="maximum">
+                   <number>150</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>5</number>
+                  </property>
+                  <property name="value">
+                   <number>15</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>px</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
@@ -1007,18 +1027,22 @@
              </layout>
             </item>
             <item>
-             <widget class="QPushButton" name="resetSeedsButton">
-              <property name="text">
-               <string>Reset Seeds</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="propagateSeedsButton">
-              <property name="text">
-               <string>Propagate Seeds</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QPushButton" name="propagateSeedsButton">
+                <property name="text">
+                 <string>Propagate Seeds</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="resetSeedsButton">
+                <property name="text">
+                 <string>Reset Seeds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="Line" name="horizontalLine">

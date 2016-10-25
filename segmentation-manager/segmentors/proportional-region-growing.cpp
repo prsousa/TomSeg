@@ -8,10 +8,11 @@ using namespace std;
 
 bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
 
-ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice, int minimumFeatureSize) {
+ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice, int minimumFeatureSize, int morphologicalSize) {
     this->img = slice.getImg();
     this->seeds = slice.getSeeds();
     this->minimumFeatureSize = minimumFeatureSize;
+    this->morphologicalSize = morphologicalSize;
 
     vector<Seed> sortedSeeds = seeds;
 
@@ -283,11 +284,11 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
     }
 }
 
-void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res, int morphSize) {
+void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    res = Erode(res, morphSize);
+    res = Erode(res, this->morphologicalSize);
     std::chrono::steady_clock::time_point erodeTime = std::chrono::steady_clock::now();
-    res = Dilate(res, morphSize);
+    res = Dilate(res, this->morphologicalSize);
     std::chrono::steady_clock::time_point dilateTime = std::chrono::steady_clock::now();
 
     std::cout << "Erode time = " << std::chrono::duration_cast<std::chrono::milliseconds>(erodeTime-begin).count() << std::endl;
@@ -356,7 +357,6 @@ void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
                     count++;
                     res.at<uchar>(p.y, p.x) = bestSeedID;
                 }
-
             }
         }
     }
@@ -369,9 +369,18 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( EMPTY ); // start with no material
 
+    cout << "Initial Conquer" << endl;
     this->InitialConquer(res);
+
+    cout << "Automatic Conquer" << endl;
     this->AutomaticConquer(res);
-    this->MorphologicalFiltering(res, 15);
+
+    cout << "Morphological Filtering" << endl;
+    if( this->morphologicalSize > 1 ) {
+        this->MorphologicalFiltering(res);
+    }
+
+    cout << "Fill Tiny Holes" << endl;
     this->FillTinyHoles(res);
 
     return res;

@@ -35,6 +35,7 @@ public slots:
     void on_removeSeedButton_released();
     void on_gridVisibleCheckBox_toggled(bool gridVisible);
     void on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeatureSize);
+    void on_morphologicalCheckBox_toggled(bool morphActive);
     void on_lastSliceButton_released();
     void on_firstSliceButton_released();
     void on_sliceSlider_valueChanged(int newSliceNumber);

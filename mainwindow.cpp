@@ -144,6 +144,11 @@ void MainWindow::on_minimumFeatureSizeSpinBox_valueChanged(int newMinimumFeature
     }
 }
 
+void MainWindow::on_morphologicalCheckBox_toggled(bool morphActive)
+{
+    ui->morphologicalSizeSpinBox->setEnabled( morphActive );
+}
+
 void MainWindow::setCurrentSlice(int sliceNumber = 0)
 {
     qDebug() << "Set Current Slice";
@@ -281,6 +286,7 @@ void MainWindow::openFileDialog()
         segManager.setSlices( filenamesSegManager );
         updateSlicesUI();
         ui->minimumFeatureSizeSpinBox->setValue( segManager.getMinimumFeatureSize() );
+        ui->morphologicalSizeSpinBox->setValue( segManager.getMorphologicalSize() );
     }
 }
 
@@ -422,6 +428,11 @@ void MainWindow::on_goButton_released()
     if( slice->getSeeds().size() < 2 ) {
         messageBox.critical(this, "Error", "You must define at least two seeds");
         return;
+    }
+
+    segManager.setMorphologicalSize( 0 );
+    if( ui->morphologicalCheckBox->isChecked() ) {
+        segManager.setMorphologicalSize( ui->morphologicalSizeSpinBox->value() );
     }
 
     //SegmenterThread* segThread = new SegmenterThread(&this->segManager, currentSliceIndex); // TODO: memory leak on thread's object

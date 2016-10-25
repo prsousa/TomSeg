@@ -38,9 +38,13 @@ public:
     void setMinimumFeatureSize(int value);
     int getMinimumFeatureSize() const;
 
+    int getMorphologicalSize() const;
+    void setMorphologicalSize(int value);
+
 private:
     std::vector<Slice> slices;
     int minimumFeatureSize;
+    int morphologicalSize;
     float xLen;
     float yLen;
     float zLen;

@@ -17,16 +17,17 @@ private:
     std::vector<Seed> seeds;
     std::unordered_map< int, std::pair<int, int> > intervals;
     int minimumFeatureSize;
+    int morphologicalSize;
 
     void RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams );
     void InitialConquer( cv::Mat& res );
     void AutomaticConquer( cv::Mat& res );
-    void MorphologicalFiltering(cv::Mat& res, int morphSize);
+    void MorphologicalFiltering(cv::Mat& res);
     void FillTinyHoles(cv::Mat& res);
 
     bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
 public:
-    ProportionalRegionGrowing(Slice slice, int minimumFeatureSize = 15);
+    ProportionalRegionGrowing(Slice slice, int minimumFeatureSize = 15, int morphologicalSize = 15);
     ~ProportionalRegionGrowing();
     cv::Mat Apply();
 };
