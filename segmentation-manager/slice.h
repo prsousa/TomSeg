@@ -21,6 +21,7 @@ public:
     void resetSeeds();
     int seedsNumber();
     std::vector<Seed> &getSeeds();
+    bool containsSeedWithId(int seedId);
     void removeSeed(int seedPos);
     void crop(Point a, size_t width, size_t height);
 

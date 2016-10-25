@@ -83,6 +83,17 @@ std::vector<Seed> &Slice::getSeeds()
     return this->seeds;
 }
 
+bool Slice::containsSeedWithId(int seedId)
+{
+    for( Seed s : this->seeds ) {
+        if( s.getId() == seedId ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Slice::removeSeed(int seedPos)
 {
     this->seeds.erase( seeds.begin() + seedPos );
