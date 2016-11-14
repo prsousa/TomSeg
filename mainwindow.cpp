@@ -131,6 +131,7 @@ void MainWindow::on_removeSeedButton_released()
 void MainWindow::on_gridVisibleCheckBox_toggled(bool gridVisible)
 {
     sliceScene->setGridVisibility(gridVisible);
+    sliceScene->setGridSize( segManager.getMinimumFeatureSize() );
     sliceScene->update();
 }
 
