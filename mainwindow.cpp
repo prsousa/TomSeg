@@ -389,11 +389,11 @@ void MainWindow::on_currentSliceNumberSpinner_valueChanged(int newSliceNumber)
 void MainWindow::on_resetSeedsButton_released()
 {
     QMessageBox msgBox(QMessageBox::Question,
-                       "Reset Seeds", "Reset Seeds");
+                       "Clear Seeds", "Clear Seeds");
 
     QAbstractButton* resetAllSeedsButton = msgBox.addButton(tr("All"), QMessageBox::YesRole);
-    QAbstractButton* startFromCurrentButton = msgBox.addButton(tr("From Current"), QMessageBox::NoRole);
-    QAbstractButton* justCurrentButton = msgBox.addButton(tr("Current"), QMessageBox::NoRole);
+    QAbstractButton* startFromCurrentButton = msgBox.addButton(tr("Next Slices"), QMessageBox::NoRole);
+    QAbstractButton* justCurrentButton = msgBox.addButton(tr("This Slice"), QMessageBox::NoRole);
 
     msgBox.exec();
 

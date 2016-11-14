@@ -1038,7 +1038,7 @@
               <item>
                <widget class="QPushButton" name="resetSeedsButton">
                 <property name="text">
-                 <string>Reset Seeds</string>
+                 <string>Clear Seeds</string>
                 </property>
                </widget>
               </item>
