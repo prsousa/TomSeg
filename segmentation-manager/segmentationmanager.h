@@ -26,7 +26,7 @@ public:
     void exportSlicesImages(std::string path, size_t firstSlice, size_t lastSlice);
     std::vector<Slice>& getSlices();
     Slice* getSlice(size_t sliceNumber);
-    void propagateSeeds(size_t sliceNumber);
+    void propagateSeeds(size_t sliceNumber, size_t stride = 1);
     cv::Mat segment();
     bool isEmpty();
     size_t size();

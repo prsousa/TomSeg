@@ -10,7 +10,7 @@ class SeedPropagater
 public:
     SeedPropagater();
     SeedPropagater(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice);
-    void propagate(std::vector<Seed> seeds);
+    void propagate(std::vector<Seed> seeds, size_t stride = 1);
 
 private:
     std::vector<Slice>::iterator firstSlice;

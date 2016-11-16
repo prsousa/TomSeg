@@ -150,13 +150,13 @@ Slice* SegmentationManager::getSlice(size_t sliceNumber)
     return &(this->slices[sliceNumber]);
 }
 
-void SegmentationManager::propagateSeeds(size_t sliceNumber)
+void SegmentationManager::propagateSeeds(size_t sliceNumber, size_t stride)
 {
     if( sliceNumber < this->slices.size() ) {
         Slice& masterSlice = this->slices[sliceNumber];
         if( masterSlice.seedsNumber() >= 2 ) {
-            SeedPropagater seedPropagater( this->slices.begin() + sliceNumber + 1, this->slices.end() );
-            seedPropagater.propagate( masterSlice.getSeeds() );
+            SeedPropagater seedPropagater( this->slices.begin() + sliceNumber, this->slices.end() );
+            seedPropagater.propagate( masterSlice.getSeeds(), stride );
         }
     }
 }

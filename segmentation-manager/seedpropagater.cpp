@@ -11,10 +11,10 @@ SeedPropagater::SeedPropagater(std::vector<Slice>::iterator firstSlice, std::vec
     this->lastSlice = lastSlice;
 }
 
-void SeedPropagater::propagate(std::vector<Seed> seeds)
+void SeedPropagater::propagate(std::vector<Seed> seeds, size_t stride)
 {
     std::vector<Slice>::iterator it;
-    for( it = firstSlice; it != lastSlice; it++ ) {
+    for( it = firstSlice + stride; it < lastSlice; it += stride ) {
         Slice& slice = *it;
         cv::Mat& sliceImg = slice.getImg();
 

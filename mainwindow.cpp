@@ -5,6 +5,7 @@
 
 #include <Qt>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QDebug>
 #include <QPainter>
 #include <QGraphicsScene>
@@ -414,7 +415,12 @@ void MainWindow::on_resetSeedsButton_released()
 
 void MainWindow::on_propagateSeedsButton_released()
 {
-    segManager.propagateSeeds(currentSliceIndex);
+    bool ok;
+    int stride = QInputDialog::getInt(this, tr("Propagate Seeds"),
+                                 tr("Interval:"), 1, 1, 100, 1, &ok);
+    if ( ok ) {
+        segManager.propagateSeeds(currentSliceIndex, stride);
+    }
 }
 
 void MainWindow::on_goButton_released()
