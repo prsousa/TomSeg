@@ -11,6 +11,9 @@
 #include <QGraphicsScene>
 #include <QTableWidgetItem>
 
+
+void zero(double *l_p_array, int a_numElements); // delete!
+
 namespace Ui {
 class MainWindow;
 }
@@ -24,6 +27,8 @@ public:
     ~MainWindow();
 
 public slots:
+    void on_gpuTestButton_released(); // delete!
+
     void on_actionOpen_triggered();
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
