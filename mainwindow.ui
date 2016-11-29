@@ -345,13 +345,6 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="gpuTestButton">
-          <property name="text">
-           <string>Test GPU</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QTabWidget" name="toolsTab">
           <property name="enabled">
            <bool>true</bool>

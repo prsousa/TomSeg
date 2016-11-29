@@ -285,14 +285,12 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 }
 
 void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res) {
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+#if USE_GPU
+    erodeAndDilate_GPU(&(res.at<u_char>(0)), this->morphologicalSize, res.cols, res.rows);
+#else
     res = Erode(res, this->morphologicalSize);
-    std::chrono::steady_clock::time_point erodeTime = std::chrono::steady_clock::now();
     res = Dilate(res, this->morphologicalSize);
-    std::chrono::steady_clock::time_point dilateTime = std::chrono::steady_clock::now();
-
-    std::cout << "Erode time = " << std::chrono::duration_cast<std::chrono::milliseconds>(erodeTime-begin).count() << std::endl;
-    std::cout << "Dilate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(dilateTime-erodeTime).count() << std::endl;
+#endif
 }
 
 void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
@@ -370,18 +368,32 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     res = cv::Scalar( EMPTY ); // start with no material
 
     cout << "Initial Conquer" << endl;
+    std::chrono::steady_clock::time_point initialConquerBeginTime = std::chrono::steady_clock::now();
     this->InitialConquer(res);
+    std::chrono::steady_clock::time_point initialConquerEndTime = std::chrono::steady_clock::now();
 
     cout << "Automatic Conquer" << endl;
+    std::chrono::steady_clock::time_point automaticConquerBeginTime = std::chrono::steady_clock::now();
     this->AutomaticConquer(res);
+    std::chrono::steady_clock::time_point automaticConquerEndTime = std::chrono::steady_clock::now();
 
     cout << "Morphological Filtering" << endl;
+    std::chrono::steady_clock::time_point morphologicalFilteringBeginTime = std::chrono::steady_clock::now();
     if( this->morphologicalSize > 1 ) {
         this->MorphologicalFiltering(res);
     }
+    std::chrono::steady_clock::time_point morphologicalFilteringEndTime = std::chrono::steady_clock::now();
 
     cout << "Fill Tiny Holes" << endl;
+    std::chrono::steady_clock::time_point fillTinyGapsBeginTime = std::chrono::steady_clock::now();
     this->FillTinyHoles(res);
+    std::chrono::steady_clock::time_point fillTinyGapsEndTime = std::chrono::steady_clock::now();
+
+
+    std::cout << "Initial Conquer\t" << std::chrono::duration_cast<std::chrono::milliseconds>(initialConquerEndTime - initialConquerBeginTime).count() << std::endl;
+    std::cout << "Automatic Conquer\t" << std::chrono::duration_cast<std::chrono::milliseconds>(automaticConquerEndTime - automaticConquerBeginTime).count() << std::endl;
+    std::cout << "Morphological Filtering\t" << std::chrono::duration_cast<std::chrono::milliseconds>(morphologicalFilteringEndTime - morphologicalFilteringBeginTime).count() << std::endl;
+    std::cout << "Fill Tiny Holes\t" << std::chrono::duration_cast<std::chrono::milliseconds>(fillTinyGapsEndTime - fillTinyGapsBeginTime).count() << std::endl;
 
     return res;
 }

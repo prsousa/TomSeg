@@ -1,6 +1,8 @@
 #ifndef PROPORTIONAL_REGION_GROWING_H
 #define PROPORTIONAL_REGION_GROWING_H
 
+#define USE_GPU 1
+
 #include <unordered_map>
 
 #include <opencv2/core/core.hpp>
@@ -9,6 +11,10 @@
 
 #include "../slice.h"
 #include "segmenter.h"
+
+
+// GPU
+void erodeAndDilate_GPU( unsigned char* labels, int size, int width, int height );
 
 class ProportionalRegionGrowing : public Segmenter
 {
