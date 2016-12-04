@@ -40,6 +40,11 @@ MainWindow::MainWindow(QWidget *parent) :
     histogramView = new HistogramView(this);
     ui->histogramVerticalLayout->removeWidget( ui->histogramDisplayer );
     ui->histogramVerticalLayout->addWidget( histogramView );
+
+    // status bar
+    infoLabel = new QLabel(this);
+    ui->statusBar->addPermanentWidget( infoLabel );
+    ui->actionUseGPU->triggered(true);
 }
 
 
@@ -354,6 +359,13 @@ void MainWindow::on_action100_triggered()
 void MainWindow::on_actionFit_on_Screen_triggered()
 {
     zoomFit();
+}
+
+void MainWindow::on_actionUseGPU_triggered(bool selected)
+{
+    this->segManager.setUseGPU(selected);
+    this->infoLabel->setText( selected ? "GPU" : "CPU" );
+    ui->statusBar->update();
 }
 
 void MainWindow::on_lastSliceButton_released()

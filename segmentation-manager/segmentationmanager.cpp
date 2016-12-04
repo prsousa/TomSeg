@@ -16,6 +16,7 @@ SegmentationManager::SegmentationManager()
     minimumFeatureSize = 15;
     morphologicalSize = 15;
     xLen = yLen = zLen = 1.f;
+    useGPU = USE_GPU_DEFAULT;
 }
 
 void SegmentationManager::setSlices(vector<string> &filenames)
@@ -183,6 +184,7 @@ cv::Mat SegmentationManager::segment()
 
         Slice& slice = this->slices[ firstSliceIndex ];
         ProportionalRegionGrowing segmenter(slice, this->minimumFeatureSize, this->morphologicalSize);
+        segmenter.setUseGPU( this->useGPU );
         res = segmenter.Apply();
         slice.setSegmentationResult(res);
 
@@ -237,4 +239,14 @@ int SegmentationManager::getMorphologicalSize() const
 void SegmentationManager::setMorphologicalSize(int value)
 {
     morphologicalSize = value;
+}
+
+bool SegmentationManager::getUseGPU() const
+{
+    return useGPU;
+}
+
+void SegmentationManager::setUseGPU(bool value)
+{
+    useGPU = value;
 }

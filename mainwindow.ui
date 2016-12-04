@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>967</width>
-    <height>622</height>
+    <height>678</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1299,8 +1299,15 @@
     <addaction name="action100"/>
     <addaction name="actionFit_on_Screen"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionUseGPU"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -1357,6 +1364,20 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionUseGPU">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use GPU</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

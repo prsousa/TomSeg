@@ -41,6 +41,9 @@ public:
     int getMorphologicalSize() const;
     void setMorphologicalSize(int value);
 
+    bool getUseGPU() const;
+    void setUseGPU(bool value);
+
 private:
     std::vector<Slice> slices;
     int minimumFeatureSize;
@@ -48,6 +51,7 @@ private:
     float xLen;
     float yLen;
     float zLen;
+    bool useGPU;
 };
 
 #endif // SEGMENTATIONMANAGER_H

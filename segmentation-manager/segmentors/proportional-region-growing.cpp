@@ -13,6 +13,7 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice, int minimumFea
     this->seeds = slice.getSeeds();
     this->minimumFeatureSize = minimumFeatureSize;
     this->morphologicalSize = morphologicalSize;
+    this->useGPU = USE_GPU_DEFAULT;
 
     vector<Seed> sortedSeeds = seeds;
 
@@ -285,12 +286,15 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 }
 
 void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res) {
-#if USE_GPU
-    erodeAndDilate_GPU(&(res.at<u_char>(0)), this->morphologicalSize, res.cols, res.rows);
-#else
-    res = Erode(res, this->morphologicalSize);
-    res = Dilate(res, this->morphologicalSize);
-#endif
+    std::cout << this->useGPU << std::endl;
+    if( this->useGPU ) {
+        std::cerr << "\tUsing GPU" << std::endl;
+        erodeAndDilate_GPU(&(res.at<u_char>(0)), this->morphologicalSize, res.cols, res.rows);
+    } else {
+        std::cerr << "\tUsing CPU" << std::endl;
+        res = Erode(res, this->morphologicalSize);
+        res = Dilate(res, this->morphologicalSize);
+    }
 }
 
 void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
@@ -361,6 +365,10 @@ void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
 
     int total = res.rows * res.cols;
     cout << "Empty: " << count << " of " << total << " (" << (count*1.0f / total) * 100 << "%)" << endl;
+}
+
+void ProportionalRegionGrowing::setUseGPU(bool value) {
+    this->useGPU = value;
 }
 
 cv::Mat ProportionalRegionGrowing::Apply() {

@@ -1,7 +1,7 @@
 #ifndef PROPORTIONAL_REGION_GROWING_H
 #define PROPORTIONAL_REGION_GROWING_H
 
-#define USE_GPU 1
+#define USE_GPU_DEFAULT true
 
 #include <unordered_map>
 
@@ -24,6 +24,7 @@ private:
     std::unordered_map< int, std::pair<int, int> > intervals;
     int minimumFeatureSize;
     int morphologicalSize;
+    bool useGPU;
 
     void RegionGrowing( cv::Mat& res, Seed seed, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams );
     void InitialConquer( cv::Mat& res );
@@ -35,6 +36,7 @@ private:
 public:
     ProportionalRegionGrowing(Slice slice, int minimumFeatureSize = 15, int morphologicalSize = 15);
     ~ProportionalRegionGrowing();
+    void setUseGPU(bool value);
     cv::Mat Apply();
 };
 

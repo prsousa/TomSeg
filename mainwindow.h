@@ -10,6 +10,7 @@
 #include <QVector>
 #include <QGraphicsScene>
 #include <QTableWidgetItem>
+#include <QLabel>
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +30,7 @@ public slots:
     void on_actionZoom_Out_triggered();
     void on_action100_triggered();
     void on_actionFit_on_Screen_triggered();
+    void on_actionUseGPU_triggered(bool selected);
     void on_addSeedButton_released();
     void on_seedsTableWidget_itemSelectionChanged();
     void on_seedsTableWidget_itemChanged(QTableWidgetItem* item);
@@ -88,6 +90,8 @@ private:
     bool autoFitScreen;
 
     HistogramView* histogramView;
+
+    QLabel* infoLabel;
 
     SegmentationManager segManager;
 

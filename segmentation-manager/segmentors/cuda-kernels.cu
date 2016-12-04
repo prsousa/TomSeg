@@ -1,8 +1,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <stdio.h>
-
 __global__
 void erode_GPU( const unsigned char *labels, unsigned char *res, int size, int width, int height ) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
