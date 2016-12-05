@@ -63,12 +63,6 @@ void Aligner::apply()
     applyDeltas( deltas );
 }
 
-cv::Mat translateImg(cv::Mat &img, int offsetx, int offsety){
-    cv::Mat trans_mat = (cv::Mat_<double>(2,3) << 1, 0, offsetx, 0, 1, offsety);
-    cv::warpAffine(img,img,trans_mat,img.size());
-    return img;
-}
-
 void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
 {
     cv::Rect roi(a.x, a.y, width, height);
@@ -117,29 +111,29 @@ void Aligner::applyDeltas(std::vector<Point> deltas)
 {
     int numSlices = lastSlice - firstSlice;
 
-    int cutLeft = 0;
-    int cutRight = 0;
-    int cutUp = 0;
-    int cutDown = 0;
+    int maxRight = 0;
+    int maxLeft = 0;
+    int maxDown = 0;
+    int maxUp = 0;
 
     for( int i = 0; i < numSlices; i++ ) {
         int deltaX = deltas[i].x;
         int deltaY = deltas[i].y;
 
-        if( deltaX > 0 && deltaX > cutLeft ) {
-            cutLeft = deltaX;
+        if( deltaX > 0 && deltaX > maxRight ) {
+            maxRight = deltaX;
         }
-        if( deltaX < 0 && std::abs(deltaX) > cutRight ) {
-            cutRight = std::abs(deltaX);
+        if( deltaX < 0 && std::abs(deltaX) > maxLeft ) {
+            maxLeft = std::abs(deltaX);
         }
-        if( deltaY > 0 && deltaY > cutUp ) {
-            cutUp = deltaY;
+        if( deltaY > 0 && deltaY > maxDown ) {
+            maxDown = deltaY;
         }
-        if( deltaY < 0 && std::abs(deltaY) > cutDown ) {
-            cutDown = std::abs(deltaY);
+        if( deltaY < 0 && std::abs(deltaY) > maxUp ) {
+            maxUp = std::abs(deltaY);
         }
 
-        qDebug() << "x: " <<deltaX << "\ty: "<< deltaY;
+        qDebug() << "x: " << deltaX << "\ty: "<< deltaY;
     }
 
     #pragma omp parallel for // num_threads(8)
@@ -147,14 +141,7 @@ void Aligner::applyDeltas(std::vector<Point> deltas)
         Point delta = deltas[i];
         Slice& slice = *(i + firstSlice);
         cv::Mat& sliceImg = slice.getImg();
-    //        std::string name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/original/" + std::to_string(i) + ".jpg";
-    //        cv::imwrite(name, sliceImg);
 
-
-        translateImg(sliceImg, delta.x, delta.y);
-        cv::Rect cut(cutLeft, cutUp, sliceImg.cols - cutLeft - cutRight, sliceImg.rows - cutUp - cutDown);
-        sliceImg = sliceImg(cut);
-    //        name = "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/to_align/aligned/" + std::to_string(i) + ".jpg";
-    //        cv::imwrite(name, sliceImg);
+        slice.crop( Point( maxRight - delta.x, maxDown - delta.y ), sliceImg.cols - maxLeft - maxRight, sliceImg.rows - maxUp - maxDown );
     }
 }
