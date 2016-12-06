@@ -5,6 +5,7 @@
 #include "differentiators/differentiator.h"
 #include "preprocessors/aligner.h"
 #include "exporter.h"
+#include "importer.h"
 #include "seedpropagater.h"
 
 #include <QDebug>
@@ -30,6 +31,11 @@ void SegmentationManager::setSlices(vector<string> &filenames)
     }
 }
 
+void SegmentationManager::addSlice(Slice slice)
+{
+    slices.push_back( slice );
+}
+
 void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds)
 {
     Slice& slice = this->slices[sliceNumber];
@@ -42,7 +48,7 @@ void SegmentationManager::alignSlices()
     aligner.apply();
 }
 
-void SegmentationManager::alignSlices(size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX, int maxDeltaY )
+void SegmentationManager::alignSlices( size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX, int maxDeltaY )
 {
     if( masterSliceNumber < this->slices.size() ) {
         Slice& masterSlice = this->slices[masterSliceNumber];
@@ -118,11 +124,8 @@ void SegmentationManager::exportResult(string path, size_t firstSlice, size_t la
 {
     if (lastSlice < firstSlice ) return;
 
-    size_t startOffset = std::min( firstSlice - 1,  this->slices.size() - 1 );
-    size_t endOffset = std::min( lastSlice,  this->slices.size() );
-
-    Exporter exporter( this->slices.begin() + startOffset, this->slices.begin() + endOffset );
-    exporter.exportResult(path, this->xLen, this->yLen, this->zLen);
+    Exporter exporter( this, firstSlice, lastSlice );
+    exporter.exportResult(path);
 }
 
 void SegmentationManager::exportSlicesImages(string path)
@@ -134,11 +137,27 @@ void SegmentationManager::exportSlicesImages(string path, size_t firstSlice, siz
 {
     if (lastSlice < firstSlice ) return;
 
-    size_t startOffset = std::min( firstSlice - 1,  this->slices.size() - 1 );
-    size_t endOffset = std::min( lastSlice,  this->slices.size() );
-
-    Exporter exporter( this->slices.begin() + startOffset, this->slices.begin() + endOffset );
+    Exporter exporter( this, firstSlice, lastSlice );
     exporter.exportSlicesImages(path);
+}
+
+void SegmentationManager::loadProject(string path)
+{
+    Importer importer( this );
+    importer.importProject( path );
+}
+
+void SegmentationManager::exportProject(string path)
+{
+    this->exportProject(path, 1, this->size());
+}
+
+void SegmentationManager::exportProject(string path, size_t firstSlice, size_t lastSlice)
+{
+    if (lastSlice < firstSlice ) return;
+
+    Exporter exporter( this, firstSlice, lastSlice );
+    exporter.exportProject( path );
 }
 
 std::vector<Slice> &SegmentationManager::getSlices()
@@ -206,14 +225,29 @@ size_t SegmentationManager::size()
     return slices.size();
 }
 
+float SegmentationManager::getXLen() const
+{
+    return xLen;
+}
+
 void SegmentationManager::setXLen(float value)
 {
     xLen = value;
 }
 
+float SegmentationManager::getYLen() const
+{
+    return yLen;
+}
+
 void SegmentationManager::setYLen(float value)
 {
     yLen = value;
+}
+
+float SegmentationManager::getZLen() const
+{
+    return zLen;
 }
 
 void SegmentationManager::setZLen(float value)

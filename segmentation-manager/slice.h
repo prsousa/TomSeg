@@ -24,11 +24,13 @@ public:
     bool containsSeedWithId(int seedId);
     void removeSeed(int seedPos);
     void crop(Point a, size_t width, size_t height);
+    cv::Rect getRoiFromOriginal() const;
 
 protected:
     cv::Mat img;
     cv::Mat segmentationResult;
     std::string filename;
+    cv::Rect roiFromOriginal;
     std::vector<Seed> seeds;
 };
 

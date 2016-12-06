@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     segmentation-manager/preprocessors/aligner.cpp \
     segmentation-manager/exporter.cpp \
     segmentation-manager/seedpropagater.cpp \
-    histogramview.cpp
+    histogramview.cpp \
+    segmentation-manager/importer.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -49,7 +50,8 @@ HEADERS  += mainwindow.h \
     segmentation-manager/preprocessors/aligner.h \
     segmentation-manager/exporter.h \
     segmentation-manager/seedpropagater.h \
-    histogramview.h
+    histogramview.h \
+    segmentation-manager/importer.h
 
 
 FORMS    += mainwindow.ui
@@ -108,6 +110,10 @@ else {
 
 
 # </CUDA>
+
+#<JSON>
+INCLUDEPATH += /usr/local/Cellar/nlohmann_json/2.0.8/include
+#</JSON>
 
 RESOURCES += \
     icons.qrc

@@ -25,7 +25,10 @@ public:
     ~MainWindow();
 
 public slots:
+    void on_actionImport_triggered();
     void on_actionOpen_triggered();
+    void on_actionSave_triggered();
+
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
     void on_action100_triggered();
@@ -98,7 +101,9 @@ private:
     int currentSliceIndex;
 
     void updateSlicesUI();
-    void openFileDialog();
+    void importFileDialog();
+    void openProjectDialog();
+    void saveProjectDialog();
     void zoomIn();
     void zoomOut();
     void zoomZero();

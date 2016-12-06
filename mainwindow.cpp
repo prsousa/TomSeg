@@ -273,13 +273,16 @@ void MainWindow::updateSlicesUI() {
 
     this->setCurrentSlice(0);
 
+    ui->minimumFeatureSizeSpinBox->setValue( segManager.getMinimumFeatureSize() );
+    ui->morphologicalSizeSpinBox->setValue( segManager.getMorphologicalSize() );
+
     resetCrop();
 }
 
-void MainWindow::openFileDialog()
+void MainWindow::importFileDialog()
 {
     QStringList filenames = QFileDialog::getOpenFileNames( this,
-                                                           tr("Open Image"),
+                                                           tr("Import Images"),
                                                            QDir::homePath(),
                                                            tr("Image Files (*.png *.jpg *.bmp *.tif)")
                                                           );
@@ -292,8 +295,41 @@ void MainWindow::openFileDialog()
 
         segManager.setSlices( filenamesSegManager );
         updateSlicesUI();
-        ui->minimumFeatureSizeSpinBox->setValue( segManager.getMinimumFeatureSize() );
-        ui->morphologicalSizeSpinBox->setValue( segManager.getMorphologicalSize() );
+    }
+}
+
+void MainWindow::openProjectDialog()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Project"),
+                                                    QDir::homePath(),
+                                                    tr("TomSeg (*.tms)"));
+
+    if( !filename.isEmpty() ) {
+        segManager = SegmentationManager();
+        segManager.loadProject( filename.toStdString() );
+
+        updateSlicesUI();
+    }
+}
+
+void MainWindow::saveProjectDialog()
+{
+    QString filename = QFileDialog::getSaveFileName(
+            this,
+            tr("Save Project"),
+            QDir::homePath(),
+            tr("TomSeg (*.tms)") );
+
+    if( !filename.isEmpty() ) {
+        bool exportAllSlices = ui->exportAllSlicesCheckBox->isChecked();
+
+        if( exportAllSlices ) {
+            segManager.exportProject( filename.toStdString() );
+        } else {
+            size_t firstSlice = ui->firstExportSliceBox->value();
+            size_t lastSlice = ui->lastExportSliceBox->value();
+            segManager.exportSlicesImages( filename.toStdString(), firstSlice, lastSlice );
+        }
     }
 }
 
@@ -336,9 +372,19 @@ void MainWindow::updateCurrentZoomInfo() {
     ui->currentZoomFactorLabel->setText( QString::number(currentZoom) +  "%");
 }
 
+void MainWindow::on_actionImport_triggered()
+{
+    importFileDialog();
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
-    openFileDialog();
+    openProjectDialog();
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    saveProjectDialog();
 }
 
 void MainWindow::on_actionZoom_In_triggered()

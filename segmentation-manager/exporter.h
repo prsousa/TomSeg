@@ -2,19 +2,20 @@
 #define EXPORTER_H
 
 #include <vector>
-#include "slice.h"
+#include "segmentationmanager.h"
 
 class Exporter
 {
 public:
     Exporter();
-    Exporter(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::iterator lastSlice);
-    void exportResult(std::string path, float xLen = 1.0, float yLen = 1.0, float zLen = 1.0);
+    Exporter(SegmentationManager* segManager, size_t firstSlice, size_t lastSlice);
+    void exportResult(std::string path);
     void exportSlicesImages(std::string path, const std::string extension = ".jpg");
+    void exportProject(std::string path);
 
 private:
-    std::vector<Slice>::iterator firstSlice;
-    std::vector<Slice>::iterator lastSlice;
+    SegmentationManager* segManager;
+    size_t startIndex, endIndex;
 };
 
 #endif // EXPORTER_H

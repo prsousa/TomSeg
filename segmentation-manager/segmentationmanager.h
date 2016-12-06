@@ -11,6 +11,7 @@ class SegmentationManager
 public:
     SegmentationManager();
     void setSlices(std::vector<std::string>& filenames);
+    void addSlice(Slice slice);
     void setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds);
     void alignSlices();
     void alignSlices(size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX, int maxDeltaY);
@@ -24,6 +25,9 @@ public:
     void exportResult(std::string path, size_t firstSlice, size_t lastSlice);
     void exportSlicesImages(std::string path);
     void exportSlicesImages(std::string path, size_t firstSlice, size_t lastSlice);
+    void loadProject(std::string path);
+    void exportProject(std::string path);
+    void exportProject(std::string path, size_t firstSlice, size_t lastSlice);
     std::vector<Slice>& getSlices();
     Slice* getSlice(size_t sliceNumber);
     void propagateSeeds(size_t sliceNumber, size_t stride = 1);
@@ -31,8 +35,13 @@ public:
     bool isEmpty();
     size_t size();
 
+    float getXLen() const;
     void setXLen(float value);
+
+    float getYLen() const;
     void setYLen(float value);
+
+    float getZLen() const;
     void setZLen(float value);
 
     void setMinimumFeatureSize(int value);

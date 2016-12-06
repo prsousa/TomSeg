@@ -14,6 +14,10 @@ Slice::Slice(string filename) : Slice()
 {
     this->filename = filename;
     this->img = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+
+    this->roiFromOriginal.x = this->roiFromOriginal.y = 0;
+    this->roiFromOriginal.width = img.cols;
+    this->roiFromOriginal.height = img.rows;
 }
 
 cv::Mat &Slice::getImg()
@@ -108,4 +112,14 @@ void Slice::crop(Point a, size_t width, size_t height)
     if( !segmentationResult.empty() ) {
         segmentationResult = segmentationResult(roi);
     }
+
+    roiFromOriginal.x += a.x;
+    roiFromOriginal.y += a.y;
+    roiFromOriginal.width = width;
+    roiFromOriginal.height = height;
+}
+
+cv::Rect Slice::getRoiFromOriginal() const
+{
+    return roiFromOriginal;
 }
