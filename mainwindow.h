@@ -70,6 +70,9 @@ public slots:
     void on_resetROIButton_released();
     void on_cropButton_released();
 
+    void on_xLenSpinBox_valueChanged( double newValue );
+    void on_yLenSpinBox_valueChanged( double newValue );
+    void on_zLenSpinBox_valueChanged( double newValue );
     void on_exportAllSlicesCheckBox_toggled(bool exportAllSlices);
     void on_exportSlicesButton_released();
     void on_exportSegmentationButton_released();

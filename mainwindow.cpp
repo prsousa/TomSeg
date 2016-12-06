@@ -522,10 +522,6 @@ void MainWindow::on_exportSegmentationButton_released()
     if( !dir.isEmpty() ) {
         bool exportAllSlices = ui->exportAllSlicesCheckBox->isChecked();
 
-        segManager.setXLen( ui->xLenSpinBox->value() );
-        segManager.setYLen( ui->yLenSpinBox->value() );
-        segManager.setZLen( ui->zLenSpinBox->value() );
-
         if( exportAllSlices ) {
             segManager.exportResult( dir.toStdString() );
         } else {
@@ -690,6 +686,21 @@ void MainWindow::on_cropButton_released()
 
         updateSlicesUI();
     }
+}
+
+void MainWindow::on_xLenSpinBox_valueChanged(double newValue)
+{
+    segManager.setXLen( newValue );
+}
+
+void MainWindow::on_yLenSpinBox_valueChanged(double newValue)
+{
+    segManager.setYLen( newValue );
+}
+
+void MainWindow::on_zLenSpinBox_valueChanged(double newValue)
+{
+    segManager.setZLen( newValue );
 }
 
 void MainWindow::on_exportAllSlicesCheckBox_toggled(bool exportAllSlices)
