@@ -209,7 +209,7 @@ void MyQGraphicsScene::updateResultDisplayer()
         myTimer.start();
         QPixmap segmentationResult = convertSegmentationResult(slice->getSegmentationResult());
         QGraphicsPixmapItem* r = this->setResultPixmap( segmentationResult );
-        qDebug() << "Conversion Time: " << myTimer.elapsed() << " ms";
+        // qDebug() << "Conversion Time: " << myTimer.elapsed() << " ms";
     }
 }
 

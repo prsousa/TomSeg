@@ -28,6 +28,7 @@ public slots:
     void on_actionImport_triggered();
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
+    void on_actionSave_As_triggered();
 
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
@@ -111,6 +112,7 @@ private:
     void zoomOut();
     void zoomZero();
     void zoomFit();
+    void updateSaveStatus();
     void updateCurrentZoomInfo();
     void setCurrentSlice(int sliceNumber);
     void updateAlign();

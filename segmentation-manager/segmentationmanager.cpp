@@ -20,6 +20,14 @@ SegmentationManager::SegmentationManager()
     useGPU = USE_GPU_DEFAULT;
 }
 
+SegmentationManager::SegmentationManager(string projectPath) : SegmentationManager()
+{
+    Importer importer( this );
+    importer.importProject( projectPath );
+
+    this->projectPath = projectPath;
+}
+
 void SegmentationManager::setSlices(vector<string> &filenames)
 {
     slices.clear();
@@ -141,12 +149,6 @@ void SegmentationManager::exportSlicesImages(string path, size_t firstSlice, siz
     exporter.exportSlicesImages(path);
 }
 
-void SegmentationManager::loadProject(string path)
-{
-    Importer importer( this );
-    importer.importProject( path );
-}
-
 void SegmentationManager::exportProject(string path)
 {
     this->exportProject(path, 1, this->size());
@@ -158,6 +160,8 @@ void SegmentationManager::exportProject(string path, size_t firstSlice, size_t l
 
     Exporter exporter( this, firstSlice, lastSlice );
     exporter.exportProject( path );
+
+    this->projectPath = path;
 }
 
 std::vector<Slice> &SegmentationManager::getSlices()
@@ -283,4 +287,34 @@ bool SegmentationManager::getUseGPU() const
 void SegmentationManager::setUseGPU(bool value)
 {
     useGPU = value;
+}
+
+string SegmentationManager::getProjectPath() const
+{
+    return projectPath;
+}
+
+string SegmentationManager::getProjectFilename() const
+{
+    int idx = 0;
+    for( int i = 0; projectPath[i]; i++ ) {
+        if( projectPath[i] == '/' ) {
+            idx = i;
+        }
+    }
+
+    return &projectPath[idx + 1];
+}
+
+string SegmentationManager::getProjectFolderPath() const
+{
+    string res = projectPath;
+    int idx = 0;
+    for( int i = 0; projectPath[i]; i++ ) {
+        if( projectPath[i] == '/' ||  projectPath[i] == '\\') {
+            idx = i;
+        }
+    }
+    res[idx + 1] = 0;
+    return res;
 }

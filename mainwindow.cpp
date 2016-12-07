@@ -34,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
                          this, SLOT(sliceSceneMouseMoved(QPointF)));
 
     currentSliceIndex = 0;
-    ui->currentSliceNumberSpinner->setMaximum( 0 );
 
     // charts
     histogramView = new HistogramView(this);
@@ -44,7 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // status bar
     infoLabel = new QLabel(this);
     ui->statusBar->addPermanentWidget( infoLabel );
-    ui->actionUseGPU->triggered(true);
+
+    autoFitScreen = true;
+
+    updateSlicesUI();
 }
 
 
@@ -158,7 +160,8 @@ void MainWindow::on_morphologicalCheckBox_toggled(bool morphActive)
 
 void MainWindow::setCurrentSlice(int sliceNumber = 0)
 {
-    qDebug() << "Set Current Slice";
+    if ( sliceNumber >= segManager.size() ) return;
+    // qDebug() << "Set Current Slice";
 
     currentSliceIndex = sliceNumber;
     ui->currentSliceNumberSpinner->setValue( sliceNumber + 1 );
@@ -205,7 +208,7 @@ void MainWindow::resetAlign()
 
 void MainWindow::updateCrop()
 {
-    qDebug() << "Update Crop";
+//    qDebug() << "Update Crop";
     size_t left = ui->leftCropSpinBox->value();
     size_t right = ui->rightCropSpinBox->value();
     size_t top = ui->topCropSpinBox->value();
@@ -253,30 +256,27 @@ void MainWindow::on_addSeedButton_released()
 void MainWindow::updateSlicesUI() {
     size_t numberOfSlices = segManager.size();
 
-    ui->currentSliceNumberSpinner->setMaximum( numberOfSlices );
-    ui->currentSliceNumberSpinner->setMinimum( 1 );
+    ui->splitter->setEnabled( numberOfSlices > 0 );
+    if( numberOfSlices ) {
+        ui->currentSliceNumberSpinner->setMaximum( numberOfSlices );
+        ui->sliceTotalLabel->setText( QString::number(numberOfSlices) );
+        ui->sliceSlider->setMaximum( numberOfSlices );
 
-    ui->sliceSlider->setMaximum( numberOfSlices );
-    ui->sliceSlider->setMinimum( 1 );
+        ui->firstExportSliceBox->setMaximum( numberOfSlices );
+        ui->lastExportSliceBox->setMaximum( numberOfSlices );
+        ui->lastExportSliceBox->setValue( numberOfSlices );
 
-    ui->firstExportSliceBox->setMinimum( 1 );
-    ui->firstExportSliceBox->setMaximum( numberOfSlices );
-    ui->lastExportSliceBox->setMinimum( 1 );
-    ui->lastExportSliceBox->setMaximum( numberOfSlices );
-    ui->lastExportSliceBox->setValue( numberOfSlices );
+        this->setCurrentSlice(0);
 
-    ui->sliceTotalLabel->setText( QString::number(numberOfSlices) );
+        ui->minimumFeatureSizeSpinBox->setValue( segManager.getMinimumFeatureSize() );
+        ui->morphologicalSizeSpinBox->setValue( segManager.getMorphologicalSize() );
 
-    ui->seedsTableWidget->setEnabled(true);
-    ui->addSeedButton->setEnabled(true);
-    autoFitScreen = true;
+        ui->actionUseGPU->triggered( segManager.getUseGPU() );
+        updateSaveStatus();
 
-    this->setCurrentSlice(0);
+        resetCrop();
+    }
 
-    ui->minimumFeatureSizeSpinBox->setValue( segManager.getMinimumFeatureSize() );
-    ui->morphologicalSizeSpinBox->setValue( segManager.getMorphologicalSize() );
-
-    resetCrop();
 }
 
 void MainWindow::importFileDialog()
@@ -293,6 +293,7 @@ void MainWindow::importFileDialog()
             filenamesSegManager.push_back( filenames[i].toStdString() );
         }
 
+        segManager = SegmentationManager();
         segManager.setSlices( filenamesSegManager );
         updateSlicesUI();
     }
@@ -300,24 +301,28 @@ void MainWindow::importFileDialog()
 
 void MainWindow::openProjectDialog()
 {
+    std::string projectFolderPath = segManager.getProjectFolderPath();
+    QString defaultDir = (projectFolderPath.empty()) ? QDir::homePath() : QString::fromStdString(projectFolderPath);
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Project"),
-                                                    QDir::homePath(),
+                                                    defaultDir,
                                                     tr("TomSeg (*.tms)"));
 
     if( !filename.isEmpty() ) {
-        segManager = SegmentationManager();
-        segManager.loadProject( filename.toStdString() );
+        segManager = SegmentationManager( filename.toStdString() );
 
+        autoFitScreen = true;
         updateSlicesUI();
     }
 }
 
 void MainWindow::saveProjectDialog()
 {
+    std::string projectFolderPath = segManager.getProjectFolderPath();
+    QString defaultDir = (projectFolderPath.empty()) ? QDir::homePath() : QString::fromStdString(projectFolderPath);
     QString filename = QFileDialog::getSaveFileName(
             this,
             tr("Save Project"),
-            QDir::homePath(),
+            defaultDir,
             tr("TomSeg (*.tms)") );
 
     if( !filename.isEmpty() ) {
@@ -367,6 +372,15 @@ void MainWindow::zoomFit()
     autoFitScreen = true;
 }
 
+void MainWindow::updateSaveStatus()
+{
+    std::string projectFilename = segManager.getProjectFilename();
+    ui->actionSave->setEnabled( !projectFilename.empty() );
+
+    std::string projectName = projectFilename.empty() ? "Untitled" : projectFilename;
+    this->setWindowTitle("Tom Seg - " + QString::fromStdString(projectName) );
+}
+
 void MainWindow::updateCurrentZoomInfo() {
     int currentZoom = ui->sliceView->matrix().m11() * 100;
     ui->currentZoomFactorLabel->setText( QString::number(currentZoom) +  "%");
@@ -384,7 +398,14 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
+    segManager.exportProject( segManager.getProjectPath() );
+    updateSaveStatus();
+}
+
+void MainWindow::on_actionSave_As_triggered()
+{
     saveProjectDialog();
+    updateSaveStatus();
 }
 
 void MainWindow::on_actionZoom_In_triggered()
@@ -410,6 +431,7 @@ void MainWindow::on_actionFit_on_Screen_triggered()
 void MainWindow::on_actionUseGPU_triggered(bool selected)
 {
     this->segManager.setUseGPU(selected);
+    ui->actionUseGPU->setChecked( selected );
     this->infoLabel->setText( selected ? "GPU" : "CPU" );
     ui->statusBar->update();
 }

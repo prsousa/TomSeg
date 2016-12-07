@@ -10,6 +10,7 @@ class SegmentationManager
 {
 public:
     SegmentationManager();
+    SegmentationManager(std::string projectPath);
     void setSlices(std::vector<std::string>& filenames);
     void addSlice(Slice slice);
     void setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds);
@@ -25,7 +26,6 @@ public:
     void exportResult(std::string path, size_t firstSlice, size_t lastSlice);
     void exportSlicesImages(std::string path);
     void exportSlicesImages(std::string path, size_t firstSlice, size_t lastSlice);
-    void loadProject(std::string path);
     void exportProject(std::string path);
     void exportProject(std::string path, size_t firstSlice, size_t lastSlice);
     std::vector<Slice>& getSlices();
@@ -53,8 +53,13 @@ public:
     bool getUseGPU() const;
     void setUseGPU(bool value);
 
+    std::string getProjectPath() const;
+    std::string getProjectFilename() const;
+    std::string getProjectFolderPath() const;
+
 private:
     std::vector<Slice> slices;
+    std::string projectPath;
     int minimumFeatureSize;
     int morphologicalSize;
     float xLen;
