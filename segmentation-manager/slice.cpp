@@ -113,6 +113,19 @@ void Slice::crop(Point a, size_t width, size_t height)
         segmentationResult = segmentationResult(roi);
     }
 
+    vector<Seed>::iterator it;
+    for( it = seeds.begin(); it != seeds.end(); it++ ) {
+        Seed &seed = *it;
+        seed.a.x = min( img.cols, max( 0, seed.a.x - a.x));
+        seed.a.y = min( img.rows, max( 0, seed.a.y - a.y));
+        seed.b.x = min( img.cols, max( 0, seed.b.x - a.x));
+        seed.b.y = min( img.rows, max( 0, seed.b.y - a.y));
+
+        if( !seed.getNumberPixeis() ) {
+            seeds.erase( it-- );
+        }
+    }
+
     roiFromOriginal.x += a.x;
     roiFromOriginal.y += a.y;
     roiFromOriginal.width = width;
