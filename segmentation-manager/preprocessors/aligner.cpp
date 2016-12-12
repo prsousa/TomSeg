@@ -4,8 +4,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <QDebug>
-
 Aligner::Aligner()
 {
 
@@ -133,7 +131,7 @@ void Aligner::applyDeltas(std::vector<Point> deltas)
             maxUp = std::abs(deltaY);
         }
 
-        qDebug() << "x: " << deltaX << "\ty: "<< deltaY;
+        // std::cout << "x: " << deltaX << "\ty: "<< deltaY << std::endl;
     }
 
     #pragma omp parallel for // num_threads(8)

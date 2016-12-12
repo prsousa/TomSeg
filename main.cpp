@@ -1,8 +1,11 @@
-#include "mainwindow.h"
-#include "cliapplication.h"
-#include <QApplication>
+#define GUI 0
 
-#define GUI 1
+#if GUI
+#include "mainwindow.h"
+#include <QApplication>
+#else
+#include "cliapplication.h"
+#endif
 
 int main(int argc, char *argv[])
 {

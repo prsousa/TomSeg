@@ -8,8 +8,6 @@
 #include "importer.h"
 #include "seedpropagater.h"
 
-#include <QDebug>
-
 using namespace std;
 
 SegmentationManager::SegmentationManager()

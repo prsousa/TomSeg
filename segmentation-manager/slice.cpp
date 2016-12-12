@@ -1,7 +1,6 @@
 #include "slice.h"
 
 #include <opencv2/highgui/highgui.hpp>
-#include <QDebug>
 
 using namespace std;
 
