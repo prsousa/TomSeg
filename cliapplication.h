@@ -10,10 +10,13 @@ public:
     int exec();
 
 private:
+    int argc;
+    char** argv;
+
     SegmentationManager segManager;
 
     void definePhasisSeeds(int sliceNumber);
-    cv::Mat colorizeLabels(cv::Mat labels, std::vector<Seed> seeds);
+    cv::Mat colorizeLabels(cv::Mat labels);
 };
 
 #endif // CLIAPPLICATION_H

@@ -17,7 +17,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     myqgraphicsscene.cpp \
     segmentation-manager/point.cpp \
     segmentation-manager/region.cpp \
@@ -114,6 +114,10 @@ else {
 #<JSON>
 INCLUDEPATH += /usr/local/Cellar/nlohmann_json/2.0.8/include
 #</JSON>
+
+#<ProgramOptions_CLI>
+LIBS += /usr/local/lib/libboost_program_options.dylib
+#</ProgramOptions_CLI>
 
 RESOURCES += \
     icons.qrc

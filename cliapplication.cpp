@@ -6,56 +6,67 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <boost/program_options.hpp>
+#include <vector>
+
+namespace po = boost::program_options;
+
+void onSliceChange( int a, void* data ) {
+    SegmentationManager* segManager = (SegmentationManager*) data;
+    int numSlices = segManager->size();
+
+    if( a >= numSlices ) { return; }
+
+    Slice* slice = segManager->getSlice(a);
+    cv::Mat& image = slice->getImg();
+
+    cv::Mat imgResized;
+    if( image.rows > 1000 ) {
+        int newHight = 600;
+        int newWidth = image.cols * newHight / image.rows;
+        cv::resize(image, imgResized, cv::Size(newWidth, newHight));
+    } else {
+        imgResized = image;
+    }
+
+    cv::imshow( "SegImage", imgResized );
+}
+
+class SliceDisplayer
+{
+    public:
+    SliceDisplayer(SegmentationManager* segManager) {
+        this->segManager = segManager;
+        current = 0;
+    }
+
+    void display() {
+        size_t numSlices = segManager->size();
+
+        cv::namedWindow( "SegImage", cv::WINDOW_AUTOSIZE );// Create a window for display.
+
+        char trackbarName[50];
+        sprintf( trackbarName, "Slice (%zu): ", numSlices );
+
+        cv::createTrackbar(trackbarName, "SegImage", &current, numSlices - 1, onSliceChange, segManager);
+
+        onSliceChange(0, segManager);
+        cv::waitKey(0);
+    }
+
+private:
+    int current;
+    SegmentationManager* segManager;
+};
+
+
 CliApplication::CliApplication( int argc, char *argv[] )
 {
-    std::vector<std::string> filenames;
-
-    for( int i = 1; i < argc; i++ ) {
-        filenames.push_back(argv[i]);
-    }
-
-    segManager.setSlices(filenames);
+    this->argc = argc;
+    this->argv = argv;
 }
 
-void CliApplication::definePhasisSeeds( int sliceNumber )
-{
-    Slice* slice = segManager.getSlice(sliceNumber);
-
-    std::string seedsFileName = slice->getFilename() + ".seeds";
-
-    std::fstream file;
-    int sA_x, sA_y, sB_x, sB_y;
-
-    file.open(seedsFileName, std::fstream::in);
-
-    if (!file) {
-        std::cerr << "Error: Seeds file cannot be loaded!" << std::endl;
-        return;
-    }
-
-    std::vector<Seed> seeds;
-    int i = 0;
-
-    while (file >> sA_x >> sA_y >> sB_x >> sB_y) {
-        seeds.push_back(Seed(slice->getImg(), i++, Point(sA_x, sA_y), Point(sB_x, sB_y)));
-    }
-
-    slice->setSeeds(seeds);
-}
-
-void displayImage(std::string title, cv::Mat img, int x = 0, int y = 100) {
-    if( img.rows > 1000 ) {
-        int newHigh = 600;
-        int newWidth = img.cols * newHigh / img.rows;
-        cv::resize(img, img, cv::Size(newWidth, newHigh));
-    }
-
-    cv::namedWindow(title, cv::WINDOW_AUTOSIZE);
-    cv::moveWindow(title, x, y);
-    cv::imshow(title, img);
-}
-
-cv::Mat CliApplication::colorizeLabels(cv::Mat labels, std::vector<Seed> seeds)
+cv::Mat CliApplication::colorizeLabels(cv::Mat labels)
 {
     cv::Mat res(labels.rows, labels.cols, CV_8UC3);
     res = cv::Scalar( 0 );
@@ -84,47 +95,62 @@ cv::Mat CliApplication::colorizeLabels(cv::Mat labels, std::vector<Seed> seeds)
 
 int CliApplication::exec()
 {
+    po::options_description desc("Allowed options");
+    desc.add_options()
+        ("help,h", "produce help message")
+        ("images,i", po::value< std::vector<std::string> >(), "images to import")
+        ("project,p", po::value< std::string >(), "project file")
+        ("segment,s", "segments the volume")
+        ("display,d", "displays the result in a basic GUI")
+        ("output,o", po::value< std::string >(), "path to resulting *.mrc file")
+        ("export,e", po::value< std::string >(), "folder path to exporting image slices")
+    ;
+
+    po::positional_options_description p;
+    p.add("images", -1);
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(this->argc, this->argv).
+              options(desc).positional(p).run(), vm);
+    po::notify(vm);
+
+    if ( vm.count("help") ) {
+        std::cout << "Usage: TomSeg [options]\n";
+        std::cout << desc;
+        return EXIT_SUCCESS;
+    }
+
+    if ( vm.count("images") && !vm.count("project") ) {
+        segManager = SegmentationManager();
+        std::vector<std::string> filenames =  vm["images"].as< std::vector<std::string> >();
+        segManager.setSlices( filenames );
+    }
+
+    if( vm.count("project") ) {
+        segManager = SegmentationManager( vm["project"].as< std::string >() );
+    }
+
+
     if( segManager.isEmpty() ) {
-        return 0;
+        return -1;
     }
 
-    this->definePhasisSeeds(0);
-
-    segManager.alignSlices(0, Point(176, 1375), 488-176, 1504-1375);
-
-    cv::vector<Slice>& slices = segManager.getSlices();
-
-    Slice* slice = &slices[0];
-
-    std::vector<Seed>& seeds = slice->getSeeds();
-    slice->setMinimumFeatureSize(20);
-
-    segManager.segment();
-
-
-    for( int i = 0; i < slices.size(); i++ ) {
-        Slice& s = slices[i];
-
-        cv::Mat res = colorizeLabels(s.getSegmentationResult(), seeds);
-
-         // cv::imwrite( "/Users/Paulo/Projetos/Tese/TomSeg/datasets/ROI/result/sliceRes_" + std::to_string(i+1) + ".jpg", res);
-
-        // displayImage("Slice " + std::to_string(i+1) + " Subtracted", res, 650);
+    if( vm.count("segment") ) {
+        segManager.segment();
     }
 
-
-    cv::Mat imgWithSeeds;
-    cv::cvtColor(slice->getImg(), imgWithSeeds, cv::COLOR_GRAY2BGR);
-    for( Seed s : seeds ) {
-        s.draw(imgWithSeeds);
+    if( vm.count("output") ) {
+        segManager.exportResult( vm["output"].as< std::string >() );
     }
 
-    displayImage("Original With Seeds", imgWithSeeds);
+    if( vm.count("export") ) {
+        segManager.exportSlicesImages( vm["export"].as< std::string >() );
+    }
 
+    if( vm.count("display") ) {
+        SliceDisplayer displayer(&segManager);
+        displayer.display();
+    }
 
-    cv::waitKey(0);
-
-
-
-    return 1;
+    return EXIT_SUCCESS;
 }
