@@ -55,6 +55,7 @@ void Importer::importProject(std::string path)
             if( sliceInfo.find("path") != sliceInfo.end() ) {
                 std::string path = sliceInfo["path"];
                 Slice slice(path);
+
                 try {
                     Point a(sliceInfo["ROI"]["x"], sliceInfo["ROI"]["y"]);
                     slice.crop( a, sliceInfo["ROI"]["width"], sliceInfo["ROI"]["height"] );

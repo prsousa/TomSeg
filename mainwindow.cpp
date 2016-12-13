@@ -276,7 +276,6 @@ void MainWindow::updateSlicesUI() {
 
         resetCrop();
     }
-
 }
 
 void MainWindow::importFileDialog()
@@ -321,7 +320,7 @@ void MainWindow::saveProjectDialog()
     QString defaultDir = (projectFolderPath.empty()) ? QDir::homePath() : QString::fromStdString(projectFolderPath);
     QString filename = QFileDialog::getSaveFileName(
             this,
-            tr("Save Project"),
+            tr("Save Project As"),
             defaultDir,
             tr("TomSeg (*.tms)") );
 

@@ -155,7 +155,11 @@ void normalize(T* arr, size_t size) {
 
     T amplitude = max - min;
     for( size_t i = 0; i < size; i++ ) {
-        arr[i] = (arr[i] - min) / amplitude;
+        if( amplitude == 0 ) {
+            arr[i] = 0;
+        } else {
+            arr[i] = (arr[i] - min) / amplitude;
+        }
     }
 }
 

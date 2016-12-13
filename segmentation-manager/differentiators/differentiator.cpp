@@ -49,7 +49,7 @@ void Differentiator::apply()
         cv::Mat diff = abs( img0 - img1 );
         // displayImageApagar2("Diff", diff);
 
-        cv::threshold( diff, diff, 30, 255, 0 );
+        cv::threshold( diff, diff, 15, 255, 0 );
 
         // displayImageApagar2("Diff", diff);
 

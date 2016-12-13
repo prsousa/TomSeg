@@ -102,7 +102,7 @@ int CliApplication::exec()
         ("project,p", po::value< std::string >(), "project file")
         ("segment,s", "segments the volume")
         ("display,d", "displays the result in a basic GUI")
-        ("output,o", po::value< std::string >(), "path to resulting *.mrc file")
+        ("output,o", po::value< std::string >(), "folder path to resulting *.mrc files")
         ("export,e", po::value< std::string >(), "folder path to exporting image slices")
     ;
 
@@ -132,7 +132,8 @@ int CliApplication::exec()
 
 
     if( segManager.isEmpty() ) {
-        return -1;
+        std::cerr << "Empty Project (--help)" << std::endl;
+        return EXIT_FAILURE;
     }
 
     if( vm.count("segment") ) {
