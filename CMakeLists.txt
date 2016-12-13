@@ -1,24 +1,34 @@
-project( TomSeg )
-cmake_minimum_required( VERSION 2.8 )
-find_package( CUDA REQUIRED )
-find_package( OpenCV REQUIRED )
-find_package( Boost COMPONENTS program_options )
+PROJECT( TomSeg )
+CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
+FIND_PACKAGE( CUDA REQUIRED )
+FIND_PACKAGE( OpenCV REQUIRED )
+FIND_PACKAGE( Boost COMPONENTS program_options )
 
-set( CMAKE_CXX_FLAGS "-std=c++11 -O3" )
-# set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_21 )
+INCLUDE_DIRECTORIES (
+  ${Boost_INCLUDE_DIRS}
+)
 
-cuda_add_library( CudaObjs
-    segmentation-manager/segmentors/cuda-kernels.cu )
+SET( CMAKE_CXX_FLAGS "-std=c++11 -O3" )
 
-file( GLOB SRC_LIST main.cpp cliapplication.cpp cliapplication.h )
+# SET( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_21 )
+SET( CUDA_PROPAGATE_HOST_FLAGS OFF )
+SET( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11 )
 
-add_subdirectory( segmentation-manager )
+CUDA_ADD_LIBRARY( CudaObjs
+    segmentation-manager/segmentors/cuda-kernels.cu
+)
 
-add_executable( ${PROJECT_NAME} ${SRC_LIST} )
+FILE( GLOB SRC_LIST main.cpp cliapplication.cpp cliapplication.h )
 
-add_definitions(-D CLI)
+ADD_SUBDIRECTORY( segmentation-manager )
 
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${Boost_LIBRARIES} )
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${OpenCV_LIBS} )
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} CudaObjs )
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} SegmentationManager )
+ADD_EXECUTABLE( ${PROJECT_NAME} ${SRC_LIST} )
+
+ADD_DEFINITIONS( -D CLI )
+
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME}
+    SegmentationManager
+    CudaObjs
+    ${Boost_LIBRARIES}
+    ${OpenCV_LIBS}
+)
