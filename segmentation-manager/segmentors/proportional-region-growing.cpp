@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <chrono>
 
 #include "proportional-region-growing.h"
 #include "../point.h"
@@ -53,6 +54,7 @@ cv::Mat Erode(cv::Mat masks, int size) {
 
     size = size / 2;
 
+// #pragma omp parallel for
     for( int i = 0; i < masks.rows; i++ ) {
         for( int j = 0; j < masks.cols; j++ ) {
 
@@ -79,7 +81,7 @@ cv::Mat Dilate(cv::Mat masks, int size) {
     masks.copyTo(res);
 
     size = size / 2;
-
+// #pragma omp parallel for
     for( int i = 0; i < masks.rows; i++ ) {
         for( int j = 0; j < masks.cols; j++ ) {
 
@@ -289,7 +291,7 @@ void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res) {
     std::cout << this->useGPU << std::endl;
     if( this->useGPU ) {
         std::cerr << "\tUsing GPU" << std::endl;
-        erodeAndDilate_GPU(&(res.at<u_char>(0)), this->morphologicalSize, res.cols, res.rows);
+        erodeAndDilate_GPU(&(res.at<uchar>(0)), this->morphologicalSize, res.cols, res.rows);
     } else {
         std::cerr << "\tUsing CPU" << std::endl;
         res = Erode(res, this->morphologicalSize);
@@ -388,6 +390,7 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     cout << "Morphological Filtering" << endl;
     std::chrono::steady_clock::time_point morphologicalFilteringBeginTime = std::chrono::steady_clock::now();
     if( this->morphologicalSize > 1 ) {
+        std::cout << morphologicalSize << std::endl << std::flush;
         this->MorphologicalFiltering(res);
     }
     std::chrono::steady_clock::time_point morphologicalFilteringEndTime = std::chrono::steady_clock::now();
