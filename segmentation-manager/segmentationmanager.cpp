@@ -33,13 +33,15 @@ void SegmentationManager::setSlices(vector<string> &filenames)
     vector<string>::iterator i;
     for( i = filenames.begin(); i != filenames.end(); i++ ) {
         string imagename = *i;
-        slices.push_back( Slice(imagename) );
+        this->addSlice( Slice(imagename) );
     }
 }
 
 void SegmentationManager::addSlice(Slice slice)
 {
-    slices.push_back( slice );
+    if( !slice.getImg().empty() ) {
+        slices.push_back( slice );
+    }
 }
 
 void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Seed>& seeds)
