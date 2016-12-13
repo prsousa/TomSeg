@@ -1,22 +1,22 @@
-#define GUI 0
+// #define CLI
 
-#if GUI
+#ifdef CLI
+#include "cliapplication.h"
+#else
 #include "mainwindow.h"
 #include <QApplication>
-#else
-#include "cliapplication.h"
 #endif
 
 int main(int argc, char *argv[])
 {
-#if GUI
+#ifdef CLI
+    CliApplication cliApp(argc, argv);
+    return cliApp.exec();
+#else
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
 
     return a.exec();
-#else
-    CliApplication cliApp(argc, argv);
-    return cliApp.exec();
 #endif
 }
