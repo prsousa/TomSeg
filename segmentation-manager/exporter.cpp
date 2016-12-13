@@ -93,7 +93,7 @@ void Exporter::exportResult( std::string path )
         files[i].close();
     }
 
-    delete files;
+    delete[] files;
 }
 
 void Exporter::exportSlicesImages(std::string path, const std::string extension)
