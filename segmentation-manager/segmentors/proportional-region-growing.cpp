@@ -167,8 +167,8 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
                 int blurSiz = 9 / 2;
                 int n = 0;
 
-                for(int b = max(p.y - blurSiz, 0); b <= min(p.y + blurSiz, img.rows); b++) {
-                    for(int a = max(p.x - blurSiz, 0); a <= min(p.x + blurSiz, img.cols); a++) {
+                for(int b = max(p.y - blurSiz, 0); b <= min(p.y + blurSiz, img.rows - 1); b++) {
+                    for(int a = max(p.x - blurSiz, 0); a <= min(p.x + blurSiz, img.cols - 1); a++) {
                         bluredIntensity += (int) img.at<uchar>(b, a);
                         n++;
                     }
