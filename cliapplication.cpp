@@ -100,6 +100,7 @@ int CliApplication::exec()
         ("help,h", "produce help message")
         ("images,i", po::value< std::vector<std::string> >(), "images to import")
         ("project,p", po::value< std::string >(), "project file")
+        ("gpu", po::value< bool >()->implicit_value(true), "enable/disable GPU optimizations")
         ("segment,s", "segments the volume")
         ("display,d", "displays the result in a basic GUI")
         ("output,o", po::value< std::string >(), "folder path to resulting *.mrc files")
@@ -128,6 +129,10 @@ int CliApplication::exec()
 
     if( vm.count("project") ) {
         segManager = SegmentationManager( vm["project"].as< std::string >() );
+    }
+
+    if( vm.count("gpu") ) {
+        segManager.setUseGPU( vm["gpu"].as< bool >() );
     }
 
 
