@@ -74,6 +74,7 @@ void MainWindow::updateSeedsTable()
         QTableWidgetItem* heightItem = new QTableWidgetItem();
 
         Seed::getColor( seed.getId(), color );
+        colorItem->setText( QString::number(seed.getId()) );
         colorItem->setData(Qt::BackgroundRole, QColor( color[0], color[1], color[2] ));
         colorItem->setCheckState( seed.active ? Qt::Checked : Qt::Unchecked );
         xItem->setText( QString::number(seed.a.x) );
@@ -108,17 +109,19 @@ void MainWindow::on_seedsTableWidget_itemChanged(QTableWidgetItem* item)
     Slice* slice = segManager.getSlice(currentSliceIndex);
     Seed& seed = slice->getSeeds()[rowIndex];
 
+    int id = ui->seedsTableWidget->item( rowIndex, 0 )->text().toInt();
     int x = ui->seedsTableWidget->item( rowIndex, 1 )->text().toInt();
     int y = ui->seedsTableWidget->item( rowIndex, 2 )->text().toInt();
     int width = ui->seedsTableWidget->item( rowIndex, 3 )->text().toInt();
     int height = ui->seedsTableWidget->item( rowIndex, 4 )->text().toInt();
     Point a( x, y );
     Point b( x + width, y + height );
-    Seed newSeed(slice->getImg(), seed.getId(), a, b);
+    Seed newSeed(slice->getImg(), id, a, b);
 
     slice->getSeeds()[rowIndex] = newSeed;
 
     sliceScene->updateSeedsDisplayer();
+    this->updateSeedsTable();
 }
 
 void MainWindow::on_removeSeedButton_released()
