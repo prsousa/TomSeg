@@ -101,7 +101,7 @@ int CliApplication::exec()
         ("images,i", po::value< std::vector<std::string> >(), "images to import")
         ("project,p", po::value< std::string >(), "project file")
         ("gpu", po::value< bool >()->implicit_value(true), "enable/disable GPU optimizations")
-        ("segment,s", "segments the volume")
+        ("segment,s", po::value< int >()->implicit_value(1), "segments the volume")
         ("display,d", "displays the result in a basic GUI")
         ("output,o", po::value< std::string >(), "folder path to resulting *.mrc files")
         ("export,e", po::value< std::string >(), "folder path to exporting image slices")
@@ -142,7 +142,9 @@ int CliApplication::exec()
     }
 
     if( vm.count("segment") ) {
-        segManager.segment();
+        for( int i = 0; i < vm["segment"].as< int >(); i++ ) {
+            segManager.segment();
+        }
     }
 
     if( vm.count("output") ) {
