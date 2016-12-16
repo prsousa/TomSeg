@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include "proportional-region-growing.h"
+#include <opencv2/gpu/gpu.hpp>
 #include "../point.h"
 
 using namespace std;
@@ -289,13 +290,26 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 
 void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res) {
     std::cout << this->useGPU << std::endl;
+
+    int erosion_size = this->morphologicalSize / 2;
+    cv::Mat element = cv::getStructuringElement( cv::MORPH_ELLIPSE,
+        cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+        cv::Point(erosion_size, erosion_size)
+    );
+
     if( this->useGPU ) {
         std::cerr << "\tUsing GPU" << std::endl;
-        erodeAndDilate_GPU(&(res.at<uchar>(0)), this->morphologicalSize, res.cols, res.rows);
+        //erodeAndDilate_GPU(&(res.at<uchar>(0)), this->morphologicalSize, res.cols, res.rows);
+        cv::gpu::GpuMat src_gpu, dst_gpu;
+        cv::gpu::Stream stream;
+        stream.enqueueUpload(res, src_gpu);
+        cv::gpu::morphologyEx(src_gpu,dst_gpu, cv::MORPH_OPEN, element);
+        stream.enqueueDownload(dst_gpu, res);
     } else {
         std::cerr << "\tUsing CPU" << std::endl;
-        res = Erode(res, this->morphologicalSize);
-        res = Dilate(res, this->morphologicalSize);
+        cv::morphologyEx(res, res, cv::MORPH_OPEN, element);
+        // res = Erode(res, this->morphologicalSize);
+        // res = Dilate(res, this->morphologicalSize);
     }
 }
 
