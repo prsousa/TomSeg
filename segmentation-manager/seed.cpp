@@ -179,10 +179,8 @@ Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, float* 
         avgDiffs[i] = std::abs( this->average - s.average );
         stdDevDiffs[i] = std::abs( this->relativeStdDev - s.relativeStdDev );
 
-        cout << "Parcelar Grade (#"<< i << ")\t" << avgDiffs[i] << "\t" << stdDevDiffs[i] << "\t" << dists[i] << endl;
+        //cout << "Parcelar Grade (#"<< i << ")\t" << avgDiffs[i] << "\t" << stdDevDiffs[i] << "\t" << dists[i] << endl;
     }
-
-    cout << endl;
 
     normalize(avgDiffs, seeds.size());
     normalize(stdDevDiffs, seeds.size());
@@ -202,7 +200,7 @@ Seed* Seed::getBestGradedSeed(std::vector<Seed> &seeds, cv::Mat& labels, float* 
             res = &seeds[i];
         }
 
-        cout << "Grade (#"<< i << ")" << finalGrade << "\t" << avgGrade << "\t" << stdDevGrade << "\t" << distanceGrade << endl;
+        // cout << "Grade (#"<< i << ")" << finalGrade << "\t" << avgGrade << "\t" << stdDevGrade << "\t" << distanceGrade << endl;
     }
 
     delete avgDiffs;

@@ -1,3 +1,6 @@
+#include <chrono>
+#include <iostream>
+
 #include "segmentationmanager.h"
 
 #include "segmentors/segmenter.h"
@@ -201,15 +204,21 @@ cv::Mat SegmentationManager::segment()
 
     slicesWithSeedsIndex.push_back( this->slices.size() ); // "hack" to make intervals work
 
-    for( int i = 0; i < slicesWithSeedsIndex.size() - 1; i++ ) {
+    for( size_t i = 0; i < slicesWithSeedsIndex.size() - 1; i++ ) {
         int firstSliceIndex = slicesWithSeedsIndex[i];
         int lastSliceIndex = slicesWithSeedsIndex[i + 1];
 
         Slice& slice = this->slices[ firstSliceIndex ];
+
+        std::chrono::steady_clock::time_point beginSegmentationTime = std::chrono::steady_clock::now();
+
         ProportionalRegionGrowing segmenter(slice, this->minimumFeatureSize, this->morphologicalSize);
         segmenter.setUseGPU( this->useGPU );
         res = segmenter.Apply();
         slice.setSegmentationResult(res);
+
+        std::chrono::steady_clock::time_point endSegmentationTime = std::chrono::steady_clock::now();
+        std::cout << "SegTime:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endSegmentationTime - beginSegmentationTime).count() << std::endl << std::endl;
 
         // Apply differences to slices in between
         Differentiator dif(this->slices.begin() + firstSliceIndex, this->slices.begin() + lastSliceIndex);

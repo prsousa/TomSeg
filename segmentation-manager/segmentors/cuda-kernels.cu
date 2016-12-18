@@ -1,7 +1,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#define CUDA_DEBUG 1
+#define CUDA_DEBUG 0
 
 #if CUDA_DEBUG
 #include <stdio.h>
