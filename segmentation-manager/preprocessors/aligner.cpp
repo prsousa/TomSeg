@@ -61,31 +61,32 @@ void Aligner::apply()
     applyDeltas( deltas );
 }
 
-void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
+void Aligner::apply(cv::Mat &masterImg, const Point a, const size_t width, const size_t height)
 {
     cv::Rect roi(a.x, a.y, width, height);
     const cv::Mat templ = masterImg(roi);
 
-    int numSlices = lastSlice - firstSlice;
+    const int numSlices = lastSlice - firstSlice;
 
     std::vector<Point> deltas(numSlices);
 
-    std::vector<Slice>::iterator it;
-    #pragma omp parallel for shared(templ) // num_threads(8)
+    const int initROIX = std::max( 0, a.x - this->maxDeltaX );
+    const int initROIY = std::max( 0, a.y - this->maxDeltaY );
+
+    const int localTemplX = std::min( this->maxDeltaX, a.x );
+    const int localTemplY = std::min( this->maxDeltaY, a.y );
+
+
+    #pragma omp parallel for shared(deltas) default(none) // num_threads(8)
     for( int i = 0; i < numSlices; i++ ) {
         Slice& slice = *(i + firstSlice);
         cv::Mat sliceImg = slice.getImg();
 
-        int initROIX = std::max( 0, a.x - this->maxDeltaX );
-        int initROIY = std::max( 0, a.y - this->maxDeltaY );
         int finalROIX = std::min( sliceImg.cols, a.x + (int) width + this->maxDeltaX );
         int finalROIY = std::min( sliceImg.rows, a.y + (int) height + this->maxDeltaY );
-
-        int localTemplX = std::min( this->maxDeltaX, a.x );
-        int localTemplY = std::min( this->maxDeltaY, a.y );
-
         cv::Rect searchAreaROI( initROIX, initROIY, finalROIX - initROIX, finalROIY - initROIY );
         cv::Mat searchArea = sliceImg( searchAreaROI );
+
         cv::Mat matchResult;
 
         cv::matchTemplate( searchArea, templ, matchResult, cv::TM_CCOEFF_NORMED );
@@ -107,14 +108,14 @@ void Aligner::apply(cv::Mat &masterImg, Point a, size_t width, size_t height)
 
 void Aligner::applyDeltas(std::vector<Point> deltas)
 {
-    int numSlices = lastSlice - firstSlice;
+    size_t numSlices = lastSlice - firstSlice;
 
     int maxRight = 0;
     int maxLeft = 0;
     int maxDown = 0;
     int maxUp = 0;
 
-    for( int i = 0; i < numSlices; i++ ) {
+    for( size_t i = 0; i < numSlices; i++ ) {
         int deltaX = deltas[i].x;
         int deltaY = deltas[i].y;
 
