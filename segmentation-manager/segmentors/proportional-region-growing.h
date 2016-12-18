@@ -20,6 +20,7 @@ class ProportionalRegionGrowing : public Segmenter
 {
 private:
     cv::Mat img;
+    cv::Mat bluredImg;
     std::vector<Seed> seeds;
     std::unordered_map< int, std::pair<int, int> > intervals;
     int minimumFeatureSize;

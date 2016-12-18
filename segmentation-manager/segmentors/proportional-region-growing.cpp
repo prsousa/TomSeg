@@ -13,6 +13,8 @@ bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
 
 ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice, int minimumFeatureSize, int morphologicalSize) {
     this->img = slice.getImg();
+    cv::blur( this->img, this->bluredImg, cv::Size(9,9) );
+
     this->seeds = slice.getSeeds();
     this->minimumFeatureSize = minimumFeatureSize;
     this->morphologicalSize = morphologicalSize;
@@ -166,20 +168,7 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
         queue.pop_back();
 
         if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) && res.at<uchar>(p.y, p.x) == EMPTY ) {
-            int bluredIntensity = 0;
-            {
-                int blurSiz = 9 / 2;
-                int n = 0;
-
-                for(int b = max(p.y - blurSiz, 0); b <= min(p.y + blurSiz, img.rows - 1); b++) {
-                    for(int a = max(p.x - blurSiz, 0); a <= min(p.x + blurSiz, img.cols - 1); a++) {
-                        bluredIntensity += (int) img.at<uchar>(b, a);
-                        n++;
-                    }
-                }
-
-                if(n) bluredIntensity = bluredIntensity / n;
-            }
+            int bluredIntensity = bluredImg.at<uchar>(p.y, p.x);
 
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
                 res.at<uchar>(p.y, p.x) = seedId;
