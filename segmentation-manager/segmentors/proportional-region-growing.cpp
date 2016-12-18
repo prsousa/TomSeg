@@ -5,6 +5,8 @@
 #include "proportional-region-growing.h"
 #include "../point.h"
 
+#define SEG_DEBUG 0
+
 using namespace std;
 
 bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
@@ -25,21 +27,22 @@ ProportionalRegionGrowing::ProportionalRegionGrowing(Slice slice, int minimumFea
 
     for( size_t i = 0; i < sortedSeeds.size() - 1; i++ ) {
         int interval = sortedSeeds[i].relativeStdDev * ((sortedSeeds[i+1].average - sortedSeeds[i].average) * 1.0f / (sortedSeeds[i].relativeStdDev + sortedSeeds[i+1].relativeStdDev) * 1.0f);
-//        cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].stdDev << "\t int: " << interval << endl;
         chunks.push_back( sortedSeeds[i].average + interval );
+        if( SEG_DEBUG ) cout << "SeedSorted #" << i << "\tμ: " << this->seeds[i].average << "\tσ: " << this->seeds[i].relativeStdDev << "\t int: " << interval << endl;
     }
 
     chunks.push_back(255);
 
     for( size_t i = 0; i < sortedSeeds.size(); i++ ) {
         Seed s = sortedSeeds[i];
-        cout << "-" << s.getId() << endl;
         this->intervals[s.getId()] = std::make_pair(chunks[i], chunks[i+1]);
+        if( SEG_DEBUG ) cout << "-" << s.getId() << endl;
     }
 
-
-    for(int interval : chunks) {
-        cout << interval << endl;
+    if( SEG_DEBUG ) {
+        for(int interval : chunks) {
+            cout << interval << endl;
+        }
     }
 }
 
@@ -120,7 +123,6 @@ bool ProportionalRegionGrowing::FindNextSeed( Seed* res, cv::Mat labels, int min
             }
         }
     }
-
 
     return false;
 }
@@ -217,7 +219,7 @@ bool standardDeviationJudge(int intensity, void* aditionalJudgeParams) {
 void ProportionalRegionGrowing::InitialConquer(cv::Mat& res) {
     int proportionalSeedIntervals[2];
 
-    for(Seed seed : this->seeds) {
+    for( Seed seed : this->seeds ) {
         std::pair<int, int> localInterval = this->intervals[seed.getId()];
         proportionalSeedIntervals[0] = localInterval.first;    // inferior histogram limmit
         proportionalSeedIntervals[1] = localInterval.second;  // superior histogram limmit
@@ -249,21 +251,21 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
             proportionalSeedIntervals[0] = localInterval.first;     // inferior histogram limmit
             proportionalSeedIntervals[1] = localInterval.second;    // superior histogram limmit
 
-            cout << "Similar Seed: " << nextSeed.getId() << endl;
+            if( SEG_DEBUG ) cout << "Similar Seed: " << nextSeed.getId() << endl;
 
             this->RegionGrowing( res, nextSeed, proportionalJudge, proportionalSeedIntervals);
         } else {
             // TODO: find out and apply convinient RegionGrowing
             // or endless FindNextSeed loop
-            cout << "Degenerated Seed Found" << endl;
-            cout << nextSeed << endl;
+            if( SEG_DEBUG ) cout << "Degenerated Seed Found" << endl;
+            if( SEG_DEBUG ) cout << nextSeed << endl;
 
 //            Seed similarByAvg = nextSeed.getMoreSimilarSeedByAvg( this->seeds );
 //            Seed similarByStdDev = nextSeed.getMoreSimilarSeedByStdDev( this->seeds );
 
             float grade;
             Seed* bestGradedSeed = nextSeed.getBestGradedSeed(this->seeds, res, &grade);
-            cout << "Similar: \t" << bestGradedSeed->getId() << "\tGrade: " << grade << endl;
+            if( SEG_DEBUG ) cout << "Similar: \t" << bestGradedSeed->getId() << "\tGrade: " << grade << endl;
 
 //            {
 //                cv::Mat imgWithNewSeed;
@@ -288,12 +290,11 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
 }
 
 void ProportionalRegionGrowing::MorphologicalFiltering(cv::Mat& res) {
-    std::cout << this->useGPU << std::endl;
     if( this->useGPU ) {
-        std::cerr << "\tUsing GPU" << std::endl;
+        std::cout << "\tUsing GPU" << std::endl;
         erodeAndDilate_GPU(&(res.at<uchar>(0)), this->morphologicalSize, res.cols, res.rows);
     } else {
-        std::cerr << "\tUsing CPU" << std::endl;
+        std::cout << "\tUsing CPU" << std::endl;
         res = Erode(res, this->morphologicalSize);
         res = Dilate(res, this->morphologicalSize);
     }
@@ -366,7 +367,7 @@ void ProportionalRegionGrowing::FillTinyHoles(cv::Mat& res) {
     }
 
     int total = res.rows * res.cols;
-    cout << "Empty: " << count << " of " << total << " (" << (count*1.0f / total) * 100 << "%)" << endl;
+    if( SEG_DEBUG ) cout << "Empty: " << count << " of " << total << " (" << (count*1.0f / total) * 100 << "%)" << endl;
 }
 
 void ProportionalRegionGrowing::setUseGPU(bool value) {
@@ -377,25 +378,20 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( EMPTY ); // start with no material
 
-    cout << "Initial Conquer" << endl;
     std::chrono::steady_clock::time_point initialConquerBeginTime = std::chrono::steady_clock::now();
     this->InitialConquer(res);
     std::chrono::steady_clock::time_point initialConquerEndTime = std::chrono::steady_clock::now();
 
-    cout << "Automatic Conquer" << endl;
     std::chrono::steady_clock::time_point automaticConquerBeginTime = std::chrono::steady_clock::now();
     this->AutomaticConquer(res);
     std::chrono::steady_clock::time_point automaticConquerEndTime = std::chrono::steady_clock::now();
 
-    cout << "Morphological Filtering" << endl;
     std::chrono::steady_clock::time_point morphologicalFilteringBeginTime = std::chrono::steady_clock::now();
     if( this->morphologicalSize > 1 ) {
-        std::cout << morphologicalSize << std::endl << std::flush;
         this->MorphologicalFiltering(res);
     }
     std::chrono::steady_clock::time_point morphologicalFilteringEndTime = std::chrono::steady_clock::now();
 
-    cout << "Fill Tiny Holes" << endl;
     std::chrono::steady_clock::time_point fillTinyGapsBeginTime = std::chrono::steady_clock::now();
     this->FillTinyHoles(res);
     std::chrono::steady_clock::time_point fillTinyGapsEndTime = std::chrono::steady_clock::now();
