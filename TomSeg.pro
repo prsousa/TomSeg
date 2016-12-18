@@ -119,6 +119,14 @@ INCLUDEPATH += /usr/local/Cellar/nlohmann_json/2.0.8/include
 LIBS += /usr/local/lib/libboost_program_options.dylib
 #</ProgramOptions_CLI>
 
+#<O3>
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -O3
+
+QMAKE_LFLAGS_RELEASE -= -O1
+QMAKE_LFLAGS_RELEASE += -O3
+#</O3>
+
 RESOURCES += \
     icons.qrc
 
