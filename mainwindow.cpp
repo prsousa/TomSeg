@@ -275,10 +275,11 @@ void MainWindow::updateSlicesUI() {
         ui->morphologicalSizeSpinBox->setValue( segManager.getMorphologicalSize() );
 
         ui->actionUseGPU->triggered( segManager.getUseGPU() );
-        updateSaveStatus();
 
         resetCrop();
     }
+
+    updateSaveStatus();
 }
 
 void MainWindow::importFileDialog()
@@ -378,6 +379,7 @@ void MainWindow::updateSaveStatus()
 {
     std::string projectFilename = segManager.getProjectFilename();
     ui->actionSave->setEnabled( !projectFilename.empty() );
+    ui->actionSave_As->setEnabled( segManager.size() > 0 );
 
     std::string projectName = projectFilename.empty() ? "Untitled" : projectFilename;
     this->setWindowTitle("Tom Seg - " + QString::fromStdString(projectName) );
