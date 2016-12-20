@@ -147,7 +147,7 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
 inline
 __attribute__((always_inline))
 void ProportionalRegionGrowing::enqueuePoint(cv::Mat& m, std::vector<Point>& queue, Point p) {
-    if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x + 1 < img.cols && m.at<uchar>(p.y, p.x) == EMPTY ) {
+    if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && m.at<uchar>(p.y, p.x) == EMPTY ) {
         queue.push_back( p );
     }
 }
