@@ -105,19 +105,25 @@ void onSliceChange( int a, void* data ) {
         int newHight = 600;
         int newWidth = image.cols * newHight / image.rows;
         cv::resize(image, imgResized, cv::Size(newWidth, newHight));
-        cv::resize(labels, labelsResized, cv::Size(newWidth, newHight));
+        if( !labels.empty() ) cv::resize(labels, labelsResized, cv::Size(newWidth, newHight));
     } else {
         imgResized = image;
         labelsResized = labels;
     }
 
-    cv::Mat imgCombined;
-    float alpha = 1.0 - ( sliceDisplayer->getLabelsAlpha() / 100.f );
-    float beta = ( 1.0 -  alpha);
-    cv::cvtColor( imgResized, imgResized, CV_GRAY2RGB );
-    cv::addWeighted( imgResized, alpha, labelsResized, beta, 0.0, imgCombined);
+    cv::Mat imgShow;
+    if( !labelsResized.empty() ) {
+        cv::Mat imgCombined;
+        float alpha = 1.0 - ( sliceDisplayer->getLabelsAlpha() / 100.f );
+        float beta = ( 1.0 -  alpha);
+        cv::cvtColor( imgResized, imgResized, CV_GRAY2RGB );
+        cv::addWeighted( imgResized, alpha, labelsResized, beta, 0.0, imgCombined);
+        imgShow = imgCombined;
+    } else {
+        imgShow = imgResized;
+    }
 
-    cv::imshow( sliceDisplayer->getWindowName(), imgCombined );
+    cv::imshow( sliceDisplayer->getWindowName(), imgShow );
 }
 
 
