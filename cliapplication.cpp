@@ -11,62 +11,60 @@
 
 namespace po = boost::program_options;
 
-void onSliceChange( int a, void* data ) {
-    SegmentationManager* segManager = (SegmentationManager*) data;
-    int numSlices = segManager->size();
-
-    if( a >= numSlices ) { return; }
-
-    Slice* slice = segManager->getSlice(a);
-    cv::Mat& image = slice->getImg();
-
-    cv::Mat imgResized;
-    if( image.rows > 1000 ) {
-        int newHight = 600;
-        int newWidth = image.cols * newHight / image.rows;
-        cv::resize(image, imgResized, cv::Size(newWidth, newHight));
-    } else {
-        imgResized = image;
-    }
-
-    cv::imshow( "SegImage", imgResized );
-}
+void onSliceChange( int a, void* data );
+static int windowId = 0;
 
 class SliceDisplayer
 {
     public:
-    SliceDisplayer(SegmentationManager* segManager) {
+    SliceDisplayer(SegmentationManager* segManager) : SliceDisplayer( segManager, "SegResult") {
+        this->windowName += "_" + std::to_string(windowId++);
+    }
+
+    SliceDisplayer(SegmentationManager* segManager, std::string windowName ) {
         this->segManager = segManager;
-        current = 0;
+        this->windowName = windowName;
+        this->current = 0;
+        this->labelsAlpha = 70;
     }
 
     void display() {
         size_t numSlices = segManager->size();
+        cv::namedWindow( windowName, cv::WINDOW_AUTOSIZE );// Create a window for display.
 
-        cv::namedWindow( "SegImage", cv::WINDOW_AUTOSIZE );// Create a window for display.
+        std::string sliceTrackbarName = "Slice (" + std::to_string(numSlices) + ")";
 
-        char trackbarName[50];
-        sprintf( trackbarName, "Slice (%zu): ", numSlices );
+        cv::createTrackbar(sliceTrackbarName, windowName, &current, numSlices - 1, onSliceChange, this);
+        cv::createTrackbar("Alpha", windowName, &this->labelsAlpha, 100, onSliceChange, this);
 
-        cv::createTrackbar(trackbarName, "SegImage", &current, numSlices - 1, onSliceChange, segManager);
-
-        onSliceChange(0, segManager);
+        onSliceChange(0, this);
         cv::waitKey(0);
+    }
+
+    SegmentationManager* getSegmentationManager() const {
+        return this->segManager;
+    }
+
+    std::string getWindowName() const {
+        return this->windowName;
+    }
+
+    int getLabelsAlpha() const {
+        return labelsAlpha;
+    }
+
+    int getCurrent() const {
+        return current;
     }
 
 private:
     int current;
+    std::string windowName;
+    int labelsAlpha;
     SegmentationManager* segManager;
 };
 
-
-CliApplication::CliApplication( int argc, char *argv[] )
-{
-    this->argc = argc;
-    this->argv = argv;
-}
-
-cv::Mat CliApplication::colorizeLabels(cv::Mat labels)
+cv::Mat colorizeLabels(cv::Mat& labels)
 {
     cv::Mat res(labels.rows, labels.cols, CV_8UC3);
     res = cv::Scalar( 0 );
@@ -92,6 +90,44 @@ cv::Mat CliApplication::colorizeLabels(cv::Mat labels)
 
     return res;
 }
+
+void onSliceChange( int a, void* data ) {
+    SliceDisplayer* sliceDisplayer = (SliceDisplayer*) data;
+    SegmentationManager* segManager = sliceDisplayer->getSegmentationManager();
+
+    Slice* slice = segManager->getSlice( sliceDisplayer->getCurrent() );
+    cv::Mat& image = slice->getImg();
+    cv::Mat& segResult = slice->getSegmentationResult();
+    cv::Mat labels = colorizeLabels( segResult );
+
+    cv::Mat imgResized, labelsResized;
+    if( image.rows > 1000 ) {
+        int newHight = 600;
+        int newWidth = image.cols * newHight / image.rows;
+        cv::resize(image, imgResized, cv::Size(newWidth, newHight));
+        cv::resize(labels, labelsResized, cv::Size(newWidth, newHight));
+    } else {
+        imgResized = image;
+        labelsResized = labels;
+    }
+
+    cv::Mat imgCombined;
+    float alpha = 1.0 - ( sliceDisplayer->getLabelsAlpha() / 100.f );
+    float beta = ( 1.0 -  alpha);
+    cv::cvtColor( imgResized, imgResized, CV_GRAY2RGB );
+    cv::addWeighted( imgResized, alpha, labelsResized, beta, 0.0, imgCombined);
+
+    cv::imshow( sliceDisplayer->getWindowName(), imgCombined );
+}
+
+
+
+CliApplication::CliApplication( int argc, char *argv[] )
+{
+    this->argc = argc;
+    this->argv = argv;
+}
+
 
 int CliApplication::exec()
 {
