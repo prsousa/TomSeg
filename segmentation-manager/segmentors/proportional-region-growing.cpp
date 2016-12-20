@@ -144,6 +144,14 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
     cv::imshow(title, img);
 }
 
+inline
+_LIBCPP_INLINE_VISIBILITY
+void ProportionalRegionGrowing::enqueuePoint(cv::Mat& m, std::vector<Point>& queue, Point p) {
+    if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x + 1 < img.cols && m.at<uchar>(p.y, p.x) == EMPTY ) {
+        queue.push_back( p );
+    }
+}
+
 // TODO: this solution to improve the modularity may not be the best
 // instead of receiving the aditionalJudgeParams arg, it might be better
 // to create an object ProportinalJudge that encapsulates it
@@ -153,13 +161,13 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
     vector<Point> queue;
 
     for( int i = seed.a.y; i < seed.b.y; i++ ) {
-        queue.push_back(Point(seed.a.x - 1, i));
-        queue.push_back(Point(seed.b.x + 1, i));
+        enqueuePoint( res, queue, Point(seed.a.x - 1, i) );
+        enqueuePoint( res, queue, Point(seed.b.x + 1, i) );
     }
 
     for( int j = seed.a.x; j < seed.b.x; j++ ) {
-        queue.push_back(Point(j, seed.a.y - 1));
-        queue.push_back(Point(j, seed.b.y + 1));
+        enqueuePoint( res, queue,Point(j, seed.a.y - 1) );
+        enqueuePoint( res, queue,Point(j, seed.b.y + 1) );
     }
 
     while( !queue.empty() ) {
@@ -172,16 +180,16 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
                 res.at<uchar>(p.y, p.x) = seedId;
 
-                queue.push_back(Point(p.x + 1, p.y));
-                queue.push_back(Point(p.x - 1, p.y));
-                queue.push_back(Point(p.x, p.y - 1));
-                queue.push_back(Point(p.x, p.y + 1));
+                enqueuePoint( res, queue, Point(p.x + 1, p.y));
+                enqueuePoint( res, queue, Point(p.x - 1, p.y));
+                enqueuePoint( res, queue, Point(p.x, p.y - 1));
+                enqueuePoint( res, queue, Point(p.x, p.y + 1));
 
                 // corners (8-way)
-                queue.push_back(Point(p.x - 1, p.y - 1));
-                queue.push_back(Point(p.x - 1, p.y + 1));
-                queue.push_back(Point(p.x + 1, p.y - 1));
-                queue.push_back(Point(p.x + 1, p.y + 1));
+                enqueuePoint( res, queue, Point(p.x - 1, p.y - 1));
+                enqueuePoint( res, queue, Point(p.x - 1, p.y + 1));
+                enqueuePoint( res, queue, Point(p.x + 1, p.y - 1));
+                enqueuePoint( res, queue, Point(p.x + 1, p.y + 1));
             }
         }
     }
