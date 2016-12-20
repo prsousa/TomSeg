@@ -151,8 +151,6 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
     const int seedId = seed.getId();
 
     vector<Point> queue;
-    cv::Mat visited(img.rows, img.cols, CV_8U);
-    visited = cv::Scalar( 0 );
 
     for( int i = seed.a.y; i < seed.b.y; i++ ) {
         queue.push_back(Point(seed.a.x - 1, i));
@@ -168,7 +166,7 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
         Point p = queue.back();
         queue.pop_back();
 
-        if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && !visited.at<uchar>(p.y, p.x) && res.at<uchar>(p.y, p.x) == EMPTY ) {
+        if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && res.at<uchar>(p.y, p.x) == EMPTY ) {
             int bluredIntensity = bluredImg.at<uchar>(p.y, p.x);
 
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
@@ -185,8 +183,6 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
                 queue.push_back(Point(p.x + 1, p.y - 1));
                 queue.push_back(Point(p.x + 1, p.y + 1));
             }
-
-            visited.at<uchar>(p.y, p.x) = 1;
         }
     }
 }
