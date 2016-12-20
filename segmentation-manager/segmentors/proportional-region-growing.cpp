@@ -184,12 +184,6 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
                 enqueuePoint( res, queue, Point(p.x - 1, p.y));
                 enqueuePoint( res, queue, Point(p.x, p.y - 1));
                 enqueuePoint( res, queue, Point(p.x, p.y + 1));
-
-                // corners (8-way)
-                enqueuePoint( res, queue, Point(p.x - 1, p.y - 1));
-                enqueuePoint( res, queue, Point(p.x - 1, p.y + 1));
-                enqueuePoint( res, queue, Point(p.x + 1, p.y - 1));
-                enqueuePoint( res, queue, Point(p.x + 1, p.y + 1));
             }
         }
     }
