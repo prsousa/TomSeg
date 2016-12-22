@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "myqgraphicsscene.h"
@@ -284,11 +286,15 @@ void MainWindow::updateSlicesUI() {
 
 void MainWindow::importFileDialog()
 {
+    std::chrono::steady_clock::time_point beginFilePicking = std::chrono::steady_clock::now();
     QStringList filenames = QFileDialog::getOpenFileNames( this,
                                                            tr("Import Images"),
                                                            QDir::homePath(),
                                                            tr("Image Files (*.png *.jpg *.bmp *.tif)")
                                                           );
+    std::chrono::steady_clock::time_point endFilePicking = std::chrono::steady_clock::now();
+    qDebug() << "SelectFiles:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endFilePicking - beginFilePicking).count();
+
 
     if( !filenames.isEmpty() ) {
         std::vector<std::string> filenamesSegManager;
@@ -304,11 +310,15 @@ void MainWindow::importFileDialog()
 
 void MainWindow::openProjectDialog()
 {
+    std::chrono::steady_clock::time_point beginFilePicking = std::chrono::steady_clock::now();
+
     std::string projectFolderPath = segManager.getProjectFolderPath();
     QString defaultDir = (projectFolderPath.empty()) ? QDir::homePath() : QString::fromStdString(projectFolderPath);
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Project"),
                                                     defaultDir,
                                                     tr("TomSeg (*.tms)"));
+    std::chrono::steady_clock::time_point endFilePicking = std::chrono::steady_clock::now();
+    qDebug() << "SelectProjectFile:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endFilePicking - beginFilePicking).count();
 
     if( !filename.isEmpty() ) {
         segManager = SegmentationManager( filename.toStdString() );
