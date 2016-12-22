@@ -180,10 +180,10 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
                 res.at<uchar>(p.y, p.x) = seedId;
 
-                enqueuePoint( res, queue, Point(p.x + 1, p.y));
-                enqueuePoint( res, queue, Point(p.x - 1, p.y));
-                enqueuePoint( res, queue, Point(p.x, p.y - 1));
-                enqueuePoint( res, queue, Point(p.x, p.y + 1));
+                enqueuePoint( res, queue, Point(p.x, p.y - 1) );
+                enqueuePoint( res, queue, Point(p.x, p.y + 1) );
+                enqueuePoint( res, queue, Point(p.x + 1, p.y) );
+                enqueuePoint( res, queue, Point(p.x - 1, p.y) );
             }
         }
     }

@@ -1,7 +1,7 @@
 #ifndef PROPORTIONAL_REGION_GROWING_H
 #define PROPORTIONAL_REGION_GROWING_H
 
-#define USE_GPU_DEFAULT true
+#define USE_GPU_DEFAULT false
 
 #include <unordered_map>
 
