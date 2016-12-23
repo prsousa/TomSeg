@@ -210,6 +210,8 @@ void SegmentationManager::propagateSeeds(size_t sliceNumber, size_t stride)
 
 cv::Mat SegmentationManager::segment()
 {
+    std::chrono::steady_clock::time_point beginSegmentation = std::chrono::steady_clock::now();
+
     cv::Mat res;
     std::vector<int> slicesWithSeedsIndex;
     {
@@ -244,6 +246,9 @@ cv::Mat SegmentationManager::segment()
         Differentiator dif(this->slices.begin() + firstSliceIndex, this->slices.begin() + lastSliceIndex);
         dif.apply();
     }
+
+    std::chrono::steady_clock::time_point endSegmentation = std::chrono::steady_clock::now();
+    std::cout << "Segmentation Time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endSegmentation - beginSegmentation).count() << std::endl << std::endl;
 
     return res;
 }

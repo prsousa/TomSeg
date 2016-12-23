@@ -538,12 +538,8 @@ void MainWindow::on_goButton_released()
 
     //SegmenterThread* segThread = new SegmenterThread(&this->segManager, currentSliceIndex); // TODO: memory leak on thread's object
     //segThread->start();
-    QTime myTimer;
-    myTimer.start();
 
     segManager.segment();
-
-    qDebug() << "Segmentation Time: " << myTimer.elapsed() << " ms";
 
     sliceScene->updateResultDisplayer();
 }
