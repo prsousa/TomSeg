@@ -31,7 +31,7 @@ public:
     std::vector<Slice>& getSlices();
     Slice* getSlice(size_t sliceNumber);
     void propagateSeeds(size_t sliceNumber, size_t stride = 1);
-    cv::Mat segment();
+    void segment();
     bool isEmpty();
     size_t size();
 

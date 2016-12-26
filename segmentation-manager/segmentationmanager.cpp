@@ -208,11 +208,10 @@ void SegmentationManager::propagateSeeds(size_t sliceNumber, size_t stride)
     }
 }
 
-cv::Mat SegmentationManager::segment()
+void SegmentationManager::segment()
 {
     std::chrono::steady_clock::time_point beginSegmentation = std::chrono::steady_clock::now();
 
-    cv::Mat res;
     std::vector<int> slicesWithSeedsIndex;
     {
         int i = 0;
@@ -225,8 +224,10 @@ cv::Mat SegmentationManager::segment()
     }
 
     slicesWithSeedsIndex.push_back( this->slices.size() ); // "hack" to make intervals work
+    size_t slicesWithSeedsIndexSize = slicesWithSeedsIndex.size();
 
-    for( size_t i = 0; i < slicesWithSeedsIndex.size() - 1; i++ ) {
+#pragma omp parallel for shared(slicesWithSeedsIndexSize, slicesWithSeedsIndex, std::cout) default(none) schedule(guided)
+    for( size_t i = 0; i < slicesWithSeedsIndexSize - 1; i++ ) {
         int firstSliceIndex = slicesWithSeedsIndex[i];
         int lastSliceIndex = slicesWithSeedsIndex[i + 1];
 
@@ -236,7 +237,7 @@ cv::Mat SegmentationManager::segment()
 
         ProportionalRegionGrowing segmenter(slice, this->minimumFeatureSize, this->morphologicalSize);
         segmenter.setUseGPU( this->useGPU );
-        res = segmenter.Apply();
+        cv::Mat res = segmenter.Apply();
         slice.setSegmentationResult(res);
 
         std::chrono::steady_clock::time_point endSegmentationTime = std::chrono::steady_clock::now();
@@ -249,8 +250,6 @@ cv::Mat SegmentationManager::segment()
 
     std::chrono::steady_clock::time_point endSegmentation = std::chrono::steady_clock::now();
     std::cout << "Segmentation Time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endSegmentation - beginSegmentation).count() << std::endl << std::endl;
-
-    return res;
 }
 
 bool SegmentationManager::isEmpty()
