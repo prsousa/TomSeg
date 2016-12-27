@@ -146,9 +146,10 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
 
 inline
 __attribute__((always_inline))
-void ProportionalRegionGrowing::enqueuePoint(cv::Mat& m, std::vector<Point>& queue, Point p) {
-    if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && m.at<uchar>(p.y, p.x) == EMPTY ) {
+void ProportionalRegionGrowing::enqueuePoint(cv::Mat& m, cv::Mat& enqueued, std::vector<Point>& queue, Point p) {
+    if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && m.at<uchar>(p.y, p.x) == EMPTY && !enqueued.at<uchar>(p.y, p.x) ) {
         queue.push_back( p );
+        enqueued.at<uchar>(p.y, p.x) = 1;
     }
 }
 
@@ -159,15 +160,16 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
     const int seedId = seed.getId();
 
     vector<Point> queue;
+    cv::Mat enqueued(res.rows, res.cols, CV_8U, cv::Scalar(0));
 
     for( int i = seed.a.y; i < seed.b.y; i++ ) {
-        enqueuePoint( res, queue, Point(seed.a.x - 1, i) );
-        enqueuePoint( res, queue, Point(seed.b.x + 1, i) );
+        enqueuePoint( res, enqueued, queue, Point(seed.a.x - 1, i) );
+        enqueuePoint( res, enqueued, queue, Point(seed.b.x + 1, i) );
     }
 
     for( int j = seed.a.x; j < seed.b.x; j++ ) {
-        enqueuePoint( res, queue,Point(j, seed.a.y - 1) );
-        enqueuePoint( res, queue,Point(j, seed.b.y + 1) );
+        enqueuePoint( res, enqueued, queue, Point(j, seed.a.y - 1) );
+        enqueuePoint( res, enqueued, queue, Point(j, seed.b.y + 1) );
     }
 
     while( !queue.empty() ) {
@@ -180,10 +182,10 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
             if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
                 res.at<uchar>(p.y, p.x) = seedId;
 
-                enqueuePoint( res, queue, Point(p.x, p.y - 1) );
-                enqueuePoint( res, queue, Point(p.x, p.y + 1) );
-                enqueuePoint( res, queue, Point(p.x + 1, p.y) );
-                enqueuePoint( res, queue, Point(p.x - 1, p.y) );
+                enqueuePoint( res, enqueued, queue, Point(p.x, p.y - 1) );
+                enqueuePoint( res, enqueued, queue, Point(p.x, p.y + 1) );
+                enqueuePoint( res, enqueued, queue, Point(p.x + 1, p.y) );
+                enqueuePoint( res, enqueued, queue, Point(p.x - 1, p.y) );
             }
         }
     }

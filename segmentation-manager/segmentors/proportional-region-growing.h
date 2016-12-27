@@ -35,7 +35,7 @@ private:
 
     bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
 
-    inline void enqueuePoint(cv::Mat& m, std::vector<Point>& queue, Point p);
+    inline void enqueuePoint(cv::Mat& m, cv::Mat& enqueued, std::vector<Point>& queue, Point p);
 public:
     ProportionalRegionGrowing(Slice slice, int minimumFeatureSize = 15, int morphologicalSize = 15);
     ~ProportionalRegionGrowing();
