@@ -155,7 +155,7 @@ Point ProportionalRegionGrowing::linearFill( cv::Mat& res, cv::Mat& visited, uch
 
         lFillLoc--;
 
-        if( lFillLoc < 0 || visited.at<uchar>(src.y, lFillLoc) || !(*pixelJudge)(bluredImg.at<uchar>(src.y, lFillLoc), aditionalJudgeParams) ) {
+        if( lFillLoc < 0 || res.at<uchar>(src.y, lFillLoc) != EMPTY || visited.at<uchar>(src.y, lFillLoc) || !(*pixelJudge)(bluredImg.at<uchar>(src.y, lFillLoc), aditionalJudgeParams) ) {
             break;
         }
     }
@@ -166,7 +166,7 @@ Point ProportionalRegionGrowing::linearFill( cv::Mat& res, cv::Mat& visited, uch
 
         rFillLoc++;
 
-        if( rFillLoc >= img.cols || visited.at<uchar>(src.y, rFillLoc) || !(*pixelJudge)(bluredImg.at<uchar>(src.y, rFillLoc), aditionalJudgeParams) ) {
+        if( rFillLoc >= img.cols || res.at<uchar>(src.y, rFillLoc) != EMPTY || visited.at<uchar>(src.y, rFillLoc) || !(*pixelJudge)(bluredImg.at<uchar>(src.y, rFillLoc), aditionalJudgeParams) ) {
             break;
         }
     }
@@ -183,10 +183,14 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
     vector<Point> queue;
     cv::Mat visited(res.rows, res.cols, CV_8U, cv::Scalar(0));
 
-    for( int i = max(0, seed.a.y); i < min(img.rows, seed.b.y); i++ ) {
-        for( int j = max(0, seed.a.x); j < min(img.cols, seed.b.x); j++ ) {
-            queue.push_back( linearFill( res, visited, seedId, Point(j, i), pixelJudge, aditionalJudgeParams ) );
-        }
+    for( int i = seed.a.y; i < seed.b.y; i++ ) {
+        if(seed.a.x) queue.push_back( linearFill( res, visited, seedId, Point(seed.a.x - 1, i), pixelJudge, aditionalJudgeParams ) );
+        queue.push_back( linearFill( res, visited, seedId, Point(seed.b.x + 1, i), pixelJudge, aditionalJudgeParams ) );
+    }
+
+    for( int j = seed.a.x; j < seed.b.x; j++ ) {
+        if(seed.a.y) queue.push_back( linearFill( res, visited, seedId, Point(j, seed.a.y - 1), pixelJudge, aditionalJudgeParams ) );
+        queue.push_back( linearFill( res, visited, seedId, Point(j, seed.a.y + 1), pixelJudge, aditionalJudgeParams ) );
     }
 
     while( !queue.empty() ) {
@@ -194,14 +198,13 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
         queue.pop_back();
 
         for( int x = range.x; x < range.y; x++ ) {
-            if( range.z > 0 && !visited.at<uchar>(range.z - 1, x) && pixelJudge(bluredImg.at<uchar>(range.z - 1, x), aditionalJudgeParams) ) {
-                Point rangeUp = linearFill( res, visited, seedId, Point(x, range.z - 1), pixelJudge, aditionalJudgeParams);
-                queue.push_back( rangeUp );
+            if( range.z > 0 && res.at<uchar>(range.z - 1, x) == EMPTY && !visited.at<uchar>(range.z - 1, x) && pixelJudge(bluredImg.at<uchar>(range.z - 1, x), aditionalJudgeParams) ) {
+                queue.push_back( linearFill( res, visited, seedId, Point(x, range.z - 1), pixelJudge, aditionalJudgeParams) );
             }
         }
 
         for( int x = range.x; x < range.y; x++ ) {
-            if( range.z + 1 < img.rows && !visited.at<uchar>(range.z + 1, x) && pixelJudge(bluredImg.at<uchar>(range.z + 1, x), aditionalJudgeParams) ) {
+            if( range.z + 1 < img.rows && res.at<uchar>(range.z + 1, x) == EMPTY && !visited.at<uchar>(range.z + 1, x) && pixelJudge(bluredImg.at<uchar>(range.z + 1, x), aditionalJudgeParams) ) {
                 queue.push_back( linearFill( res, visited, seedId, Point(x, range.z + 1), pixelJudge, aditionalJudgeParams) );
             }
         }
