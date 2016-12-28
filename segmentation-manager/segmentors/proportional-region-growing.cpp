@@ -144,13 +144,34 @@ void displayImageApagar(string title, cv::Mat img, int x = 0, int y = 100) {
     cv::imshow(title, img);
 }
 
-inline
-__attribute__((always_inline))
-void ProportionalRegionGrowing::enqueuePoint(cv::Mat& m, cv::Mat& enqueued, std::vector<Point>& queue, Point p) {
-    if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && m.at<uchar>(p.y, p.x) == EMPTY && !enqueued.at<uchar>(p.y, p.x) ) {
-        queue.push_back( p );
-        enqueued.at<uchar>(p.y, p.x) = 1;
+Point ProportionalRegionGrowing::linearFill( cv::Mat& res, cv::Mat& visited, uchar seedId, Point src, bool (*pixelJudge)(int,void*), void* aditionalJudgeParams ) {
+
+    int lFillLoc, rFillLoc;
+    lFillLoc = rFillLoc = src.x;
+
+    while( true ) {
+        res.at<uchar>(src.y, lFillLoc) = seedId;
+        visited.at<uchar>(src.y, lFillLoc) = 1;
+
+        lFillLoc--;
+
+        if( lFillLoc < 0 || visited.at<uchar>(src.y, lFillLoc) || !(*pixelJudge)(bluredImg.at<uchar>(src.y, lFillLoc), aditionalJudgeParams) ) {
+            break;
+        }
     }
+
+    while( true ) {
+        res.at<uchar>(src.y, rFillLoc) = seedId;
+        visited.at<uchar>(src.y, rFillLoc) = 1;
+
+        rFillLoc++;
+
+        if( rFillLoc >= img.cols || visited.at<uchar>(src.y, rFillLoc) || !(*pixelJudge)(bluredImg.at<uchar>(src.y, rFillLoc), aditionalJudgeParams) ) {
+            break;
+        }
+    }
+
+    return Point( lFillLoc + 1, rFillLoc - 1, src.y );
 }
 
 // TODO: this solution to improve the modularity may not be the best
@@ -160,32 +181,28 @@ void ProportionalRegionGrowing::RegionGrowing( cv::Mat& res, Seed seed, bool (*p
     const int seedId = seed.getId();
 
     vector<Point> queue;
-    cv::Mat enqueued(res.rows, res.cols, CV_8U, cv::Scalar(0));
+    cv::Mat visited(res.rows, res.cols, CV_8U, cv::Scalar(0));
 
-    for( int i = seed.a.y; i < seed.b.y; i++ ) {
-        enqueuePoint( res, enqueued, queue, Point(seed.a.x - 1, i) );
-        enqueuePoint( res, enqueued, queue, Point(seed.b.x + 1, i) );
-    }
-
-    for( int j = seed.a.x; j < seed.b.x; j++ ) {
-        enqueuePoint( res, enqueued, queue, Point(j, seed.a.y - 1) );
-        enqueuePoint( res, enqueued, queue, Point(j, seed.b.y + 1) );
+    for( int i = max(0, seed.a.y); i < min(img.rows, seed.b.y); i++ ) {
+        for( int j = max(0, seed.a.x); j < min(img.cols, seed.b.x); j++ ) {
+            queue.push_back( linearFill( res, visited, seedId, Point(j, i), pixelJudge, aditionalJudgeParams ) );
+        }
     }
 
     while( !queue.empty() ) {
-        Point p = queue.back();
+        Point range = queue.back();
         queue.pop_back();
 
-        if( p.y >= 0 && p.x >= 0 && p.y < img.rows && p.x < img.cols && res.at<uchar>(p.y, p.x) == EMPTY ) {
-            int bluredIntensity = bluredImg.at<uchar>(p.y, p.x);
+        for( int x = range.x; x < range.y; x++ ) {
+            if( range.z > 0 && !visited.at<uchar>(range.z - 1, x) && pixelJudge(bluredImg.at<uchar>(range.z - 1, x), aditionalJudgeParams) ) {
+                Point rangeUp = linearFill( res, visited, seedId, Point(x, range.z - 1), pixelJudge, aditionalJudgeParams);
+                queue.push_back( rangeUp );
+            }
+        }
 
-            if( (*pixelJudge)(bluredIntensity, aditionalJudgeParams) ) {
-                res.at<uchar>(p.y, p.x) = seedId;
-
-                enqueuePoint( res, enqueued, queue, Point(p.x, p.y - 1) );
-                enqueuePoint( res, enqueued, queue, Point(p.x, p.y + 1) );
-                enqueuePoint( res, enqueued, queue, Point(p.x + 1, p.y) );
-                enqueuePoint( res, enqueued, queue, Point(p.x - 1, p.y) );
+        for( int x = range.x; x < range.y; x++ ) {
+            if( range.z + 1 < img.rows && !visited.at<uchar>(range.z + 1, x) && pixelJudge(bluredImg.at<uchar>(range.z + 1, x), aditionalJudgeParams) ) {
+                queue.push_back( linearFill( res, visited, seedId, Point(x, range.z + 1), pixelJudge, aditionalJudgeParams) );
             }
         }
     }
