@@ -33,7 +33,7 @@ private:
     void MorphologicalFiltering(cv::Mat& res);
     void FillTinyHoles(cv::Mat& res);
 
-    bool FindNextSeed( Seed* res, cv::Mat labels, int minSize);
+    bool FindNextSeed( Seed* res, cv::Mat labels, int minSize, Point* p);
 
     inline void enqueuePoint(cv::Mat& m, cv::Mat& enqueued, std::vector<Point>& queue, Point p);
 public:

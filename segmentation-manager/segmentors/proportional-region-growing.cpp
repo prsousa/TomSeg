@@ -107,9 +107,9 @@ cv::Mat Dilate(cv::Mat masks, int size) {
     return res;
 }
 
-bool ProportionalRegionGrowing::FindNextSeed( Seed* res, cv::Mat labels, int minSize ) {
+bool ProportionalRegionGrowing::FindNextSeed( Seed* res, cv::Mat labels, int minSize, Point* p ) {
 
-    for(int y = 0; y < img.rows - minSize; y++) {
+    for(int y = p->y; y < img.rows - minSize; y++) {
         for(int x = 0; x < img.cols - minSize; x++) {
             Point a(x, y);
             Point b(x + minSize, y + minSize);
@@ -121,6 +121,8 @@ bool ProportionalRegionGrowing::FindNextSeed( Seed* res, cv::Mat labels, int min
                 if( imgRegion.centerOfMassIsMiddle() ) {
                     Seed s(this->img, a, b);
                     *res = s;
+                    p->y = y;
+                    p->x = x;
                     return true;
                 }
             }
@@ -222,7 +224,8 @@ void ProportionalRegionGrowing::AutomaticConquer(cv::Mat& res) {
     Seed nextSeed;
 //    int mm = 3;
 
-    while( this->FindNextSeed( &nextSeed, res, this->minimumFeatureSize ) ){
+    Point start(0, 0);
+    while( this->FindNextSeed( &nextSeed, res, this->minimumFeatureSize, &start ) ){
 //        if( !mm-- ) break;
 //        cv::Mat imgWithNewSeed;
 //        cv::cvtColor(this->img, imgWithNewSeed, cv::COLOR_GRAY2BGR);
