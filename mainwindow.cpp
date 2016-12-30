@@ -14,7 +14,6 @@
 #include <QGraphicsPixmapItem>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -625,16 +624,11 @@ void MainWindow::on_alignButton_released()
     int maxDeltaX = ui->referenceAreaMaxDeltaXSpinBox->value();
     int maxDeltaY = ui->referenceAreaMaxDeltaYSpinBox->value();
 
-    QTime myTimer;
-    myTimer.start();
-
     if( a.x > 0 && a.y > 0 && width > 0 && height > 0 ) {
         segManager.alignSlices(currentSliceIndex, a, width, height, maxDeltaX, maxDeltaY);
     } else {
         segManager.alignSlices();
     }
-
-    qDebug() << "Align Time: " << myTimer.elapsed() << " ms";
 
     resetAlign();
 

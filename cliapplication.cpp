@@ -143,6 +143,7 @@ int CliApplication::exec()
         ("images,i", po::value< std::vector<std::string> >(), "images to import")
         ("project,p", po::value< std::string >(), "project file")
         ("gpu", po::value< bool >()->implicit_value(true), "enable/disable GPU optimizations")
+        ("align,a", po::value< int >()->implicit_value(1), "aligns the slices")
         ("segment,s", po::value< int >()->implicit_value(1), "segments the volume")
         ("display,d", "displays the result in a basic GUI")
         ("output,o", po::value< std::string >(), "folder path to resulting *.mrc files")
@@ -181,6 +182,12 @@ int CliApplication::exec()
     if( segManager.isEmpty() ) {
         std::cerr << "Empty Project (--help)" << std::endl;
         return EXIT_FAILURE;
+    }
+
+    if( vm.count("align") ) {
+        for( int i = 0; i < vm["align"].as< int >(); i++ ) {
+            segManager.alignSlices();
+        }
     }
 
     if( vm.count("segment") ) {

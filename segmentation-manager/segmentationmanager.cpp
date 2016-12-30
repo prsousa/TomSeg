@@ -65,8 +65,13 @@ void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Se
 
 void SegmentationManager::alignSlices()
 {
+    std::chrono::steady_clock::time_point beginAlign = std::chrono::steady_clock::now();
+
     Aligner aligner(this->slices.begin(), this->slices.end());
     aligner.apply();
+
+    std::chrono::steady_clock::time_point endAlign = std::chrono::steady_clock::now();
+    std::cout << "AlignSlices:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endAlign - beginAlign).count() << std::endl;
 }
 
 void SegmentationManager::alignSlices( size_t masterSliceNumber, Point a, size_t width, size_t height, int maxDeltaX, int maxDeltaY )
@@ -80,7 +85,7 @@ void SegmentationManager::alignSlices( size_t masterSliceNumber, Point a, size_t
         aligner.apply( masterSlice.getImg(), a, width, height );
 
         std::chrono::steady_clock::time_point endAlign = std::chrono::steady_clock::now();
-        std::cout << "AlignSlices:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endAlign - beginAlign).count() << std::endl;
+        std::cout << "AlignSlices (ROI):\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endAlign - beginAlign).count() << std::endl;
     }
 }
 
