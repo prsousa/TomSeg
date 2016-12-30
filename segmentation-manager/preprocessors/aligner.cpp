@@ -19,12 +19,12 @@ Aligner::Aligner(std::vector<Slice>::iterator firstSlice, std::vector<Slice>::it
 
 void Aligner::apply()
 {
-    int numSlices = lastSlice - firstSlice;
+    const int numSlices = lastSlice - firstSlice;
     std::vector<Point> deltas(numSlices);
 
 
     deltas[0] = Point(0, 0);
-
+    #pragma omp parallel for shared(deltas) default(none)
     for( int i = 1; i < numSlices; i++ ) {
         Slice& prevSlice = *(i - 1 + firstSlice);
         Slice& slice = *(i + firstSlice);
