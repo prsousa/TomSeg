@@ -13,6 +13,12 @@
 
 using namespace std;
 
+#ifdef __MIC__
+#define my_steady_clock std::chrono::monotonic_clock
+#else
+#define my_steady_clock std::chrono::steady_clock
+#endif
+
 SegmentationManager::SegmentationManager()
 {
     minimumFeatureSize = 15;
@@ -23,21 +29,21 @@ SegmentationManager::SegmentationManager()
 
 SegmentationManager::SegmentationManager(string projectPath) : SegmentationManager()
 {
-    std::chrono::steady_clock::time_point beginImporting = std::chrono::steady_clock::now();
+    my_steady_clock::time_point beginImporting = my_steady_clock::now();
 
     Importer importer( this );
     importer.importProject( projectPath );
 
     this->projectPath = projectPath;
 
-    std::chrono::steady_clock::time_point endImporting = std::chrono::steady_clock::now();
+    my_steady_clock::time_point endImporting = my_steady_clock::now();
     std::cout << "ImportProject:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endImporting - beginImporting).count() << std::endl;
 
 }
 
 void SegmentationManager::setSlices(vector<string> &filenames)
 {
-    std::chrono::steady_clock::time_point beginFileLoading = std::chrono::steady_clock::now();
+    my_steady_clock::time_point beginFileLoading = my_steady_clock::now();
     slices.clear();
 
     vector<string>::iterator i;
@@ -46,7 +52,7 @@ void SegmentationManager::setSlices(vector<string> &filenames)
         this->addSlice( Slice(imagename) );
     }
 
-    std::chrono::steady_clock::time_point endFileLoading = std::chrono::steady_clock::now();
+    my_steady_clock::time_point endFileLoading = my_steady_clock::now();
     std::cout << "LoadTime:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endFileLoading - beginFileLoading).count() << std::endl;
 }
 
@@ -65,12 +71,12 @@ void SegmentationManager::setSliceSeeds(size_t sliceNumber, const std::vector<Se
 
 void SegmentationManager::alignSlices()
 {
-    std::chrono::steady_clock::time_point beginAlign = std::chrono::steady_clock::now();
+    my_steady_clock::time_point beginAlign = my_steady_clock::now();
 
     Aligner aligner(this->slices.begin(), this->slices.end());
     aligner.apply();
 
-    std::chrono::steady_clock::time_point endAlign = std::chrono::steady_clock::now();
+    my_steady_clock::time_point endAlign = my_steady_clock::now();
     std::cout << "AlignSlices:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endAlign - beginAlign).count() << std::endl;
 }
 
@@ -79,12 +85,12 @@ void SegmentationManager::alignSlices( size_t masterSliceNumber, Point a, size_t
     if( masterSliceNumber < this->slices.size() ) {
         Slice& masterSlice = this->slices[masterSliceNumber];
 
-        std::chrono::steady_clock::time_point beginAlign = std::chrono::steady_clock::now();
+        my_steady_clock::time_point beginAlign = my_steady_clock::now();
 
         Aligner aligner(this->slices.begin(), this->slices.end(), maxDeltaX, maxDeltaY);
         aligner.apply( masterSlice.getImg(), a, width, height );
 
-        std::chrono::steady_clock::time_point endAlign = std::chrono::steady_clock::now();
+        my_steady_clock::time_point endAlign = my_steady_clock::now();
         std::cout << "AlignSlices (ROI):\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endAlign - beginAlign).count() << std::endl;
     }
 }
@@ -200,7 +206,7 @@ Slice* SegmentationManager::getSlice(size_t sliceNumber)
 void SegmentationManager::propagateSeeds(size_t sliceNumber, size_t stride)
 {
     if( sliceNumber < this->slices.size() ) {
-        std::chrono::steady_clock::time_point beginPropagate = std::chrono::steady_clock::now();
+        my_steady_clock::time_point beginPropagate = my_steady_clock::now();
 
         Slice& masterSlice = this->slices[sliceNumber];
         if( masterSlice.seedsNumber() >= 2 ) {
@@ -208,14 +214,14 @@ void SegmentationManager::propagateSeeds(size_t sliceNumber, size_t stride)
             seedPropagater.propagate( masterSlice.getSeeds(), stride );
         }
 
-        std::chrono::steady_clock::time_point endPropagate = std::chrono::steady_clock::now();
+        my_steady_clock::time_point endPropagate = my_steady_clock::now();
         std::cout << "PropagateSeeds:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endPropagate - beginPropagate).count() << std::endl;
     }
 }
 
 void SegmentationManager::segment()
 {
-    std::chrono::steady_clock::time_point beginSegmentation = std::chrono::steady_clock::now();
+    my_steady_clock::time_point beginSegmentation = my_steady_clock::now();
 
     std::vector<int> slicesWithSeedsIndex;
     {
@@ -238,14 +244,14 @@ void SegmentationManager::segment()
 
         Slice& slice = this->slices[ firstSliceIndex ];
 
-        std::chrono::steady_clock::time_point beginSegmentationTime = std::chrono::steady_clock::now();
+        my_steady_clock::time_point beginSegmentationTime = my_steady_clock::now();
 
         ProportionalRegionGrowing segmenter(slice, this->minimumFeatureSize, this->morphologicalSize);
         segmenter.setUseGPU( this->useGPU );
         cv::Mat res = segmenter.Apply();
         slice.setSegmentationResult(res);
 
-        std::chrono::steady_clock::time_point endSegmentationTime = std::chrono::steady_clock::now();
+        my_steady_clock::time_point endSegmentationTime = my_steady_clock::now();
         std::cout << "SegTime:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endSegmentationTime - beginSegmentationTime).count() << std::endl << std::endl;
 
         // Apply differences to slices in between
@@ -253,7 +259,7 @@ void SegmentationManager::segment()
         dif.apply();
     }
 
-    std::chrono::steady_clock::time_point endSegmentation = std::chrono::steady_clock::now();
+    my_steady_clock::time_point endSegmentation = my_steady_clock::now();
     std::cout << "Segmentation Time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endSegmentation - beginSegmentation).count() << std::endl << std::endl;
 }
 

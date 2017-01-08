@@ -8,6 +8,12 @@
 
 #define SEG_DEBUG 0
 
+#ifdef __MIC__
+#define my_steady_clock std::chrono::monotonic_clock
+#else
+#define my_steady_clock std::chrono::steady_clock
+#endif
+
 using namespace std;
 
 bool seedComparator (Seed i, Seed j) { return (i.average<j.average); }
@@ -403,23 +409,23 @@ cv::Mat ProportionalRegionGrowing::Apply() {
     cv::Mat res(img.rows, img.cols, CV_8U);
     res = cv::Scalar( EMPTY ); // start with no material
 
-    std::chrono::steady_clock::time_point initialConquerBeginTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point initialConquerBeginTime = my_steady_clock::now();
     this->InitialConquer(res);
-    std::chrono::steady_clock::time_point initialConquerEndTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point initialConquerEndTime = my_steady_clock::now();
 
-    std::chrono::steady_clock::time_point automaticConquerBeginTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point automaticConquerBeginTime = my_steady_clock::now();
     this->AutomaticConquer(res);
-    std::chrono::steady_clock::time_point automaticConquerEndTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point automaticConquerEndTime = my_steady_clock::now();
 
-    std::chrono::steady_clock::time_point morphologicalFilteringBeginTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point morphologicalFilteringBeginTime = my_steady_clock::now();
     if( this->morphologicalSize > 1 ) {
         this->MorphologicalFiltering(res);
     }
-    std::chrono::steady_clock::time_point morphologicalFilteringEndTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point morphologicalFilteringEndTime = my_steady_clock::now();
 
-    std::chrono::steady_clock::time_point fillTinyGapsBeginTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point fillTinyGapsBeginTime = my_steady_clock::now();
     this->FillTinyHoles(res);
-    std::chrono::steady_clock::time_point fillTinyGapsEndTime = std::chrono::steady_clock::now();
+    my_steady_clock::time_point fillTinyGapsEndTime = my_steady_clock::now();
 
 
     std::cout << "Initial Conquer\t" << std::chrono::duration_cast<std::chrono::milliseconds>(initialConquerEndTime - initialConquerBeginTime).count() << std::endl;
