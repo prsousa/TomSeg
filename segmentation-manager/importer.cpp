@@ -2,9 +2,7 @@
 
 #include <fstream>
 
-#include "json.hpp"
-
-using json = nlohmann::json;
+#include "json/json.h"
 
 Importer::Importer()
 {
@@ -19,55 +17,55 @@ Importer::Importer(SegmentationManager *segManager)
 void Importer::importProject(std::string path)
 {
     std::ifstream file;
-    file.open( path, std::ios::binary);
+    file.open( path, std::ios::binary );
 
-    json proj;
-    proj << file;
+    Json::Value proj;
+    file >> proj;
 
-    if( proj.find("minimumFeatureSize") != proj.end() ) {
-        segManager->setMinimumFeatureSize( proj["minimumFeatureSize"] );
+    if( proj["minimumFeatureSize"] != Json::nullValue ) {
+        segManager->setMinimumFeatureSize( proj["minimumFeatureSize"].asInt() );
     }
 
-    if( proj.find("morphologicalSize") != proj.end() ) {
-        segManager->setMorphologicalSize( proj["morphologicalSize"] );
+    if( proj["morphologicalSize"] != Json::nullValue ) {
+        segManager->setMorphologicalSize( proj["morphologicalSize"].asInt() );
     }
 
-    if( proj.find("xLen") != proj.end() ) {
-        segManager->setXLen( proj["xLen"] );
+    if( proj["xLen"] != Json::nullValue ) {
+        segManager->setXLen( proj["xLen"].asInt() );
     }
 
-    if( proj.find("yLen") != proj.end() ) {
-        segManager->setYLen( proj["yLen"] );
+    if( proj["yLen"] != Json::nullValue) {
+        segManager->setYLen( proj["yLen"].asInt() );
     }
 
-    if( proj.find("zLen") != proj.end() ) {
-        segManager->setZLen( proj["zLen"] );
+    if( proj["zLen"] != Json::nullValue ) {
+        segManager->setZLen( proj["zLen"].asInt() );
     }
 
-    if( proj.find("useGPU") != proj.end() ) {
-        segManager->setUseGPU( proj["useGPU"] );
+    if( proj["useGPU"] != Json::nullValue ) {
+        segManager->setUseGPU( proj["useGPU"].asBool() );
     }
 
-    if( proj.find("slices") != proj.end() ) {
-        json slicesInfo = proj["slices"];
+    if( proj["slices"] != Json::nullValue ) {
+        Json::Value slicesInfo = proj["slices"];
 
-        for( json &sliceInfo : slicesInfo ) {
-            if( sliceInfo.find("path") != sliceInfo.end() ) {
-                std::string path = sliceInfo["path"];
+        for( Json::Value &sliceInfo : slicesInfo ) {
+            if( sliceInfo["path"] != Json::nullValue ) {
+                std::string path = sliceInfo["path"].asString();
                 Slice slice(path);
 
                 try {
-                    Point a(sliceInfo["ROI"]["x"], sliceInfo["ROI"]["y"]);
-                    slice.crop( a, sliceInfo["ROI"]["width"], sliceInfo["ROI"]["height"] );
+                    Point a(sliceInfo["ROI"]["x"].asInt(), sliceInfo["ROI"]["y"].asInt());
+                    slice.crop( a, sliceInfo["ROI"]["width"].asInt(), sliceInfo["ROI"]["height"].asInt() );
                 } catch(int e) {}
 
-                if( sliceInfo.find("seeds") != sliceInfo.end() ) {
-                    json seedsInfo = sliceInfo["seeds"];
-                    for( json &seedInfo : seedsInfo ) {
+                if( sliceInfo["seeds"] != Json::nullValue ) {
+                    Json::Value seedsInfo = sliceInfo["seeds"];
+                    for( Json::Value &seedInfo : seedsInfo ) {
                         try {
-                            Point a(seedInfo["a"]["x"], seedInfo["a"]["y"]);
-                            Point b(seedInfo["b"]["x"], seedInfo["b"]["y"]);
-                            Seed s(slice.getImg(), seedInfo["id"], a, b);
+                            Point a(seedInfo["a"]["x"].asInt(), seedInfo["a"]["y"].asInt());
+                            Point b(seedInfo["b"]["x"].asInt(), seedInfo["b"]["y"].asInt());
+                            Seed s(slice.getImg(), seedInfo["id"].asInt(), a, b);
                             slice.addSeed(s);
                         } catch(int e) {}
                     }

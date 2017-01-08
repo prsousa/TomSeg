@@ -6,9 +6,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "json.hpp"
-
-using json = nlohmann::json;
+#include "json/json.h"
 
 Exporter::Exporter()
 {
@@ -119,7 +117,7 @@ void Exporter::exportProject(std::string path)
     std::ofstream file;
     file.open( path, std::ios::binary );
 
-    json proj;
+    Json::Value proj;
 
     proj["minimumFeatureSize"] = segManager->getMinimumFeatureSize();
     proj["morphologicalSize"] = segManager->getMorphologicalSize();
@@ -128,41 +126,39 @@ void Exporter::exportProject(std::string path)
     proj["zLen"] = segManager->getZLen();
     proj["useGPU"] = segManager->getUseGPU();
 
-    json slicesInfo = json::array();
+    Json::Value slicesInfo = Json::arrayValue;
 
     for(Slice& slice : slices ) {
-        json sliceInfo = json::object();
+        Json::Value sliceInfo = Json::objectValue;
         sliceInfo["path"] = slice.getFilename();
         cv::Rect roiFromOriginal = slice.getRoiFromOriginal();
-        sliceInfo["ROI"] = {
-            { "x", roiFromOriginal.x },
-            { "y", roiFromOriginal.y },
-            { "width", roiFromOriginal.width },
-            { "height", roiFromOriginal.height }
-        };
+        sliceInfo["ROI"]["x"] = roiFromOriginal.x;
+        sliceInfo["ROI"]["y"] = roiFromOriginal.y;
+        sliceInfo["ROI"]["width"] = roiFromOriginal.width;
+        sliceInfo["ROI"]["height"] = roiFromOriginal.height;
 
-        json seedsInfo = json::array();
+        Json::Value seedsInfo = Json::arrayValue;
         std::vector<Seed>& seeds = slice.getSeeds();
         for( Seed& seed : seeds ) {
-            json seedInfo;
+            Json::Value seedInfo;
             seedInfo["id"] = seed.getId();
             seedInfo["a"]["x"] = seed.a.x;
             seedInfo["a"]["y"] = seed.a.y;
             seedInfo["b"]["x"] = seed.b.x;
             seedInfo["b"]["y"] = seed.b.y;
 
-            seedsInfo.push_back(seedInfo);
+            seedsInfo.append(seedInfo);
         }
 
         sliceInfo["seeds"] = seedsInfo;
 
-        slicesInfo.push_back( sliceInfo );
+        slicesInfo.append( sliceInfo );
     }
 
     proj["slices"] = slicesInfo;
 
 
-    file << proj.dump(2);
+    file << proj;
 
     file.close();
 }

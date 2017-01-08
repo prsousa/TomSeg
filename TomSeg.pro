@@ -31,6 +31,7 @@ SOURCES += main.cpp\
     segmentation-manager/preprocessors/aligner.cpp \
     segmentation-manager/exporter.cpp \
     segmentation-manager/seedpropagater.cpp \
+    segmentation-manager/jsoncpp.cpp \
     histogramview.cpp \
     segmentation-manager/importer.cpp
 
@@ -50,6 +51,8 @@ HEADERS  += mainwindow.h \
     segmentation-manager/preprocessors/aligner.h \
     segmentation-manager/exporter.h \
     segmentation-manager/seedpropagater.h \
+    segmentation-manager/json/json.h \
+    segmentation-manager/json/json-forwards.h \
     histogramview.h \
     segmentation-manager/importer.h
 
@@ -110,10 +113,6 @@ else {
 
 
 # </CUDA>
-
-#<JSON>
-INCLUDEPATH += /usr/local/Cellar/nlohmann_json/2.0.8/include
-#</JSON>
 
 #<ProgramOptions_CLI>
 LIBS += /usr/local/lib/libboost_program_options.dylib
