@@ -8,7 +8,7 @@ HistogramView::HistogramView(QWidget *parent) : QChartView(parent)
 
     chart = new QChart();
     chart->setBackgroundVisible(false);
-    series = new QLineSeries();
+    series = new QSplineSeries();
 
     chart->legend()->hide();
     chart->addSeries(series);
@@ -25,6 +25,7 @@ HistogramView::HistogramView(QWidget *parent) : QChartView(parent)
     series->attachAxis(axisX);
 
     axisY = new QValueAxis;
+    axisY->setMax(100);
     axisY->hide();
     chart->addAxis(axisY, Qt::AlignLeft);
     series->attachAxis(axisY);
@@ -44,13 +45,19 @@ void HistogramView::update()
 
     series->clear();
 
-    int max = 0;
+    float sum = 0.0;
     for( int i = 0; i < 256; i++ ) {
-        int histVal = histogram[i];
-        *series << QPointF(i, histVal);
-        if( histVal > max ) { max = histVal; }
+        sum += histogram[i];
     }
 
-    axisY->setMax( max + (max * 0.05) );
+    const int step = 16;
+    for( int i = 0; i < 256; i+=step ) {
+        int histVal = 0;
+        for( int a = 0; a < step; a++ ) {
+            histVal += histogram[i+a];
+        }
+
+        *series << QPointF(i, histVal/sum * 100);
+    }
     // chart->update();
 }

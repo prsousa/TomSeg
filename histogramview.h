@@ -4,7 +4,7 @@
 #include "segmentation-manager/slice.h"
 
 #include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
+#include <QtCharts/QSplineSeries>
 #include <QtCharts/QValueAxis>
 
 class HistogramView : public QtCharts::QChartView
@@ -21,7 +21,7 @@ public slots:
 
 private:
     QtCharts::QChart *chart;
-    QtCharts::QLineSeries *series;
+    QtCharts::QSplineSeries *series;
     QtCharts::QValueAxis *axisX;
     QtCharts::QValueAxis *axisY;
 
