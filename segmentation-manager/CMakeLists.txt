@@ -2,7 +2,11 @@ FILE( GLOB SRC_LIST *.cpp *.h )
 FILE( GLOB DIF_LIST differentiators/* )
 FILE( GLOB PRE_LIST preprocessors/* )
 FILE( GLOB JSON_LIST json/* )
-FILE( GLOB SEG_LIST segmentors/proportional-region-growing.* segmentors/segmenter.h )
+FILE( GLOB SEG_LIST
+    segmentors/proportional-region-growing.*
+    segmentors/segmenter.h
+    segmentors/otsu-threshold.*
+)
 
 ADD_LIBRARY( SegmentationManager STATIC
     ${SRC_LIST}

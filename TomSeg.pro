@@ -23,6 +23,7 @@ SOURCES += main.cpp\
     segmentation-manager/region.cpp \
     segmentation-manager/seed.cpp \
     segmentation-manager/segmentors/proportional-region-growing.cpp \
+    segmentation-manager/segmentors/otsu-threshold.cpp \
     segmentation-manager/segmentationmanager.cpp \
     segmentation-manager/slice.cpp \
     segmenterthread.cpp \
@@ -43,6 +44,7 @@ HEADERS  += mainwindow.h \
     segmentation-manager/seed.h \
     segmentation-manager/segmentors/segmenter.h \
     segmentation-manager/segmentors/proportional-region-growing.h \
+    segmentation-manager/segmentors/otsu-threshold.h \
     segmentation-manager/segmentationmanager.h \
     segmentation-manager/slice.h \
     segmenterthread.h \
