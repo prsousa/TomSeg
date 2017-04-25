@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Tom Seg</string>
+   <string>TomSeg</string>
   </property>
   <widget class="QWidget" name="mainPanel">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -566,7 +566,7 @@
           </widget>
           <widget class="QWidget" name="roiTab">
            <attribute name="title">
-            <string>3D ROI</string>
+            <string>VOI</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
@@ -1332,7 +1332,7 @@
   </action>
   <action name="actionImport">
    <property name="text">
-    <string>Import Images</string>
+    <string>Import Slices</string>
    </property>
    <property name="whatsThis">
     <string/>

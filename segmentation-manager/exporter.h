@@ -10,7 +10,7 @@ public:
     Exporter();
     Exporter(SegmentationManager* segManager, size_t firstSlice, size_t lastSlice);
     void exportResult(std::string path);
-    void exportSlicesImages(std::string path, const std::string extension = ".jpg");
+    void exportSliceImages(std::string path, const std::string extension = ".jpg");
     void exportProject(std::string path);
 
 private:

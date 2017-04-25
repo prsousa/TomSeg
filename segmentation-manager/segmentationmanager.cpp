@@ -165,17 +165,17 @@ void SegmentationManager::exportResult(string path, size_t firstSlice, size_t la
     exporter.exportResult(path);
 }
 
-void SegmentationManager::exportSlicesImages(string path)
+void SegmentationManager::exportSliceImages(string path)
 {
-    this->exportSlicesImages(path, 1, this->size());
+    this->exportSliceImages(path, 1, this->size());
 }
 
-void SegmentationManager::exportSlicesImages(string path, size_t firstSlice, size_t lastSlice)
+void SegmentationManager::exportSliceImages(string path, size_t firstSlice, size_t lastSlice)
 {
     if (lastSlice < firstSlice ) return;
 
     Exporter exporter( this, firstSlice, lastSlice );
-    exporter.exportSlicesImages(path);
+    exporter.exportSliceImages(path);
 }
 
 void SegmentationManager::exportProject(string path)

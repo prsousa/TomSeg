@@ -94,17 +94,17 @@ void Exporter::exportResult( std::string path )
     delete[] files;
 }
 
-void Exporter::exportSlicesImages(std::string path, const std::string extension)
+void Exporter::exportSliceImages(std::string path, const std::string extension)
 {
     std::vector<Slice>& slices = segManager->getSlices();
 
     char str[16];
-    for( int i = startIndex; i < endIndex; i++ ) {
+    for( size_t i = startIndex; i < endIndex; i++ ) {
         Slice& slice = slices[i];
 
         const cv::Mat& image = slice.getImg();
 
-        snprintf (str, 16, "%04d", i);
+        snprintf (str, 16, "%04zu", i);
 
         cv::imwrite( path + "/" + str + extension, image );
     }

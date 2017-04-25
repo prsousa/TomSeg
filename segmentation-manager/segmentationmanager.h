@@ -24,8 +24,8 @@ public:
     void resetSeedsFrom(int start);
     void exportResult(std::string path);
     void exportResult(std::string path, size_t firstSlice, size_t lastSlice);
-    void exportSlicesImages(std::string path);
-    void exportSlicesImages(std::string path, size_t firstSlice, size_t lastSlice);
+    void exportSliceImages(std::string path);
+    void exportSliceImages(std::string path, size_t firstSlice, size_t lastSlice);
     void exportProject(std::string path);
     void exportProject(std::string path, size_t firstSlice, size_t lastSlice);
     std::vector<Slice>& getSlices();

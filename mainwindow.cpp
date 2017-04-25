@@ -287,7 +287,7 @@ void MainWindow::importFileDialog()
 {
     std::chrono::steady_clock::time_point beginFilePicking = std::chrono::steady_clock::now();
     QStringList filenames = QFileDialog::getOpenFileNames( this,
-                                                           tr("Import Images"),
+                                                           tr("Import Slices"),
                                                            QDir::homePath(),
                                                            tr("Image Files (*.png *.jpg *.bmp *.tif)")
                                                           );
@@ -345,7 +345,7 @@ void MainWindow::saveProjectDialog()
         } else {
             size_t firstSlice = ui->firstExportSliceBox->value();
             size_t lastSlice = ui->lastExportSliceBox->value();
-            segManager.exportSlicesImages( filename.toStdString(), firstSlice, lastSlice );
+            segManager.exportSliceImages( filename.toStdString(), firstSlice, lastSlice );
         }
     }
 }
@@ -391,7 +391,7 @@ void MainWindow::updateSaveStatus()
     ui->actionSave_As->setEnabled( segManager.size() > 0 );
 
     std::string projectName = projectFilename.empty() ? "Untitled" : projectFilename;
-    this->setWindowTitle("Tom Seg - " + QString::fromStdString(projectName) );
+    this->setWindowTitle("TomSeg - " + QString::fromStdString(projectName) );
 }
 
 void MainWindow::updateCurrentZoomInfo() {
@@ -605,11 +605,11 @@ void MainWindow::on_exportSlicesButton_released()
         bool exportAllSlices = ui->exportAllSlicesCheckBox->isChecked();
 
         if( exportAllSlices ) {
-            segManager.exportSlicesImages( dir.toStdString() );
+            segManager.exportSliceImages( dir.toStdString() );
         } else {
             size_t firstSlice = ui->firstExportSliceBox->value();
             size_t lastSlice = ui->lastExportSliceBox->value();
-            segManager.exportSlicesImages( dir.toStdString(), firstSlice, lastSlice );
+            segManager.exportSliceImages( dir.toStdString(), firstSlice, lastSlice );
         }
     }
 }

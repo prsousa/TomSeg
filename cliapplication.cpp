@@ -99,7 +99,6 @@ void onSliceChange( int a, void* data ) {
     cv::Mat& image = slice->getImg();
     cv::Mat& segResult = slice->getSegmentationResult();
     cv::Mat labels = colorizeLabels( segResult );
-
     cv::Mat imgResized, labelsResized;
     if( image.rows > 1000 ) {
         int newHight = 600;
@@ -140,18 +139,18 @@ int CliApplication::exec()
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h", "produce help message")
-        ("images,i", po::value< std::vector<std::string> >(), "images to import")
-        ("project,p", po::value< std::string >(), "project file")
+        ("import,i", po::value< std::vector<std::string> >(), "import list of slices")
+        ("project,p", po::value< std::string >(), "load project file (*.tms)")
         ("gpu", po::value< bool >()->implicit_value(true), "enable/disable GPU optimizations")
-        ("align,a", po::value< int >()->implicit_value(1), "aligns the slices")
-        ("segment,s", po::value< int >()->implicit_value(1), "segments the volume")
-        ("display,d", "displays the result in a basic GUI")
-        ("output,o", po::value< std::string >(), "folder path to resulting *.mrc files")
-        ("export,e", po::value< std::string >(), "folder path to exporting image slices")
+        ("align,a", po::value< int >()->implicit_value(1), "align slices")
+        ("segment,s", po::value< int >()->implicit_value(1), "segment the 3D volume")
+        ("display,d", "display the result in a basic GUI")
+        ("output,o", po::value< std::string >(), "output folder to resulting *.mrc files")
+        ("export,e", po::value< std::string >(), "output folder to export slice images")
     ;
 
     po::positional_options_description p;
-    p.add("images", -1);
+    p.add("import", -1);
 
     po::variables_map vm;
     po::store(po::command_line_parser(this->argc, this->argv).
@@ -164,9 +163,9 @@ int CliApplication::exec()
         return EXIT_SUCCESS;
     }
 
-    if ( vm.count("images") && !vm.count("project") ) {
+    if ( vm.count("import") && !vm.count("project") ) {
         segManager = SegmentationManager();
-        std::vector<std::string> filenames =  vm["images"].as< std::vector<std::string> >();
+        std::vector<std::string> filenames =  vm["import"].as< std::vector<std::string> >();
         segManager.setSlices( filenames );
     }
 
@@ -201,7 +200,7 @@ int CliApplication::exec()
     }
 
     if( vm.count("export") ) {
-        segManager.exportSlicesImages( vm["export"].as< std::string >() );
+        segManager.exportSliceImages( vm["export"].as< std::string >() );
     }
 
     if( vm.count("display") ) {
